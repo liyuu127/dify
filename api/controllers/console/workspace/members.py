@@ -15,10 +15,11 @@ from controllers.console.wraps import (
 from extensions.ext_database import db
 from fields.member_fields import account_with_role_list_fields
 from libs.login import login_required
-from models.account import Account, TenantAccountRole
+from models.account import Account, TenantAccountRole, AccountStatus
 from services.account_service import RegisterService, TenantService
 from services.errors.account import AccountAlreadyInTenantError
 from services.feature_service import FeatureService
+from constants.common import DEFAULT_PASSWORD
 
 
 class MemberListApi(Resource):
@@ -85,6 +86,59 @@ class MemberInviteEmailApi(Resource):
         return {
             "result": "success",
             "invitation_results": invitation_results,
+        }, 201
+
+
+class MemberCreatApi(Resource):
+    """creat a new member by email."""
+
+    @setup_required
+    @login_required
+    @account_initialization_required
+    @cloud_edition_billing_resource_check("members")
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument("name", type=str, required=True, location="json", action="json")
+        parser.add_argument("email", type=str, required=True, location="json", action="json")
+        parser.add_argument("role", type=str, required=True, default="admin", location="json")
+        parser.add_argument("password", type=str, required=False, default=DEFAULT_PASSWORD, location="json")
+        parser.add_argument("language", type=str, required=False, location="json")
+        args = parser.parse_args()
+
+        email = args["email"]
+        name = args["name"]
+        role = args["role"]
+        password = args["password"]
+        interface_language = args["language"]
+        if not TenantAccountRole.is_non_owner_role(role):
+            return {"code": "invalid-role", "message": "Invalid role"}, 400
+
+        inviter = current_user
+        results = []
+        console_web_url = dify_config.CONSOLE_WEB_URL
+        tenant = inviter.current_tenant
+
+        try:
+            account = RegisterService.register(email=email, name=name, password=password, language=interface_language,
+                                               status=AccountStatus.ACTIVE,
+                                               is_setup=True)
+            TenantService.create_tenant_member(tenant, account, role)
+            TenantService.switch_tenant(account, tenant.id)
+
+            results.append(
+                {
+                    "status": "success"
+                }
+            )
+        except AccountAlreadyInTenantError:
+            results.append(
+                {"status": "success", "email": email, "url": f"{console_web_url}/signin"}
+            )
+        except Exception as e:
+            results.append({"status": "failed", "email": email, "message": str(e)})
+        return {
+            "result": "success",
+            "results": results,
         }, 201
 
 
@@ -157,6 +211,7 @@ class DatasetOperatorMemberListApi(Resource):
 
 api.add_resource(MemberListApi, "/workspaces/current/members")
 api.add_resource(MemberInviteEmailApi, "/workspaces/current/members/invite-email")
+api.add_resource(MemberCreatApi, "/workspaces/current/members/creat")
 api.add_resource(MemberCancelInviteApi, "/workspaces/current/members/<uuid:member_id>")
 api.add_resource(MemberUpdateRoleApi, "/workspaces/current/members/<uuid:member_id>/update-role")
 api.add_resource(DatasetOperatorMemberListApi, "/workspaces/current/dataset-operators")
