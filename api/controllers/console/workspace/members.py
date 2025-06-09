@@ -5,6 +5,7 @@ from flask_restful import Resource, abort, marshal_with, reqparse
 
 import services
 from configs import dify_config
+from controllers.common.errors import ParameterValidationError
 from controllers.console import api
 from controllers.console.error import WorkspaceMembersLimitExceeded
 from controllers.console.wraps import (
@@ -16,7 +17,7 @@ from extensions.ext_database import db
 from fields.member_fields import account_with_role_list_fields
 from libs.login import login_required
 from models.account import Account, TenantAccountRole, AccountStatus
-from services.account_service import RegisterService, TenantService
+from services.account_service import RegisterService, TenantService, AccountService
 from services.errors.account import AccountAlreadyInTenantError
 from services.feature_service import FeatureService
 from constants.common import DEFAULT_PASSWORD
@@ -95,14 +96,15 @@ class MemberCreatApi(Resource):
     @setup_required
     @login_required
     @account_initialization_required
-    @cloud_edition_billing_resource_check("members")
+    # @cloud_edition_billing_resource_check("members")
+    @marshal_with(account_with_role_list_fields)  # 新增这一行
     def post(self):
         parser = reqparse.RequestParser()
         parser.add_argument("name", type=str, required=True, location="json", action="json")
         parser.add_argument("email", type=str, required=True, location="json", action="json")
         parser.add_argument("role", type=str, required=True, default="admin", location="json")
         parser.add_argument("password", type=str, required=False, default=DEFAULT_PASSWORD, location="json")
-        parser.add_argument("language", type=str, required=False, location="json")
+        parser.add_argument("language", type=str, required=False, default="zh-Hans", location="json")
         args = parser.parse_args()
 
         email = args["email"]
@@ -119,27 +121,59 @@ class MemberCreatApi(Resource):
         tenant = inviter.current_tenant
 
         try:
-            account = RegisterService.register(email=email, name=name, password=password, language=interface_language,
+            account = RegisterService.register(email=email,
+                                               name=name,
+                                               password=password,
+                                               language=interface_language,
                                                status=AccountStatus.ACTIVE,
                                                is_setup=True)
             TenantService.create_tenant_member(tenant, account, role)
             TenantService.switch_tenant(account, tenant.id)
 
-            results.append(
-                {
-                    "status": "success"
-                }
-            )
+            return {"result": "success", "account": account}, 201
         except AccountAlreadyInTenantError:
-            results.append(
-                {"status": "success", "email": email, "url": f"{console_web_url}/signin"}
-            )
+            console_web_url = dify_config.CONSOLE_WEB_URL
+            return {
+                "result": "success",
+                "status": "already_in_tenant",
+                "url": f"{console_web_url}/signin"
+            }, 200
         except Exception as e:
-            results.append({"status": "failed", "email": email, "message": str(e)})
-        return {
-            "result": "success",
-            "results": results,
-        }, 201
+            return {
+                "result": "failed",
+                "message": str(e)
+            }, 500
+
+
+class MemberDeleteApi(Resource):
+    """Delete a member by member id."""
+
+    @setup_required
+    @login_required
+    @account_initialization_required
+    def post(self):
+
+        parser = reqparse.RequestParser()
+        parser.add_argument("id", type=str, required=False, location="json")
+        parser.add_argument("email", type=str, required=False, location="json")
+        args = parser.parse_args()
+
+        id = args["id"]
+        email = args["email"]
+
+        # 如果id存在，通过id删除账号
+        if id:
+            account = AccountService.load_user(id)
+            AccountService.remove_account(account)
+        # 如果email存在，通过email删除账号
+        elif email:
+            account = AccountService.get_user_through_email(email)
+            AccountService.remove_account(account)
+        # 都不存在，抛出错误
+        else:
+            raise ParameterValidationError("id or email is required")
+
+        return {"result": "success"}
 
 
 class MemberCancelInviteApi(Resource):
@@ -211,7 +245,8 @@ class DatasetOperatorMemberListApi(Resource):
 
 api.add_resource(MemberListApi, "/workspaces/current/members")
 api.add_resource(MemberInviteEmailApi, "/workspaces/current/members/invite-email")
-api.add_resource(MemberCreatApi, "/workspaces/current/members/creat")
+api.add_resource(MemberCreatApi, "/workspaces/current/members/create")
+api.add_resource(MemberDeleteApi, "/workspaces/current/members/delete")
 api.add_resource(MemberCancelInviteApi, "/workspaces/current/members/<uuid:member_id>")
 api.add_resource(MemberUpdateRoleApi, "/workspaces/current/members/<uuid:member_id>/update-role")
 api.add_resource(DatasetOperatorMemberListApi, "/workspaces/current/dataset-operators")

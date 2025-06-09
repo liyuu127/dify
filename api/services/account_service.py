@@ -19,6 +19,7 @@ from events.tenant_event import tenant_was_created
 from extensions.ext_database import db
 from extensions.ext_redis import redis_client
 from libs.helper import RateLimiter, TokenManager
+from flask_login import current_user
 from libs.passport import PassportService
 from libs.password import compare_password, hash_password, valid_password
 from libs.rsa import generate_key_pair
@@ -294,6 +295,16 @@ class AccountService:
     def delete_account(account: Account) -> None:
         """Delete account. This method only adds a task to the queue for deletion."""
         delete_account_task.delay(account.id)
+
+    # 移除账号
+    @staticmethod
+    def remove_account(account: Account) -> None:
+        """remove account """
+        account = db.session.query(Account).filter(Account.id == account.id).first()
+        if account:
+            TenantService.remove_member_from_tenant(current_user.current_tenant, account, current_user)
+            db.session.delete(account)
+            db.session.commit()
 
     @staticmethod
     def link_account_integrate(provider: str, open_id: str, account: Account) -> None:

@@ -9,3 +9,9 @@ class FilenameNotExistsError(HTTPException):
 class RemoteFileUploadError(HTTPException):
     code = 400
     description = "Error uploading remote file."
+
+
+# 参数验证失败
+class ParameterValidationError(HTTPException):
+    code = 400
+    description = "Parameter validation failed."

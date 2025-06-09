@@ -102,6 +102,55 @@ class LoginApi(Resource):
         token_pair = AccountService.login(account=account, ip_address=extract_remote_ip(request))
         AccountService.reset_login_error_rate_limit(args["email"])
         return {"result": "success", "data": token_pair.model_dump()}
+class LoginWoutCheckApi(Resource):
+    """Resource for user login."""
+
+    @setup_required
+    @email_password_login_enabled
+    def post(self):
+        """Authenticate user and login."""
+        parser = reqparse.RequestParser()
+        parser.add_argument("email", type=str, required=True, location="json")
+        parser.add_argument("password", type=valid_password, required=True, location="json")
+        parser.add_argument("remember_me", type=bool, required=False, default=False, location="json")
+        parser.add_argument("language", type=str, required=False, default="zh-Hans", location="json")
+        args = parser.parse_args()
+
+
+        if args["language"] is not None and args["language"] == "en-US":
+            language = "en-US"
+        else:
+            language = "zh-Hans"
+
+        try:
+            account = AccountService.authenticate(args["email"], args["password"])
+        except services.errors.account.AccountLoginError:
+            raise AccountBannedError()
+        except services.errors.account.AccountPasswordError:
+            AccountService.add_login_error_rate_limit(args["email"])
+            raise EmailOrPasswordMismatchError()
+        except services.errors.account.AccountNotFoundError:
+            if FeatureService.get_system_features().is_allow_register:
+                token = AccountService.send_reset_password_email(email=args["email"], language=language)
+                return {"result": "fail", "data": token, "code": "account_not_found"}
+            else:
+                raise AccountNotFound()
+        # SELF_HOSTED only have one workspace
+        tenants = TenantService.get_join_tenants(account)
+        if len(tenants) == 0:
+            system_features = FeatureService.get_system_features()
+
+            if system_features.is_allow_create_workspace and not system_features.license.workspaces.is_available():
+                raise WorkspacesLimitExceeded()
+            else:
+                return {
+                    "result": "fail",
+                    "data": "workspace not found, please contact system admin to invite you to join in a workspace",
+                }
+
+        token_pair = AccountService.login(account=account, ip_address=extract_remote_ip(request))
+        AccountService.reset_login_error_rate_limit(args["email"])
+        return {"result": "success", "data": token_pair.model_dump()}
 
 
 class LogoutApi(Resource):
@@ -245,6 +294,7 @@ class RefreshTokenApi(Resource):
 
 
 api.add_resource(LoginApi, "/login")
+api.add_resource(LoginWoutCheckApi, "/login/v2")
 api.add_resource(LogoutApi, "/logout")
 api.add_resource(EmailCodeLoginSendEmailApi, "/email-code-login")
 api.add_resource(EmailCodeLoginApi, "/email-code-login/validity")
