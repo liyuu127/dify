@@ -1,7 +1,7 @@
 from urllib import parse
 
 from flask_login import current_user
-from flask_restful import Resource, abort, marshal_with, reqparse
+from flask_restful import Resource, abort, marshal_with, reqparse, marshal
 
 import services
 from configs import dify_config
@@ -14,7 +14,7 @@ from controllers.console.wraps import (
     setup_required,
 )
 from extensions.ext_database import db
-from fields.member_fields import account_with_role_list_fields
+from fields.member_fields import account_with_role_list_fields, account_with_role_fields, account_with_role_field
 from libs.login import login_required
 from models.account import Account, TenantAccountRole, AccountStatus
 from services.account_service import RegisterService, TenantService, AccountService
@@ -96,8 +96,7 @@ class MemberCreatApi(Resource):
     @setup_required
     @login_required
     @account_initialization_required
-    # @cloud_edition_billing_resource_check("members")
-    @marshal_with(account_with_role_list_fields)  # 新增这一行
+    @marshal_with(account_with_role_field)
     def post(self):
         parser = reqparse.RequestParser()
         parser.add_argument("name", type=str, required=True, location="json", action="json")
@@ -116,8 +115,6 @@ class MemberCreatApi(Resource):
             return {"code": "invalid-role", "message": "Invalid role"}, 400
 
         inviter = current_user
-        results = []
-        console_web_url = dify_config.CONSOLE_WEB_URL
         tenant = inviter.current_tenant
 
         try:
@@ -129,15 +126,12 @@ class MemberCreatApi(Resource):
                                                is_setup=True)
             TenantService.create_tenant_member(tenant, account, role)
             TenantService.switch_tenant(account, tenant.id)
-
-            return {"result": "success", "account": account}, 201
+            return {"result": "success", "account": account}, 200
         except AccountAlreadyInTenantError:
-            console_web_url = dify_config.CONSOLE_WEB_URL
             return {
-                "result": "success",
-                "status": "already_in_tenant",
-                "url": f"{console_web_url}/signin"
-            }, 200
+                "result": "failed",
+                "message": "already_in_tenant"
+            }, 500
         except Exception as e:
             return {
                 "result": "failed",
