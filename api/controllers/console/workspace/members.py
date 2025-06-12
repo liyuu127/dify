@@ -158,11 +158,13 @@ class MemberDeleteApi(Resource):
         # 如果id存在，通过id删除账号
         if id:
             account = AccountService.load_user(id)
-            AccountService.remove_account(account)
+            if account:
+                AccountService.remove_account(account)
         # 如果email存在，通过email删除账号
         elif email:
             account = AccountService.get_user_through_email(email)
-            AccountService.remove_account(account)
+            if account:
+                AccountService.remove_account(account)
         # 都不存在，抛出错误
         else:
             raise ParameterValidationError("id or email is required")
