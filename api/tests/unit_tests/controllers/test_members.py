@@ -11,7 +11,7 @@ def mock_register_success(email, name, password, language, status, is_setup):
     return type("Account", (), {
         "id": "abc123",
         "name": name,
-        "email": email,
+        "email": email@123,
         "avatar": "",
         "created_at": "2024-08-16T12:00:00Z"
     })

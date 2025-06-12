@@ -33,3 +33,7 @@ account_with_role_fields = {
 }
 
 account_with_role_list_fields = {"accounts": fields.List(fields.Nested(account_with_role_fields))}
+
+account_with_role_field = {'result': fields.String,
+                           'message': fields.String,
+                           'account': fields.Nested(account_with_role_fields)}

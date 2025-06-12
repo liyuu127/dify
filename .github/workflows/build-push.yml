@@ -1,6 +1,8 @@
 name: Build and Push API & Web
 
 on:
+  workflow_dispatch:
+
   push:
     branches:
       - "main"
@@ -98,7 +100,7 @@ jobs:
   create-manifest:
     needs: build
     runs-on: ubuntu-latest
-    if: github.repository == 'langgenius/dify'
+#    if: github.repository == 'langgenius/dify'
     strategy:
       matrix:
         include:
