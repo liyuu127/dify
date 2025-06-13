@@ -16,7 +16,7 @@ import {
 import {
   PaperClipIcon,
 } from '@heroicons/react/24/outline'
-import { RiApps2AddLine, RiBookOpenLine, RiInformation2Line } from '@remixicon/react'
+import { RiApps2AddLine, RiInformation2Line } from '@remixicon/react'
 import classNames from '@/utils/classnames'
 import { fetchDatasetDetail, fetchDatasetRelatedApps } from '@/service/datasets'
 import type { RelatedAppResponse } from '@/models/datasets'
@@ -25,7 +25,6 @@ import Loading from '@/app/components/base/loading'
 import DatasetDetailContext from '@/context/dataset-detail'
 import { DataSourceType } from '@/models/datasets'
 import useBreakpoints, { MediaType } from '@/hooks/use-breakpoints'
-import { LanguagesSupported } from '@/i18n/language'
 import { useStore } from '@/app/components/app/store'
 import { getLocaleOnClient } from '@/i18n'
 import { useAppContext } from '@/context/app-context'
@@ -95,7 +94,8 @@ const ExtraInfo = ({ isMobile, relatedApps, expand }: IExtraInfoProps) => {
               <RiApps2AddLine className='h-4 w-4 text-text-tertiary' />
             </div>
             <div className='my-2 text-xs text-text-tertiary'>{t('common.datasetMenus.emptyTip')}</div>
-            <a
+            {/* 注释掉文档链接 */}
+            {/* <a
               className='mt-2 inline-flex cursor-pointer items-center text-xs text-text-accent'
               href={
                 locale === LanguagesSupported[1]
@@ -106,7 +106,7 @@ const ExtraInfo = ({ isMobile, relatedApps, expand }: IExtraInfoProps) => {
             >
               <RiBookOpenLine className='mr-1 text-text-accent' />
               {t('common.datasetMenus.viewDoc')}
-            </a>
+            </a> */}
           </div>
         }
       >
@@ -144,8 +144,18 @@ const DatasetDetailLayout: FC<IAppDetailLayoutProps> = (props) => {
 
   const navigation = useMemo(() => {
     const baseNavigation = [
-      { name: t('common.datasetMenus.hitTesting'), href: `/datasets/${datasetId}/hitTesting`, icon: RiFocus2Line, selectedIcon: RiFocus2Fill },
-      { name: t('common.datasetMenus.settings'), href: `/datasets/${datasetId}/settings`, icon: RiEqualizer2Line, selectedIcon: RiEqualizer2Fill },
+      {
+ name: t('common.datasetMenus.hitTesting'),
+href: `/datasets/${datasetId}/hitTesting`,
+icon: RiFocus2Line,
+selectedIcon: RiFocus2Fill,
+},
+      {
+ name: t('common.datasetMenus.settings'),
+href: `/datasets/${datasetId}/settings`,
+icon: RiEqualizer2Line,
+selectedIcon: RiEqualizer2Fill,
+},
     ]
 
     if (datasetRes?.provider !== 'external') {

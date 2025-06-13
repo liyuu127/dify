@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import { useDebounce, useDebounceFn } from 'ahooks'
 import { groupBy } from 'lodash-es'
 import { PlusIcon } from '@heroicons/react/24/solid'
-import { RiDraftLine, RiExternalLinkLine } from '@remixicon/react'
+import { RiDraftLine } from '@remixicon/react'
 import AutoDisabledDocument from '../common/document-status-with-action/auto-disabled-document'
 import List from './list'
 import s from './style.module.css'
@@ -29,7 +29,6 @@ import { useChildSegmentListKey, useSegmentListKey } from '@/service/knowledge/u
 import useEditDocumentMetadata from '../metadata/hooks/use-edit-dataset-metadata'
 import DatasetMetadataDrawer from '../metadata/metadata-dataset/dataset-metadata-drawer'
 import StatusWithAction from '../common/document-status-with-action/status-with-action'
-import { LanguagesSupported } from '@/i18n/language'
 import { getLocaleOnClient } from '@/i18n'
 
 const FolderPlusIcon = ({ className }: React.SVGProps<SVGElement>) => {
@@ -59,7 +58,11 @@ const NotionIcon = ({ className }: React.SVGProps<SVGElement>) => {
   </svg>
 }
 
-const EmptyElement: FC<{ canAdd: boolean; onClick: () => void; type?: 'upload' | 'sync' }> = ({ canAdd = true, onClick, type = 'upload' }) => {
+const EmptyElement: FC<{
+ canAdd: boolean;
+onClick: () => void;
+type?: 'upload' | 'sync'
+}> = ({ canAdd = true, onClick, type = 'upload' }) => {
   const { t } = useTranslation()
   return <div className={s.emptyWrapper}>
     <div className={s.emptyElement}>
@@ -257,7 +260,8 @@ const Documents: FC<IDocumentsProps> = ({ datasetId }) => {
     <div className='flex h-full flex-col overflow-y-auto'>
       <div className='flex flex-col justify-center gap-1 px-6 pt-4'>
         <h1 className='text-base font-semibold text-text-primary'>{t('datasetDocuments.list.title')}</h1>
-        <div className='flex items-center space-x-0.5 text-sm font-normal text-text-tertiary'>
+        {/* 注释掉文档链接 */}
+        {/* <div className='flex items-center space-x-0.5 text-sm font-normal text-text-tertiary'>
           <span>{t('datasetDocuments.list.desc')}</span>
           <a
             className='flex items-center text-text-accent'
@@ -271,7 +275,7 @@ const Documents: FC<IDocumentsProps> = ({ datasetId }) => {
             <span>{t('datasetDocuments.list.learnMore')}</span>
             <RiExternalLinkLine className='h-3 w-3' />
           </a>
-        </div>
+        </div> */}
       </div>
       <div className='flex flex-1 flex-col px-6 py-4'>
         <div className='flex flex-wrap items-center justify-between'>
