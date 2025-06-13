@@ -519,7 +519,7 @@ const translation = {
     documents: '文件',
     hitTesting: '召回測試',
     settings: '設定',
-    emptyTip: ' 知識庫尚未關聯，請前往應用程式或外掛完成關聯。',
+    emptyTip: ' 知識庫尚未關聯',
     viewDoc: '檢視文件',
     relatedApp: '個關聯應用',
     noRelatedApp: '沒有連結的應用程式',

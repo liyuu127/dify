@@ -39,8 +39,15 @@ const labelClass = `
 `
 
 const getKey = (pageIndex: number, previousPageData: DataSetListResponse) => {
-  if (!pageIndex || previousPageData.has_more)
-    return { url: 'datasets', params: { page: pageIndex + 1, limit: 30 } }
+  if (!pageIndex || previousPageData.has_more) {
+ return {
+ url: 'datasets',
+params: {
+ page: pageIndex + 1,
+limit: 30,
+},
+}
+}
   return null
 }
 
@@ -78,14 +85,21 @@ const Form = () => {
   const { data: embeddingModelList } = useModelList(ModelTypeEnum.textEmbedding)
 
   const getMembers = async () => {
-    const { accounts } = await fetchMembers({ url: '/workspaces/current/members', params: {} })
+    const { accounts } = await fetchMembers({
+ url: '/workspaces/current/members',
+params: {},
+})
     if (!accounts)
       setMemberList([])
     else
       setMemberList(accounts)
   }
 
-  const handleSettingsChange = (data: { top_k?: number; score_threshold?: number; score_threshold_enabled?: boolean }) => {
+  const handleSettingsChange = (data: {
+ top_k?: number;
+score_threshold?: number;
+score_threshold_enabled?: boolean
+}) => {
     if (data.top_k !== undefined)
       setTopK(data.top_k)
     if (data.score_threshold !== undefined)
@@ -102,7 +116,10 @@ const Form = () => {
     if (loading)
       return
     if (!name?.trim()) {
-      notify({ type: 'error', message: t('datasetSettings.form.nameError') })
+      notify({
+ type: 'error',
+message: t('datasetSettings.form.nameError'),
+})
       return
     }
     if (
@@ -112,7 +129,10 @@ const Form = () => {
         indexMethod,
       })
     ) {
-      notify({ type: 'error', message: t('appDebug.datasetConfig.rerankModelRequired') })
+      notify({
+ type: 'error',
+message: t('appDebug.datasetConfig.rerankModelRequired'),
+})
       return
     }
     if (retrievalConfig.weights) {
@@ -154,14 +174,20 @@ const Form = () => {
         })
       }
       await updateDatasetSetting(requestParams)
-      notify({ type: 'success', message: t('common.actionMsg.modifiedSuccessfully') })
+      notify({
+ type: 'success',
+message: t('common.actionMsg.modifiedSuccessfully'),
+})
       if (mutateDatasets) {
         await mutateDatasets()
         mutate(unstable_serialize(getKey))
       }
     }
     catch {
-      notify({ type: 'error', message: t('common.actionMsg.modifiedUnsuccessfully') })
+      notify({
+ type: 'error',
+message: t('common.actionMsg.modifiedUnsuccessfully'),
+})
     }
     finally {
       setLoading(false)
@@ -307,10 +333,11 @@ const Form = () => {
               <div className={labelClass}>
                 <div>
                   <div className='system-sm-semibold text-text-secondary'>{t('datasetSettings.form.retrievalSetting.title')}</div>
-                  <div className='body-xs-regular text-text-tertiary'>
+                  {/* 注释掉文档链接 */}
+                  {/* <div className='body-xs-regular text-text-tertiary'>
                     <a target='_blank' rel='noopener noreferrer' href='https://docs.dify.ai/guides/knowledge-base/create-knowledge-and-upload-documents#id-4-retrieval-settings' className='text-text-accent'>{t('datasetSettings.form.retrievalSetting.learnMore')}</a>
                     {t('datasetSettings.form.retrievalSetting.description')}
-                  </div>
+                  </div> */}
                 </div>
               </div>
               <div className='grow'>
