@@ -146,7 +146,8 @@ const translation = {
   menus: {
     status: 'beta',
     explore: '探索',
-    apps: '工作室',
+    // apps: '工作室',更换为智能体
+    apps: '智能体',
     appDetail: '应用详情',
     account: '账户',
     plugins: '插件',

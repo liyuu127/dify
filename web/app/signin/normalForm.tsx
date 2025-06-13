@@ -1,18 +1,13 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { RiContractLine, RiDoorLockLine, RiErrorWarningFill } from '@remixicon/react'
 import Loading from '../components/base/loading'
-import MailAndCodeAuth from './components/mail-and-code-auth'
 import MailAndPasswordAuth from './components/mail-and-password-auth'
-import SocialAuth from './components/social-auth'
-import SSOAuth from './components/sso-auth'
 import cn from '@/utils/classnames'
 import { invitationCheck } from '@/service/common'
 import { LicenseStatus } from '@/types/feature'
 import Toast from '@/app/components/base/toast'
-import { IS_CE_EDITION } from '@/config'
 import { useGlobalPublicStore } from '@/context/global-public-context'
 
 const NormalForm = () => {
@@ -126,7 +121,8 @@ const NormalForm = () => {
   return (
     <>
       <div className="mx-auto mt-8 w-full">
-        {isInviteLink
+        {/* 注释掉邀请链接 */}
+        {/* {isInviteLink
           ? <div className="mx-auto w-full">
             <h2 className="title-4xl-semi-bold text-text-primary">{t('login.join')}{workspaceName}</h2>
             {!systemFeatures.branding.enabled && <p className='body-md-regular mt-2 text-text-tertiary'>{t('login.joinTipStart')}{workspaceName}{t('login.joinTipEnd')}</p>}
@@ -134,31 +130,32 @@ const NormalForm = () => {
           : <div className="mx-auto w-full">
             <h2 className="title-4xl-semi-bold text-text-primary">{t('login.pageTitle')}</h2>
             {!systemFeatures.branding.enabled && <p className='body-md-regular mt-2 text-text-tertiary'>{t('login.welcome')}</p>}
-          </div>}
+          </div>} */}
         <div className="relative">
-          <div className="mt-6 flex flex-col gap-3">
+          {/* 注释掉社交登录 */}
+          {/* <div className="mt-6 flex flex-col gap-3">
             {systemFeatures.enable_social_oauth_login && <SocialAuth />}
             {systemFeatures.sso_enforced_for_signin && <div className='w-full'>
               <SSOAuth protocol={systemFeatures.sso_enforced_for_signin_protocol} />
             </div>}
-          </div>
-
-          {showORLine && <div className="relative mt-6">
+          </div> */}
+          {/* 注释掉分割线 */}
+          {/* {showORLine && <div className="relative mt-6">
             <div className="absolute inset-0 flex items-center" aria-hidden="true">
               <div className='h-px w-full bg-gradient-to-r from-background-gradient-mask-transparent via-divider-regular to-background-gradient-mask-transparent'></div>
             </div>
             <div className="relative flex justify-center">
               <span className="system-xs-medium-uppercase px-2 text-text-tertiary">{t('login.or')}</span>
             </div>
-          </div>}
+          </div>} */}
           {
             (systemFeatures.enable_email_code_login || systemFeatures.enable_email_password_login) && <>
-              {systemFeatures.enable_email_code_login && authType === 'code' && <>
+              {/* {systemFeatures.enable_email_code_login && authType === 'code' && <>
                 <MailAndCodeAuth isInvite={isInviteLink} />
                 {systemFeatures.enable_email_password_login && <div className='cursor-pointer py-1 text-center' onClick={() => { updateAuthType('password') }}>
                   <span className='system-xs-medium text-components-button-secondary-accent-text'>{t('login.usePassword')}</span>
                 </div>}
-              </>}
+              </>} */}
               {systemFeatures.enable_email_password_login && authType === 'password' && <>
                 <MailAndPasswordAuth isInvite={isInviteLink} isEmailSetup={systemFeatures.is_email_setup} allowRegistration={systemFeatures.is_allow_register} />
                 {systemFeatures.enable_email_code_login && <div className='cursor-pointer py-1 text-center' onClick={() => { updateAuthType('code') }}>
@@ -181,7 +178,8 @@ const NormalForm = () => {
               </div>
             </div>
           </>}
-          {!systemFeatures.branding.enabled && <>
+          {/* 注释掉版权信息 */}
+          {/* {!systemFeatures.branding.enabled && <>
             <div className="system-xs-regular mt-2 block w-full text-text-tertiary">
               {t('login.tosDesc')}
               &nbsp;
@@ -205,7 +203,7 @@ const NormalForm = () => {
                 href='/install'
               >{t('login.setAdminAccount')}</Link>
             </div>}
-          </>}
+          </>} */}
 
         </div>
       </div>

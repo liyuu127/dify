@@ -1,25 +1,13 @@
 'use client'
 import { useCallback, useEffect } from 'react'
-import Link from 'next/link'
 import { useBoolean } from 'ahooks'
 import { useSelectedLayoutSegment } from 'next/navigation'
-import { Bars3Icon } from '@heroicons/react/20/solid'
-import AccountDropdown from './account-dropdown'
 import AppNav from './app-nav'
 import DatasetNav from './dataset-nav'
-import EnvNav from './env-nav'
-import PluginsNav from './plugins-nav'
-import ExploreNav from './explore-nav'
-import ToolsNav from './tools-nav'
-import { WorkspaceProvider } from '@/context/workspace-context'
 import { useAppContext } from '@/context/app-context'
-import DifyLogo from '@/app/components/base/logo/dify-logo'
-import WorkplaceSelector from '@/app/components/header/account-dropdown/workplace-selector'
 import useBreakpoints, { MediaType } from '@/hooks/use-breakpoints'
 import { useProviderContext } from '@/context/provider-context'
 import { useModalContext } from '@/context/modal-context'
-import PlanBadge from './plan-badge'
-import LicenseNav from './license-env'
 import { Plan } from '../billing/type'
 
 const navClassName = `
@@ -49,8 +37,9 @@ const Header = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedSegment])
   return (
-    <div className='relative flex flex-1 items-center justify-between bg-background-body'>
-      <div className='flex items-center'>
+    <div style={{ backgroundColor: '#0a2858' }} className='relative flex flex-1 items-center justify-between'>
+      {/* 注释掉探索和工具栏，因为这两个功能暂时不需要 */}
+      {/* <div className='flex items-center'>
         {isMobile && <div
           className='flex h-8 w-8 cursor-pointer items-center justify-center'
           onClick={toggle}
@@ -81,31 +70,33 @@ const Header = () => {
           <div className='font-light text-divider-deep'>/</div>
           {enableBilling ? <PlanBadge allowHover sandboxAsUpgrade plan={plan.type} onClick={handlePlanClick} /> : <LicenseNav />}
         </div >
-      )}
+      )} */}
       {
         !isMobile && (
           <div className='absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center'>
-            {!isCurrentWorkspaceDatasetOperator && <ExploreNav className={navClassName} />}
+            {/* 注释掉探索和工具栏，因为这两个功能暂时不需要 */}
+            {/* {!isCurrentWorkspaceDatasetOperator && <ExploreNav className={navClassName} />} */}
             {!isCurrentWorkspaceDatasetOperator && <AppNav />}
             {(isCurrentWorkspaceEditor || isCurrentWorkspaceDatasetOperator) && <DatasetNav />}
-            {!isCurrentWorkspaceDatasetOperator && <ToolsNav className={navClassName} />}
+            {/* {!isCurrentWorkspaceDatasetOperator && <ToolsNav className={navClassName} />} */}
           </div>
         )
       }
-      <div className='flex shrink-0 items-center pr-3'>
+      {/* 注释掉环境变量和插件，因为这两个功能暂时不需要 */}
+      {/* <div className='flex shrink-0 items-center pr-3'>
         <EnvNav />
         <div className='mr-2'>
           <PluginsNav />
         </div>
         <AccountDropdown />
-      </div>
+      </div> */}
       {
         (isMobile && isShowNavMenu) && (
           <div className='flex w-full flex-col gap-y-1 p-2'>
-            {!isCurrentWorkspaceDatasetOperator && <ExploreNav className={navClassName} />}
+            {/* {!isCurrentWorkspaceDatasetOperator && <ExploreNav className={navClassName} />} */}
             {!isCurrentWorkspaceDatasetOperator && <AppNav />}
             {(isCurrentWorkspaceEditor || isCurrentWorkspaceDatasetOperator) && <DatasetNav />}
-            {!isCurrentWorkspaceDatasetOperator && <ToolsNav className={navClassName} />}
+            {/* {!isCurrentWorkspaceDatasetOperator && <ToolsNav className={navClassName} />} */}
           </div>
         )
       }

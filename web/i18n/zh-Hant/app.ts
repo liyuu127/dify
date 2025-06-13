@@ -3,7 +3,7 @@ const translation = {
   types: {
     all: '全部',
     chatbot: '聊天助手',
-    agent: 'Agent',
+    agent: '問答智能體',
     workflow: '工作流',
     completion: '文字生成',
     advanced: '聊天流',
