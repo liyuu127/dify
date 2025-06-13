@@ -146,7 +146,8 @@ const translation = {
   menus: {
     status: 'beta',
     explore: 'Explore',
-    apps: 'Studio',
+    // apps: 'Studio',更换为apps: 'Intelligent agent'
+    apps: 'Intelligent agent',
     appDetail: 'App Detail',
     account: 'Account',
     plugins: 'Plugins',

@@ -65,7 +65,10 @@ const AppCard = ({ app, onRefresh }: AppCardProps) => {
   const onConfirmDelete = useCallback(async () => {
     try {
       await deleteApp(app.id)
-      notify({ type: 'success', message: t('app.appDeleted') })
+      notify({
+ type: 'success',
+message: t('app.appDeleted'),
+})
       if (onRefresh)
         onRefresh()
       mutateApps()
@@ -108,7 +111,10 @@ const AppCard = ({ app, onRefresh }: AppCardProps) => {
       mutateApps()
     }
     catch {
-      notify({ type: 'error', message: t('app.editFailed') })
+      notify({
+ type: 'error',
+message: t('app.editFailed'),
+})
     }
   }, [app.id, mutateApps, notify, onRefresh, t])
 
@@ -135,7 +141,10 @@ const AppCard = ({ app, onRefresh }: AppCardProps) => {
       getRedirection(isCurrentWorkspaceEditor, newApp, push)
     }
     catch {
-      notify({ type: 'error', message: t('app.newApp.appCreateFailed') })
+      notify({
+ type: 'error',
+message: t('app.newApp.appCreateFailed'),
+})
     }
   }
 
@@ -152,7 +161,10 @@ const AppCard = ({ app, onRefresh }: AppCardProps) => {
       a.click()
     }
     catch {
-      notify({ type: 'error', message: t('app.exportFailed') })
+      notify({
+ type: 'error',
+message: t('app.exportFailed'),
+})
     }
   }
 
@@ -171,7 +183,10 @@ const AppCard = ({ app, onRefresh }: AppCardProps) => {
       setSecretEnvList(list)
     }
     catch {
-      notify({ type: 'error', message: t('app.exportFailed') })
+      notify({
+ type: 'error',
+message: t('app.exportFailed'),
+})
     }
   }
 
@@ -241,7 +256,10 @@ const AppCard = ({ app, onRefresh }: AppCardProps) => {
           throw new Error('No app found in Explore')
       }
       catch (e: any) {
-        Toast.notify({ type: 'error', message: `${e.message || e}` })
+        Toast.notify({
+ type: 'error',
+message: `${e.message || e}`,
+})
       }
     }
     return (
@@ -267,10 +285,10 @@ const AppCard = ({ app, onRefresh }: AppCardProps) => {
             </button>
           </>
         )}
-        <Divider className="my-1" />
-        <button className='mx-1 flex h-8 cursor-pointer items-center gap-2 rounded-lg px-3 hover:bg-state-base-hover' onClick={onClickInstalledApp}>
+        {/* <Divider className="my-1" /> */}
+        {/* <button className='mx-1 flex h-8 cursor-pointer items-center gap-2 rounded-lg px-3 hover:bg-state-base-hover' onClick={onClickInstalledApp}>
           <span className='system-sm-regular text-text-secondary'>{t('app.openInExplore')}</span>
-        </button>
+        </button> */}
         <Divider className="my-1" />
         {
           systemFeatures.webapp_auth.enabled && isCurrentWorkspaceEditor && <>

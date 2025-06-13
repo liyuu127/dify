@@ -16,9 +16,7 @@ import Doc from './Doc'
 import TabSliderNew from '@/app/components/base/tab-slider-new'
 import TagManagementModal from '@/app/components/base/tag-management'
 import TagFilter from '@/app/components/base/tag-management/filter'
-import Button from '@/app/components/base/button'
 import Input from '@/app/components/base/input'
-import { ApiConnectionMod } from '@/app/components/base/icons/src/vender/solid/development'
 import CheckboxWithLabel from '@/app/components/datasets/create/website/base/checkbox-with-label'
 
 // Services
@@ -42,13 +40,21 @@ const Container = () => {
   const [includeAll, { toggle: toggleIncludeAll }] = useBoolean(false)
   useDocumentTitle(t('dataset.knowledge'))
 
+  // 注释掉原来数据
+  // const options = useMemo(() => {
+  //   return [
+  //     { value: 'dataset', text: t('dataset.datasets') },
+  //     ...(currentWorkspace.role === 'dataset_operator' ? [] : [{ value: 'api', text: t('dataset.datasetsApi') }]),
+  //   ]
+  // }, [currentWorkspace.role, t])
   const options = useMemo(() => {
     return [
-      { value: 'dataset', text: t('dataset.datasets') },
-      ...(currentWorkspace.role === 'dataset_operator' ? [] : [{ value: 'api', text: t('dataset.datasetsApi') }]),
+      {
+ value: 'dataset',
+text: t('dataset.datasets'),
+},
     ]
-  }, [currentWorkspace.role, t])
-
+  }, [t])
   const [activeTab, setActiveTab] = useTabSearchParams({
     defaultTab: 'dataset',
   })
@@ -113,13 +119,14 @@ const Container = () => {
               onClear={() => handleKeywordsChange('')}
             />
             <div className="h-4 w-[1px] bg-divider-regular" />
-            <Button
+            {/* 注释掉外部API */}
+            {/* <Button
               className='shadows-shadow-xs gap-0.5'
               onClick={() => setShowExternalApiPanel(true)}
             >
               <ApiConnectionMod className='h-4 w-4 text-components-button-secondary-text' />
               <div className='system-sm-medium flex items-center justify-center gap-1 px-0.5 text-components-button-secondary-text'>{t('dataset.externalAPIPanelTitle')}</div>
-            </Button>
+            </Button> */}
           </div>
         )}
         {activeTab === 'api' && data && <ApiServer apiBaseUrl={data.api_base_url || ''} />}

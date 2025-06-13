@@ -10,8 +10,6 @@ import { useDebounceFn } from 'ahooks'
 import {
   RiApps2Line,
   RiExchange2Line,
-  RiFile4Line,
-  RiMessage3Line,
   RiRobot3Line,
 } from '@remixicon/react'
 import AppCard from './AppCard'
@@ -39,7 +37,15 @@ const getKey = (
   keywords: string,
 ) => {
   if (!pageIndex || previousPageData.has_more) {
-    const params: any = { url: 'apps', params: { page: pageIndex + 1, limit: 30, name: keywords, is_created_by_me: isCreatedByMe } }
+    const params: any = {
+ url: 'apps',
+params: {
+ page: pageIndex + 1,
+limit: 30,
+name: keywords,
+is_created_by_me: isCreatedByMe,
+},
+}
 
     if (activeTab !== 'all')
       params.params.mode = activeTab
@@ -68,10 +74,16 @@ const Apps = () => {
   const [searchKeywords, setSearchKeywords] = useState(keywords)
   const newAppCardRef = useRef<HTMLDivElement>(null)
   const setKeywords = useCallback((keywords: string) => {
-    setQuery(prev => ({ ...prev, keywords }))
+    setQuery(prev => ({
+ ...prev,
+keywords,
+}))
   }, [setQuery])
   const setTagIDs = useCallback((tagIDs: string[]) => {
-    setQuery(prev => ({ ...prev, tagIDs }))
+    setQuery(prev => ({
+ ...prev,
+tagIDs,
+}))
   }, [setQuery])
 
   const { data, isLoading, error, setSize, mutate } = useSWRInfinite(
@@ -86,13 +98,26 @@ const Apps = () => {
   )
 
   const anchorRef = useRef<HTMLDivElement>(null)
+  // 注释掉chat、completion、advanced-chat，因为这三个功能暂时不需要
   const options = [
-    { value: 'all', text: t('app.types.all'), icon: <RiApps2Line className='mr-1 h-[14px] w-[14px]' /> },
-    { value: 'chat', text: t('app.types.chatbot'), icon: <RiMessage3Line className='mr-1 h-[14px] w-[14px]' /> },
-    { value: 'agent-chat', text: t('app.types.agent'), icon: <RiRobot3Line className='mr-1 h-[14px] w-[14px]' /> },
-    { value: 'completion', text: t('app.types.completion'), icon: <RiFile4Line className='mr-1 h-[14px] w-[14px]' /> },
-    { value: 'advanced-chat', text: t('app.types.advanced'), icon: <RiMessage3Line className='mr-1 h-[14px] w-[14px]' /> },
-    { value: 'workflow', text: t('app.types.workflow'), icon: <RiExchange2Line className='mr-1 h-[14px] w-[14px]' /> },
+    {
+ value: 'all',
+text: t('app.types.all'),
+icon: <RiApps2Line className='mr-1 h-[14px] w-[14px]' />,
+},
+    // { value: 'chat', text: t('app.types.chatbot'), icon: <RiMessage3Line className='mr-1 h-[14px] w-[14px]' /> },
+    {
+ value: 'agent-chat',
+text: t('app.types.agent'),
+icon: <RiRobot3Line className='mr-1 h-[14px] w-[14px]' />,
+},
+    // { value: 'completion', text: t('app.types.completion'), icon: <RiFile4Line className='mr-1 h-[14px] w-[14px]' /> },
+    // { value: 'advanced-chat', text: t('app.types.advanced'), icon: <RiMessage3Line className='mr-1 h-[14px] w-[14px]' /> },
+    {
+ value: 'workflow',
+text: t('app.types.workflow'),
+icon: <RiExchange2Line className='mr-1 h-[14px] w-[14px]' />,
+},
   ]
 
   useEffect(() => {
@@ -146,7 +171,10 @@ const Apps = () => {
   const handleCreatedByMeChange = useCallback(() => {
     const newValue = !isCreatedByMe
     setIsCreatedByMe(newValue)
-    setQuery(prev => ({ ...prev, isCreatedByMe: newValue }))
+    setQuery(prev => ({
+ ...prev,
+isCreatedByMe: newValue,
+}))
   }, [isCreatedByMe, setQuery])
 
   return (

@@ -1,10 +1,6 @@
 'use client'
 import React from 'react'
 import { useContext } from 'use-context-selector'
-import Select from '@/app/components/base/select/locale'
-import Divider from '@/app/components/base/divider'
-import { languages } from '@/i18n/language'
-import type { Locale } from '@/i18n'
 import I18n from '@/context/i18n'
 import dynamic from 'next/dynamic'
 
@@ -23,16 +19,19 @@ const Header = () => {
 
   return (
     <div className='flex w-full items-center justify-between p-6'>
-      <DifyLogo size='large' />
+      {/* 注释掉logo */}
+      {/* <DifyLogo size='large' /> */}
       <div className='flex items-center gap-1'>
-        <Select
+        {/* 注释掉语言选择 */}
+        {/* <Select
           value={locale}
           items={languages.filter(item => item.supported)}
           onChange={(value) => {
             setLocaleOnClient(value as Locale)
           }}
-        />
-        <Divider type='vertical' className='mx-0 ml-2 h-4' />
+        /> */}
+        {/* 注释掉分割线 */}
+        {/* <Divider type='vertical' className='mx-0 ml-2 h-4' /> */}
         <ThemeSelector />
       </div>
     </div>
