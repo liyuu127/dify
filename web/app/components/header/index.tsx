@@ -2,13 +2,16 @@
 import { useCallback, useEffect } from 'react'
 import { useBoolean } from 'ahooks'
 import { useSelectedLayoutSegment } from 'next/navigation'
+import AccountDropdown from './account-dropdown'
 import AppNav from './app-nav'
 import DatasetNav from './dataset-nav'
 import { useAppContext } from '@/context/app-context'
+import AILogo from '@/app/components/base/logo/AI-logo'
 import useBreakpoints, { MediaType } from '@/hooks/use-breakpoints'
 import { useProviderContext } from '@/context/provider-context'
 import { useModalContext } from '@/context/modal-context'
 import { Plan } from '../billing/type'
+import { useGlobalPublicStore } from '@/context/global-public-context'
 
 const navClassName = `
   flex items-center relative mr-0 sm:mr-3 px-3 h-8 rounded-xl
@@ -24,6 +27,7 @@ const Header = () => {
   const [isShowNavMenu, { toggle, setFalse: hideNavMenu }] = useBoolean(false)
   const { enableBilling, plan } = useProviderContext()
   const { setShowPricingModal, setShowAccountSettingModal } = useModalContext()
+  const systemFeatures = useGlobalPublicStore(s => s.systemFeatures)
   const isFreePlan = plan.type === Plan.sandbox
   const handlePlanClick = useCallback(() => {
     if (isFreePlan)
@@ -37,8 +41,13 @@ const Header = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedSegment])
   return (
-    <div style={{ backgroundColor: '#0a2858' }} className='relative flex flex-1 items-center justify-between'>
-      {/* 注释掉探索和工具栏，因为这两个功能暂时不需要 */}
+    <div style={{ backgroundColor: '#0a2858' }} className='relative flex flex-1 items-center justify-between bg-background-body'>
+      <div className='flex items-center'>
+         <div className='flex shrink-0 items-center gap-1.5 self-stretch pl-3'>
+            <AILogo />
+          </div>
+      </div >
+      {/* 注释掉导航栏，因为不需要 */}
       {/* <div className='flex items-center'>
         {isMobile && <div
           className='flex h-8 w-8 cursor-pointer items-center justify-center'
@@ -61,11 +70,18 @@ const Header = () => {
             </div>
           </div>
         }
-      </div >
-      {isMobile && (
+      </div > */}
+      {/* 注释掉logo和导航栏，因为不需要 */}
+      {/* {isMobile && (
         <div className='flex'>
           <Link href="/apps" className='mr-4 flex items-center'>
-            <DifyLogo />
+            {systemFeatures.branding.enabled && systemFeatures.branding.workspace_logo
+              ? <img
+                src={systemFeatures.branding.workspace_logo}
+                className='block h-[22px] w-auto object-contain'
+                alt='logo'
+              />
+              : <DifyLogo />}
           </Link>
           <div className='font-light text-divider-deep'>/</div>
           {enableBilling ? <PlanBadge allowHover sandboxAsUpgrade plan={plan.type} onClick={handlePlanClick} /> : <LicenseNav />}
@@ -74,7 +90,6 @@ const Header = () => {
       {
         !isMobile && (
           <div className='absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center'>
-            {/* 注释掉探索和工具栏，因为这两个功能暂时不需要 */}
             {/* {!isCurrentWorkspaceDatasetOperator && <ExploreNav className={navClassName} />} */}
             {!isCurrentWorkspaceDatasetOperator && <AppNav />}
             {(isCurrentWorkspaceEditor || isCurrentWorkspaceDatasetOperator) && <DatasetNav />}
@@ -83,13 +98,14 @@ const Header = () => {
         )
       }
       {/* 注释掉环境变量和插件，因为这两个功能暂时不需要 */}
-      {/* <div className='flex shrink-0 items-center pr-3'>
-        <EnvNav />
+      <div className='flex shrink-0 items-center pr-3'>
+        {/* <EnvNav /> */}
         <div className='mr-2'>
-          <PluginsNav />
+          {/* <PluginsNav /> */}
         </div>
         <AccountDropdown />
-      </div> */}
+      </div>
+      {/* 注释掉探索和工具栏，因为这两个功能暂时不需要 */}
       {
         (isMobile && isShowNavMenu) && (
           <div className='flex w-full flex-col gap-y-1 p-2'>

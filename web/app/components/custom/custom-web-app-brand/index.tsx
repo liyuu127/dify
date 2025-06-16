@@ -10,7 +10,7 @@ import {
   RiLoader2Line,
   RiPlayLargeLine,
 } from '@remixicon/react'
-import DifyLogo from '@/app/components/base/logo/dify-logo'
+import AILogo from '@/app/components/base/logo/AI-logo'
 import Switch from '@/app/components/base/switch'
 import Button from '@/app/components/base/button'
 import Divider from '@/app/components/base/divider'
@@ -52,7 +52,10 @@ const CustomWebAppBrand = () => {
       return
 
     if (file.size > 5 * 1024 * 1024) {
-      notify({ type: 'error', message: t('common.imageUploader.uploadFromComputerLimit', { size: 5 }) })
+      notify({
+ type: 'error',
+message: t('common.imageUploader.uploadFromComputerLimit', { size: 5 }),
+})
       return
     }
 
@@ -66,7 +69,10 @@ const CustomWebAppBrand = () => {
         setFileId(res.id)
       },
       onErrorCallback: () => {
-        notify({ type: 'error', message: t('common.imageUploader.uploadFromComputerUploadError') })
+        notify({
+ type: 'error',
+message: t('common.imageUploader.uploadFromComputerUploadError'),
+})
         setUploadProgress(-1)
       },
     }, false, '/workspaces/custom-config/webapp-logo/upload')
@@ -246,7 +252,7 @@ const CustomWebAppBrand = () => {
                     <div className='system-2xs-medium-uppercase text-text-tertiary'>POWERED BY</div>
                     {webappLogo
                       ? <img src={`${webappLogo}?hash=${imgKey}`} alt='logo' className='block h-5 w-auto' />
-                      : <DifyLogo size='small' />
+                      : <AILogo size='small' />
                     }
                   </>
                 )}
@@ -305,7 +311,7 @@ const CustomWebAppBrand = () => {
                 <div className='system-2xs-medium-uppercase text-text-tertiary'>POWERED BY</div>
                 {webappLogo
                   ? <img src={`${webappLogo}?hash=${imgKey}`} alt='logo' className='block h-5 w-auto' />
-                  : <DifyLogo size='small' />
+                  : <AILogo size='small' />
                 }
               </>
             )}
