@@ -4,7 +4,7 @@ import { RiArrowRightUpLine, RiRobot2Line } from '@remixicon/react'
 import { useRouter } from 'next/navigation'
 import Button from '../components/base/button'
 import Avatar from './avatar'
-import DifyLogo from '@/app/components/base/logo/dify-logo'
+import AILogo from '@/app/components/base/logo/AI-logo'
 import { useCallback } from 'react'
 
 const Header = () => {
@@ -19,7 +19,7 @@ const Header = () => {
     <div className='flex flex-1 items-center justify-between px-4'>
       <div className='flex items-center gap-3'>
         <div className='flex cursor-pointer items-center' onClick={back}>
-          <DifyLogo />
+          <AILogo />
         </div>
         <div className='h-4 w-[1px] origin-center rotate-[11.31deg] bg-divider-regular' />
         <p className='title-3xl-semi-bold relative mt-[-2px] text-text-primary'>{t('common.account.account')}</p>

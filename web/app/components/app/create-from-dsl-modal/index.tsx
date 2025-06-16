@@ -25,7 +25,6 @@ import { useProviderContext } from '@/context/provider-context'
 import AppsFull from '@/app/components/billing/apps-full-in-dialog'
 import { NEED_REFRESH_APP_LIST_KEY } from '@/config'
 import { getRedirection } from '@/utils/app-redirection'
-import cn from '@/utils/classnames'
 import { usePluginDependencies } from '@/app/components/workflow/plugin-dependency/hooks'
 import { noop } from 'lodash-es'
 
@@ -51,7 +50,10 @@ const CreateFromDSLModal = ({ show, onSuccess, onClose, activeTab = CreateFromDS
   const [currentTab, setCurrentTab] = useState(activeTab)
   const [dslUrlValue, setDslUrlValue] = useState(dslUrl)
   const [showErrorModal, setShowErrorModal] = useState(false)
-  const [versions, setVersions] = useState<{ importedVersion: string; systemVersion: string }>()
+  const [versions, setVersions] = useState<{
+ importedVersion: string;
+systemVersion: string
+}>()
   const [importId, setImportId] = useState<string>()
   const { handleCheckPluginDependencies } = usePluginDependencies()
 
@@ -119,7 +121,10 @@ const CreateFromDSLModal = ({ show, onSuccess, onClose, activeTab = CreateFromDS
         localStorage.setItem(NEED_REFRESH_APP_LIST_KEY, '1')
         if (app_id)
           await handleCheckPluginDependencies(app_id)
-        getRedirection(isCurrentWorkspaceEditor, { id: app_id!, mode: app_mode }, push)
+        getRedirection(isCurrentWorkspaceEditor, {
+ id: app_id!,
+mode: app_mode,
+}, push)
       }
       else if (status === DSLImportStatus.PENDING) {
         setVersions({
@@ -134,12 +139,18 @@ const CreateFromDSLModal = ({ show, onSuccess, onClose, activeTab = CreateFromDS
         setImportId(id)
       }
       else {
-        notify({ type: 'error', message: t('app.newApp.appCreateFailed') })
+        notify({
+ type: 'error',
+message: t('app.newApp.appCreateFailed'),
+})
       }
     }
     // eslint-disable-next-line unused-imports/no-unused-vars
     catch (e) {
-      notify({ type: 'error', message: t('app.newApp.appCreateFailed') })
+      notify({
+ type: 'error',
+message: t('app.newApp.appCreateFailed'),
+})
     }
     isCreatingRef.current = false
   }
@@ -179,15 +190,24 @@ const CreateFromDSLModal = ({ show, onSuccess, onClose, activeTab = CreateFromDS
         if (app_id)
           await handleCheckPluginDependencies(app_id)
         localStorage.setItem(NEED_REFRESH_APP_LIST_KEY, '1')
-        getRedirection(isCurrentWorkspaceEditor, { id: app_id!, mode: app_mode }, push)
+        getRedirection(isCurrentWorkspaceEditor, {
+ id: app_id!,
+mode: app_mode,
+}, push)
       }
       else if (status === DSLImportStatus.FAILED) {
-        notify({ type: 'error', message: t('app.newApp.appCreateFailed') })
+        notify({
+ type: 'error',
+message: t('app.newApp.appCreateFailed'),
+})
       }
     }
     // eslint-disable-next-line unused-imports/no-unused-vars
     catch (e) {
-      notify({ type: 'error', message: t('app.newApp.appCreateFailed') })
+      notify({
+ type: 'error',
+message: t('app.newApp.appCreateFailed'),
+})
     }
   }
 
@@ -228,7 +248,7 @@ const CreateFromDSLModal = ({ show, onSuccess, onClose, activeTab = CreateFromDS
             <RiCloseLine className='h-5 w-5 text-text-tertiary' />
           </div>
         </div>
-        <div className='system-md-semibold flex h-9 items-center space-x-6 border-b border-divider-subtle px-6 text-text-tertiary'>
+        {/* <div className='system-md-semibold flex h-9 items-center space-x-6 border-b border-divider-subtle px-6 text-text-tertiary'>
           {
             tabs.map(tab => (
               <div
@@ -248,7 +268,7 @@ const CreateFromDSLModal = ({ show, onSuccess, onClose, activeTab = CreateFromDS
               </div>
             ))
           }
-        </div>
+        </div> */}
         <div className='px-6 py-4'>
           {
             currentTab === CreateFromDSLModalTab.FROM_FILE && (
