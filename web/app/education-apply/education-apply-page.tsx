@@ -25,7 +25,7 @@ import { useToastContext } from '@/app/components/base/toast'
 import { EDUCATION_VERIFYING_LOCALSTORAGE_ITEM } from '@/app/education-apply/constants'
 import { getLocaleOnClient } from '@/i18n'
 import { noop } from 'lodash-es'
-import DifyLogo from '../components/base/logo/dify-logo'
+import AILogo from '@/app/components/base/logo/AI-logo'
 
 const EducationApplyAge = () => {
   const { t } = useTranslation()
@@ -38,7 +38,11 @@ const EducationApplyAge = () => {
     isPending,
     mutateAsync: educationAdd,
   } = useEducationAdd({ onSuccess: noop })
-  const [modalShow, setShowModal] = useState<undefined | { title: string; desc: string; onConfirm?: () => void }>(undefined)
+  const [modalShow, setShowModal] = useState<undefined | {
+ title: string;
+desc: string;
+onConfirm?: () => void
+}>(undefined)
   const { onPlanInfoChanged } = useProviderContext()
   const updateEducationStatus = useInvalidateEducationStatus()
   const { notify } = useToastContext()
@@ -95,7 +99,7 @@ const EducationApplyAge = () => {
         >
         </div>
         <div className='mt-[-349px] box-content flex h-7 items-center justify-between p-6'>
-          <DifyLogo size='large' style='monochromeWhite' />
+          <AILogo size='large' style='monochromeWhite' />
         </div>
         <div className='mx-auto max-w-[720px] px-8 pb-[180px]'>
           <div className='mb-2 flex h-[192px] flex-col justify-end pb-4 pt-3 text-text-primary-on-surface'>

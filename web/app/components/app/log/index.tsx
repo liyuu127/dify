@@ -2,13 +2,12 @@
 import type { FC, SVGProps } from 'react'
 import React, { useState } from 'react'
 import useSWR from 'swr'
-import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useDebounce } from 'ahooks'
 import { omit } from 'lodash-es'
 import dayjs from 'dayjs'
 import { basePath } from '@/utils/var'
-import { Trans, useTranslation } from 'react-i18next'
+import { useTranslation } from 'react-i18next'
 import List from './list'
 import Filter, { TIME_PERIOD_MAPPING } from './filter'
 import Pagination from '@/app/components/base/pagination'
@@ -16,6 +15,7 @@ import Loading from '@/app/components/base/loading'
 import { fetchChatConversations, fetchCompletionConversations } from '@/service/log'
 import { APP_PAGE_LIMIT } from '@/config'
 import type { App, AppMode } from '@/types/app'
+
 export type ILogsProps = {
   appDetail: App
 }
@@ -39,7 +39,8 @@ const EmptyElement: FC<{ appUrl: string }> = ({ appUrl }) => {
   const pathSegments = pathname.split('/')
   pathSegments.pop()
   return <div className='flex h-full items-center justify-center'>
-    <div className='box-border h-fit w-[560px] rounded-2xl bg-background-section-burn px-5 py-4'>
+    {/* 注释掉分享链接 */}
+    {/* <div className='box-border h-fit w-[560px] rounded-2xl bg-background-section-burn px-5 py-4'>
       <span className='system-md-semibold text-text-secondary'>{t('appLog.table.empty.element.title')}<ThreeDotsIcon className='relative -left-1.5 -top-3 inline' /></span>
       <div className='system-sm-regular mt-2 text-text-tertiary'>
         <Trans
@@ -47,7 +48,7 @@ const EmptyElement: FC<{ appUrl: string }> = ({ appUrl }) => {
           components={{ shareLink: <Link href={`${pathSegments.join('/')}/overview`} className='text-util-colors-blue-blue-600' />, testLink: <Link href={appUrl} className='text-util-colors-blue-blue-600' target='_blank' rel='noopener noreferrer' /> }}
         />
       </div>
-    </div>
+    </div> */}
   </div>
 }
 

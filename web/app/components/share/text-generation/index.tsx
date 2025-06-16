@@ -37,7 +37,7 @@ import Toast from '@/app/components/base/toast'
 import type { VisionFile, VisionSettings } from '@/types/app'
 import { Resolution, TransferMethod } from '@/types/app'
 import { useAppFavicon } from '@/hooks/use-app-favicon'
-import DifyLogo from '@/app/components/base/logo/dify-logo'
+import AILogo from '@/app/components/base/logo/AI-logo'
 import cn from '@/utils/classnames'
 import { useGetAppAccessMode, useGetUserCanAccessApp } from '@/service/access-control'
 import { AccessMode } from '@/models/access-control'
@@ -130,12 +130,18 @@ const TextGeneration: FC<IMainProps> = ({
   }
   const handleSaveMessage = async (messageId: string) => {
     await saveMessage(messageId, isInstalledApp, installedAppInfo?.id)
-    notify({ type: 'success', message: t('common.api.saved') })
+    notify({
+ type: 'success',
+message: t('common.api.saved'),
+})
     fetchSavedMessage()
   }
   const handleRemoveSavedMessage = async (messageId: string) => {
     await removeMessage(messageId, isInstalledApp, installedAppInfo?.id)
-    notify({ type: 'success', message: t('common.api.remove') })
+    notify({
+ type: 'success',
+message: t('common.api.remove'),
+})
     fetchSavedMessage()
   }
 
@@ -212,7 +218,10 @@ const TextGeneration: FC<IMainProps> = ({
   })
   const checkBatchInputs = (data: string[][]) => {
     if (!data || data.length === 0) {
-      notify({ type: 'error', message: t('share.generation.errorMsg.empty') })
+      notify({
+ type: 'error',
+message: t('share.generation.errorMsg.empty'),
+})
       return false
     }
     const headerData = data[0]
@@ -226,13 +235,19 @@ const TextGeneration: FC<IMainProps> = ({
     })
 
     if (!isMapVarName) {
-      notify({ type: 'error', message: t('share.generation.errorMsg.fileStructNotMatch') })
+      notify({
+ type: 'error',
+message: t('share.generation.errorMsg.fileStructNotMatch'),
+})
       return false
     }
 
     let payloadData = data.slice(1)
     if (payloadData.length === 0) {
-      notify({ type: 'error', message: t('share.generation.errorMsg.atLeastOne') })
+      notify({
+ type: 'error',
+message: t('share.generation.errorMsg.atLeastOne'),
+})
       return false
     }
 
@@ -253,7 +268,10 @@ const TextGeneration: FC<IMainProps> = ({
       })
 
       if (hasMiddleEmptyLine) {
-        notify({ type: 'error', message: t('share.generation.errorMsg.emptyLine', { rowIndex: startIndex + 2 }) })
+        notify({
+ type: 'error',
+message: t('share.generation.errorMsg.emptyLine', { rowIndex: startIndex + 2 }),
+})
         return false
       }
     }
@@ -262,7 +280,10 @@ const TextGeneration: FC<IMainProps> = ({
     payloadData = payloadData.filter(item => !item.every(i => i === ''))
     // after remove empty rows in the end, checked again
     if (payloadData.length === 0) {
-      notify({ type: 'error', message: t('share.generation.errorMsg.atLeastOne') })
+      notify({
+ type: 'error',
+message: t('share.generation.errorMsg.atLeastOne'),
+})
       return false
     }
     let errorRowIndex = 0
@@ -296,11 +317,26 @@ const TextGeneration: FC<IMainProps> = ({
     })
 
     if (errorRowIndex !== 0) {
-      if (requiredVarName)
-        notify({ type: 'error', message: t('share.generation.errorMsg.invalidLine', { rowIndex: errorRowIndex + 1, varName: requiredVarName }) })
+      if (requiredVarName) {
+ notify({
+ type: 'error',
+message: t('share.generation.errorMsg.invalidLine', {
+ rowIndex: errorRowIndex + 1,
+varName: requiredVarName,
+}),
+})
+}
 
-      if (moreThanMaxLengthVarName)
-        notify({ type: 'error', message: t('share.generation.errorMsg.moreThanMaxLengthLine', { rowIndex: errorRowIndex + 1, varName: moreThanMaxLengthVarName, maxLength }) })
+      if (moreThanMaxLengthVarName) {
+ notify({
+ type: 'error',
+message: t('share.generation.errorMsg.moreThanMaxLengthLine', {
+ rowIndex: errorRowIndex + 1,
+varName: moreThanMaxLengthVarName,
+maxLength,
+}),
+})
+}
 
       return false
     }
@@ -310,7 +346,10 @@ const TextGeneration: FC<IMainProps> = ({
     if (!checkBatchInputs(data))
       return
     if (!allTasksFinished) {
-      notify({ type: 'info', message: t('appDebug.errorMessage.waitForBatchResponse') })
+      notify({
+ type: 'info',
+message: t('appDebug.errorMessage.waitForBatchResponse'),
+})
       return
     }
 
@@ -576,8 +615,14 @@ const TextGeneration: FC<IMainProps> = ({
           )}
           <TabHeader
             items={[
-              { id: 'create', name: t('share.generation.tabs.create') },
-              { id: 'batch', name: t('share.generation.tabs.batch') },
+              {
+ id: 'create',
+name: t('share.generation.tabs.create'),
+},
+              {
+ id: 'batch',
+name: t('share.generation.tabs.batch'),
+},
               ...(!isWorkflow
                 ? [{
                   id: 'saved',
@@ -644,7 +689,7 @@ const TextGeneration: FC<IMainProps> = ({
             {systemFeatures.branding.enabled ? (
               <img src={systemFeatures.branding.login_page_logo} alt='logo' className='block h-5 w-auto' />
             ) : (
-              <DifyLogo size='small' />
+              <AILogo size='small' />
             )}
           </div>
         )}

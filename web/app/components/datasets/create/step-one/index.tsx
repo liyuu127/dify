@@ -20,7 +20,6 @@ import { useProviderContext } from '@/context/provider-context'
 import VectorSpaceFull from '@/app/components/billing/vector-space-full'
 import classNames from '@/utils/classnames'
 import { Icon3Dots } from '@/app/components/base/icons/src/vender/line/others'
-import { ENABLE_WEBSITE_FIRECRAWL, ENABLE_WEBSITE_JINAREADER, ENABLE_WEBSITE_WATERCRAWL } from '@/config'
 
 type IStepOneProps = {
   datasetId?: string
@@ -170,7 +169,8 @@ const StepOne = ({
                         {t('datasetCreation.stepOne.dataSourceType.file')}
                       </span>
                     </div>
-                    <div
+                    {/* 注释掉Notion链接 */}
+                    {/* <div
                       className={cn(
                         s.dataSourceItem,
                         'system-sm-medium',
@@ -192,8 +192,9 @@ const StepOne = ({
                       >
                         {t('datasetCreation.stepOne.dataSourceType.notion')}
                       </span>
-                    </div>
-                    {(ENABLE_WEBSITE_FIRECRAWL || ENABLE_WEBSITE_JINAREADER || ENABLE_WEBSITE_WATERCRAWL) && (
+                    </div> */}
+                    {/* 注释掉网站链接 */}
+                    {/* {(ENABLE_WEBSITE_FIRECRAWL || ENABLE_WEBSITE_JINAREADER || ENABLE_WEBSITE_WATERCRAWL) && (
                       <div
                         className={cn(
                           s.dataSourceItem,
@@ -211,7 +212,7 @@ const StepOne = ({
                           {t('datasetCreation.stepOne.dataSourceType.web')}
                         </span>
                       </div>
-                    )}
+                    )} */}
                   </div>
                 )
               }

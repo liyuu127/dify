@@ -10,10 +10,7 @@ import {
   RiArrowDownSLine,
   RiArrowRightSLine,
   RiLockLine,
-  RiPlanetLine,
   RiPlayCircleLine,
-  RiPlayList2Line,
-  RiTerminalBoxLine,
 } from '@remixicon/react'
 import { useKeyPress } from 'ahooks'
 import { getKeyboardKeyCodeBySystem } from '../../workflow/utils'
@@ -36,10 +33,7 @@ import { fetchInstalledAppList } from '@/service/explore'
 import EmbeddedModal from '@/app/components/app/overview/embedded'
 import { useStore as useAppStore } from '@/app/components/app/store'
 import { useGetLanguage } from '@/context/i18n'
-import { CodeBrowser } from '@/app/components/base/icons/src/vender/line/development'
-import WorkflowToolConfigureButton from '@/app/components/tools/workflow-tool/configure-button'
 import type { InputVar } from '@/app/components/workflow/types'
-import { appDefaultIconBackground } from '@/config'
 import type { PublishWorkflowParams } from '@/types/workflow'
 import { useAppWhiteListSubjects, useGetUserCanAccessApp } from '@/service/access-control'
 import { AccessMode } from '@/models/access-control'
@@ -91,7 +85,10 @@ const AppPublisher = ({
   const appMode = (appDetail?.mode !== 'completion' && appDetail?.mode !== 'workflow') ? 'chat' : appDetail.mode
   const appURL = `${appBaseURL}${basePath}/${appMode}/${accessToken}`
   const isChatApp = ['chat', 'agent-chat', 'completion'].includes(appDetail?.mode || '')
-  const { data: userCanAccessApp, isLoading: isGettingUserCanAccessApp, refetch } = useGetUserCanAccessApp({ appId: appDetail?.id, enabled: false })
+  const { data: userCanAccessApp, isLoading: isGettingUserCanAccessApp, refetch } = useGetUserCanAccessApp({
+ appId: appDetail?.id,
+enabled: false,
+})
   const { data: appAccessSubjects, isLoading: isGettingAppWhiteListSubjects } = useAppWhiteListSubjects(appDetail?.id, open && systemFeatures.webapp_auth.enabled && appDetail?.access_mode === AccessMode.SPECIFIC_GROUPS_MEMBERS)
 
   useEffect(() => {
@@ -159,12 +156,18 @@ const AppPublisher = ({
         throw new Error('No app found in Explore')
     }
     catch (e: any) {
-      Toast.notify({ type: 'error', message: `${e.message || e}` })
+      Toast.notify({
+ type: 'error',
+message: `${e.message || e}`,
+})
     }
   }, [appDetail?.id])
 
   const handleAccessControlUpdate = useCallback(() => {
-    fetchAppDetail({ url: '/apps', id: appDetail!.id }).then((res) => {
+    fetchAppDetail({
+ url: '/apps',
+id: appDetail!.id,
+}).then((res) => {
       setAppDetail(res)
       setShowAppAccessControl(false)
     })
@@ -178,7 +181,10 @@ const AppPublisher = ({
       return
     handlePublish()
   },
-    { exactMatch: true, useCapture: true })
+    {
+ exactMatch: true,
+useCapture: true,
+})
 
   return (
     <>
@@ -299,7 +305,8 @@ const AppPublisher = ({
                       {t('workflow.common.runApp')}
                     </SuggestedAction>
                   </Tooltip>
-                  {appDetail?.mode === 'workflow' || appDetail?.mode === 'completion'
+                  {/* 注释掉批量运行 */}
+                  {/* {appDetail?.mode === 'workflow' || appDetail?.mode === 'completion'
                     ? (
                       <Tooltip triggerClassName='flex' disabled={!systemFeatures.webapp_auth.enabled || userCanAccessApp?.result} popupContent={t('app.noAccessPermission')} asChild={false}>
                         <SuggestedAction
@@ -323,8 +330,9 @@ const AppPublisher = ({
                       >
                         {t('workflow.common.embedIntoSite')}
                       </SuggestedAction>
-                    )}
-                  <Tooltip triggerClassName='flex' disabled={!systemFeatures.webapp_auth.enabled || userCanAccessApp?.result} popupContent={t('app.noAccessPermission')} asChild={false}>
+                    )} */}
+                    {/* 注释掉嵌入站点 */}
+                  {/* <Tooltip triggerClassName='flex' disabled={!systemFeatures.webapp_auth.enabled || userCanAccessApp?.result} popupContent={t('app.noAccessPermission')} asChild={false}>
                     <SuggestedAction
                       className='flex-1'
                       onClick={() => {
@@ -335,15 +343,17 @@ const AppPublisher = ({
                     >
                       {t('workflow.common.openInExplore')}
                     </SuggestedAction>
-                  </Tooltip>
-                  <SuggestedAction
+                  </Tooltip> */}
+                  {/* 注释掉访问API参考 */}
+                  {/* <SuggestedAction
                     disabled={!publishedAt}
                     link='./develop'
                     icon={<RiTerminalBoxLine className='h-4 w-4' />}
                   >
                     {t('workflow.common.accessAPIReference')}
-                  </SuggestedAction>
-                  {appDetail?.mode === 'workflow' && (
+                  </SuggestedAction> */}
+                  {/* 注释掉工作流工具配置 */}
+                  {/* {appDetail?.mode === 'workflow' && (
                     <WorkflowToolConfigureButton
                       disabled={!publishedAt}
                       published={!!toolPublished}
@@ -359,7 +369,7 @@ const AppPublisher = ({
                       handlePublish={handlePublish}
                       onRefreshData={onRefreshData}
                     />
-                  )}
+                  )} */}
                 </div>
               </>}
           </div>

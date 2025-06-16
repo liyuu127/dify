@@ -49,7 +49,7 @@ const translation = {
     empty: {
       title: '還沒有文件',
       upload: {
-        tip: '您可以上傳檔案，從網站同步，或者從網路應用程式（如概念、GitHub 等）同步。',
+        tip: '您可以上傳檔案',
       },
       sync: {
         tip: 'Dify 會定期從您的 Notion 中下載檔案並完成處理。',

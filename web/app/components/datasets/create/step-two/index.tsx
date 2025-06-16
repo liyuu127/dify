@@ -344,7 +344,10 @@ const StepTwo = ({
 
   const updatePreview = () => {
     if (segmentationType === ProcessMode.general && maxChunkLength > MAXIMUM_CHUNK_TOKEN_LENGTH) {
-      Toast.notify({ type: 'error', message: t('datasetCreation.stepTwo.maxLengthCheck', { limit: MAXIMUM_CHUNK_TOKEN_LENGTH }) })
+      Toast.notify({
+ type: 'error',
+message: t('datasetCreation.stepTwo.maxLengthCheck', { limit: MAXIMUM_CHUNK_TOKEN_LENGTH }),
+})
       return
     }
     fetchEstimate()
@@ -400,11 +403,17 @@ const StepTwo = ({
   const getCreationParams = () => {
     let params
     if (segmentationType === ProcessMode.general && overlap > maxChunkLength) {
-      Toast.notify({ type: 'error', message: t('datasetCreation.stepTwo.overlapCheck') })
+      Toast.notify({
+ type: 'error',
+message: t('datasetCreation.stepTwo.overlapCheck'),
+})
       return
     }
     if (segmentationType === ProcessMode.general && maxChunkLength > limitMaxChunkLength) {
-      Toast.notify({ type: 'error', message: t('datasetCreation.stepTwo.maxLengthCheck', { limit: limitMaxChunkLength }) })
+      Toast.notify({
+ type: 'error',
+message: t('datasetCreation.stepTwo.maxLengthCheck', { limit: limitMaxChunkLength }),
+})
       return
     }
     if (isSetting) {
@@ -435,7 +444,10 @@ const StepTwo = ({
           indexMethod: indexMethod as string,
         })
       ) {
-        Toast.notify({ type: 'error', message: t('appDebug.datasetConfig.rerankModelRequired') })
+        Toast.notify({
+ type: 'error',
+message: t('appDebug.datasetConfig.rerankModelRequired'),
+})
         return
       }
       params = {
@@ -961,10 +973,10 @@ const StepTwo = ({
             ? (
               <div className={'mb-1'}>
                 <div className='system-md-semibold mb-0.5 text-text-secondary'>{t('datasetSettings.form.retrievalSetting.title')}</div>
-                <div className='body-xs-regular text-text-tertiary'>
+                {/* <div className='body-xs-regular text-text-tertiary'>
                   <a target='_blank' rel='noopener noreferrer' href='https://docs.dify.ai/guides/knowledge-base/create-knowledge-and-upload-documents#id-4-retrieval-settings' className='text-text-accent'>{t('datasetSettings.form.retrievalSetting.learnMore')}</a>
                   {t('datasetSettings.form.retrievalSetting.longDescription')}
-                </div>
+                </div> */}
               </div>
             )
             : (

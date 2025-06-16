@@ -536,7 +536,7 @@ const translation = {
     documents: '文档',
     hitTesting: '召回测试',
     settings: '设置',
-    emptyTip: '此知识尚未集成到任何应用程序中。请参阅文档以获取指导。',
+    emptyTip: '此知识尚未集成到任何应用程序中',
     viewDoc: '查看文档',
     relatedApp: '个关联应用',
     noRelatedApp: '无关联应用',
