@@ -68,12 +68,13 @@ const AppDetailLayout: FC<IAppDetailLayoutProps> = (props) => {
         }]
         : []
       ),
-      {
-        name: t('common.appMenus.apiAccess'),
-        href: `/app/${appId}/develop`,
-        icon: RiTerminalBoxLine,
-        selectedIcon: RiTerminalBoxFill,
-      },
+      // 注释掉API访问，因为不需要
+      // {
+      //   name: t('common.appMenus.apiAccess'),
+      //   href: `/app/${appId}/develop`,
+      //   icon: RiTerminalBoxLine,
+      //   selectedIcon: RiTerminalBoxFill,
+      // },
       ...(isCurrentWorkspaceEditor
         ? [{
           name: mode !== 'workflow'
@@ -85,12 +86,13 @@ const AppDetailLayout: FC<IAppDetailLayoutProps> = (props) => {
         }]
         : []
       ),
-      {
-        name: t('common.appMenus.overview'),
-        href: `/app/${appId}/overview`,
-        icon: RiDashboard2Line,
-        selectedIcon: RiDashboard2Fill,
-      },
+      // 注释掉监测，因为不需要
+      // {
+      //   name: t('common.appMenus.overview'),
+      //   href: `/app/${appId}/overview`,
+      //   icon: RiDashboard2Line,
+      //   selectedIcon: RiDashboard2Fill,
+      // },
     ]
     return navs
   }, [])

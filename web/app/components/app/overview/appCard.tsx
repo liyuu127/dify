@@ -79,7 +79,9 @@ function AppCard({
       webapp: [
         { opName: t('appOverview.overview.appInfo.launch'), opIcon: RiExternalLinkLine },
       ] as { opName: string; opIcon: any }[],
-      api: [{ opName: t('appOverview.overview.apiInfo.doc'), opIcon: RiBookOpenLine }],
+      // 注释掉API访问，因为不需要
+      // api: [{ opName: t('appOverview.overview.apiInfo.doc'), opIcon: RiBookOpenLine }],
+      api: [],
       app: [],
     }
     if (appInfo.mode !== 'completion' && appInfo.mode !== 'workflow')

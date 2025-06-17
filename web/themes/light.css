@@ -152,6 +152,8 @@ html[data-theme="light"] {
   --color-components-main-nav-nav-button-bg-active: #fcfcfd;
   --color-components-main-nav-nav-button-border: #fffffff2;
   --color-components-main-nav-nav-button-bg-hover: #1018280a;
+  --AI-color-components-main-nav-nav-button-text-active: #ffffff;
+  --AI-color-components-main-nav-nav-button-bg-active: #122543;
 
   --color-components-main-nav-nav-user-border: #ffffff;
 
@@ -355,6 +357,7 @@ html[data-theme="light"] {
 
   --color-text-primary: #101828;
   --color-text-secondary: #354052;
+  --AI-color-text-secondary: #1c3b72;
   --color-text-tertiary: #676f83;
   --color-text-quaternary: #1018284d;
   --color-text-destructive: #d92d20;
@@ -377,6 +380,7 @@ html[data-theme="light"] {
   --color-text-inverted-dimmed: #000000f2;
 
   --color-background-body: #f2f4f7;
+  --AI-color-background-body: #f6f9ff;
   --color-background-default-subtle: #fcfcfd;
   --color-background-neutral-subtle: #f9fafb;
   --color-background-sidenav-bg: #ffffffcc;
