@@ -4,7 +4,6 @@ import { usePathname, useRouter } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
 import {
   RiArrowRightSLine,
-  RiBookOpenLine,
   RiEqualizer2Line,
   RiExternalLinkLine,
   RiLockLine,
@@ -77,18 +76,37 @@ function AppCard({
   const OPERATIONS_MAP = useMemo(() => {
     const operationsMap = {
       webapp: [
-        { opName: t('appOverview.overview.appInfo.launch'), opIcon: RiExternalLinkLine },
-      ] as { opName: string; opIcon: any }[],
-      api: [{ opName: t('appOverview.overview.apiInfo.doc'), opIcon: RiBookOpenLine }],
+        {
+ opName: t('appOverview.overview.appInfo.launch'),
+opIcon: RiExternalLinkLine,
+},
+      ] as {
+ opName: string;
+opIcon: any
+}[],
+      // 注释掉API访问，因为不需要
+      // api: [{ opName: t('appOverview.overview.apiInfo.doc'), opIcon: RiBookOpenLine }],
+      api: [],
       app: [],
     }
-    if (appInfo.mode !== 'completion' && appInfo.mode !== 'workflow')
-      operationsMap.webapp.push({ opName: t('appOverview.overview.appInfo.embedded.entry'), opIcon: RiWindowLine })
+    if (appInfo.mode !== 'completion' && appInfo.mode !== 'workflow') {
+ operationsMap.webapp.push({
+ opName: t('appOverview.overview.appInfo.embedded.entry'),
+opIcon: RiWindowLine,
+})
+}
 
-    operationsMap.webapp.push({ opName: t('appOverview.overview.appInfo.customize.entry'), opIcon: RiPaintBrushLine })
+    operationsMap.webapp.push({
+ opName: t('appOverview.overview.appInfo.customize.entry'),
+opIcon: RiPaintBrushLine,
+})
 
-    if (isCurrentWorkspaceEditor)
-      operationsMap.webapp.push({ opName: t('appOverview.overview.appInfo.settings.entry'), opIcon: RiEqualizer2Line })
+    if (isCurrentWorkspaceEditor) {
+ operationsMap.webapp.push({
+ opName: t('appOverview.overview.appInfo.settings.entry'),
+opIcon: RiEqualizer2Line,
+})
+}
 
     return operationsMap
   }, [isCurrentWorkspaceEditor, appInfo, t])
@@ -159,7 +177,10 @@ function AppCard({
     setShowAccessControl(true)
   }, [appDetail])
   const handleAccessControlUpdate = useCallback(() => {
-    fetchAppDetail({ url: '/apps', id: appDetail!.id }).then((res) => {
+    fetchAppDetail({
+ url: '/apps',
+id: appDetail!.id,
+}).then((res) => {
       setAppDetail(res)
       setShowAccessControl(false)
     })

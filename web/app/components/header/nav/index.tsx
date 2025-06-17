@@ -47,7 +47,7 @@ const Nav = ({
   return (
     <div className={`
       mr-0 flex h-8 shrink-0 items-center rounded-xl px-0.5 text-sm font-medium sm:mr-3
-      ${isActivated && 'bg-components-main-nav-nav-button-bg-active font-semibold shadow-md'}
+      ${isActivated && 'bg-AI-components-main-nav-nav-button-bg-active font-semibold shadow-md'}
       ${!curNav && !isActivated && 'hover:bg-components-main-nav-nav-button-bg-hover'}
     `}>
       <Link href={link + (linkLastSearchParams && `?${linkLastSearchParams}`)}>
@@ -55,7 +55,7 @@ const Nav = ({
           onClick={() => setAppDetail()}
           className={classNames(`
             flex items-center h-7 px-2.5 cursor-pointer rounded-[10px]
-            ${isActivated ? 'text-components-main-nav-nav-button-text-active' : 'text-components-main-nav-nav-button-text'}
+            ${isActivated ? 'text-AI-components-main-nav-nav-button-text-active' : 'text-components-main-nav-nav-button-text'}
             ${curNav && isActivated && 'hover:bg-components-main-nav-nav-button-bg-active-hover'}
           `)}
           onMouseEnter={() => setHovered(true)}

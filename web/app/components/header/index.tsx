@@ -36,12 +36,15 @@ const Header = () => {
       setShowAccountSettingModal({ payload: 'billing' })
   }, [isFreePlan, setShowAccountSettingModal, setShowPricingModal])
 
+  const switchPlatform = () => {
+    console.log('点击了===============')
+  }
   useEffect(() => {
     hideNavMenu()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedSegment])
   return (
-    <div style={{ backgroundColor: '#0a2858' }} className='relative flex flex-1 items-center justify-between bg-background-body'>
+    <div className='relative flex flex-1 items-center justify-between bg-background-body'>
       <div className='flex items-center'>
          <div className='flex shrink-0 items-center gap-1.5 self-stretch pl-3'>
             <AILogo />
@@ -104,6 +107,10 @@ const Header = () => {
           {/* <PluginsNav /> */}
         </div>
         <AccountDropdown />
+        {/* 点击切换平台 */}
+        {/* <div onClick={switchPlatform}>
+          应用平台
+        </div> */}
       </div>
       {/* 注释掉探索和工具栏，因为这两个功能暂时不需要 */}
       {

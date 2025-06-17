@@ -84,9 +84,22 @@ export type AppContextProviderProps = {
 export const AppContextProvider: FC<AppContextProviderProps> = ({ children }) => {
   const pageContainerRef = useRef<HTMLDivElement>(null)
 
-  const { data: appList, mutate: mutateApps } = useSWR({ url: '/apps', params: { page: 1, limit: 30, name: '' } }, fetchAppList)
-  const { data: userProfileResponse, mutate: mutateUserProfile } = useSWR({ url: '/account/profile', params: {} }, fetchUserProfile)
-  const { data: currentWorkspaceResponse, mutate: mutateCurrentWorkspace, isLoading: isLoadingCurrentWorkspace } = useSWR({ url: '/workspaces/current', params: {} }, fetchCurrentWorkspace)
+  const { data: appList, mutate: mutateApps } = useSWR({
+ url: '/apps',
+params: {
+ page: 1,
+limit: 30,
+name: '',
+},
+}, fetchAppList)
+  const { data: userProfileResponse, mutate: mutateUserProfile } = useSWR({
+ url: '/account/profile',
+params: {},
+}, fetchUserProfile)
+  const { data: currentWorkspaceResponse, mutate: mutateCurrentWorkspace, isLoading: isLoadingCurrentWorkspace } = useSWR({
+ url: '/workspaces/current',
+params: {},
+}, fetchCurrentWorkspace)
 
   const [userProfile, setUserProfile] = useState<UserProfileResponse>()
   const [langeniusVersionInfo, setLangeniusVersionInfo] = useState<LangGeniusVersionResponse>(initialLangeniusVersionInfo)
@@ -101,8 +114,16 @@ export const AppContextProvider: FC<AppContextProviderProps> = ({ children }) =>
       setUserProfile(result)
       const current_version = userProfileResponse.headers.get('x-version')
       const current_env = process.env.NODE_ENV === 'development' ? 'DEVELOPMENT' : userProfileResponse.headers.get('x-env')
-      const versionData = await fetchLanggeniusVersion({ url: '/version', params: { current_version } })
-      setLangeniusVersionInfo({ ...versionData, current_version, latest_version: versionData.version, current_env })
+      const versionData = await fetchLanggeniusVersion({
+ url: '/version',
+params: { current_version },
+})
+      setLangeniusVersionInfo({
+ ...versionData,
+current_version,
+latest_version: versionData.version,
+current_env,
+})
     }
   }, [userProfileResponse])
 
@@ -137,7 +158,7 @@ export const AppContextProvider: FC<AppContextProviderProps> = ({ children }) =>
     }}>
       <div className='flex h-full flex-col overflow-y-auto'>
         {globalThis.document?.body?.getAttribute('data-public-maintenance-notice') && <MaintenanceNotice />}
-        <div ref={pageContainerRef} className='relative flex grow flex-col overflow-y-auto overflow-x-hidden bg-background-body'>
+        <div ref={pageContainerRef} className='relative flex grow flex-col overflow-y-auto overflow-x-hidden bg-AI-background-body'>
           {children}
         </div>
       </div>

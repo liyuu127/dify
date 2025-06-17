@@ -32,7 +32,7 @@ const Header = () => {
         /> */}
         {/* 注释掉分割线 */}
         {/* <Divider type='vertical' className='mx-0 ml-2 h-4' /> */}
-        <ThemeSelector />
+        {/* <ThemeSelector /> */}
       </div>
     </div>
   )
