@@ -345,7 +345,7 @@ message: `${e.message || e}`,
             <AppTypeIcon type={app.mode} wrapperClassName='absolute -bottom-0.5 -right-0.5 w-4 h-4 shadow-sm' className='h-3 w-3' />
           </div>
           <div className='w-0 grow py-[1px]'>
-            <div className='flex items-center text-sm font-semibold leading-5 text-text-secondary'>
+            <div className='flex items-center text-sm font-semibold leading-5 text-AI-text-secondary'>
               <div className='truncate' title={app.name}>{app.name}</div>
             </div>
             <div className='flex items-center gap-1 text-[10px] font-medium leading-[18px] text-text-tertiary'>

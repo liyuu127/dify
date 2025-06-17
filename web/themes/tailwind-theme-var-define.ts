@@ -152,6 +152,8 @@ const vars = {
   'components-main-nav-nav-button-bg-active': 'var(--color-components-main-nav-nav-button-bg-active)',
   'components-main-nav-nav-button-border': 'var(--color-components-main-nav-nav-button-border)',
   'components-main-nav-nav-button-bg-hover': 'var(--color-components-main-nav-nav-button-bg-hover)',
+  'AI-components-main-nav-nav-button-text-active': 'var(--AI-color-components-main-nav-nav-button-text-active)',
+  'AI-components-main-nav-nav-button-bg-active': 'var(--AI-color-components-main-nav-nav-button-bg-active)',
 
   'components-main-nav-nav-user-border': 'var(--color-components-main-nav-nav-user-border)',
 
@@ -355,6 +357,7 @@ const vars = {
 
   'text-primary': 'var(--color-text-primary)',
   'text-secondary': 'var(--color-text-secondary)',
+  'AI-text-secondary': 'var(--AI-color-text-secondary)',
   'text-tertiary': 'var(--color-text-tertiary)',
   'text-quaternary': 'var(--color-text-quaternary)',
   'text-destructive': 'var(--color-text-destructive)',
@@ -376,7 +379,8 @@ const vars = {
   'text-inverted': 'var(--color-text-inverted)',
   'text-inverted-dimmed': 'var(--color-text-inverted-dimmed)',
 
-  'background-body': 'var(--color-background-body)',
+  'background-body': 'var(-color-background-body)',
+  'AI-background-body': 'var(--AI-color-background-body)',
   'background-default-subtle': 'var(--color-background-default-subtle)',
   'background-neutral-subtle': 'var(--color-background-neutral-subtle)',
   'background-sidenav-bg': 'var(--color-background-sidenav-bg)',
