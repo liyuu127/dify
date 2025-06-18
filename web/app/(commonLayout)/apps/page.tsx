@@ -9,7 +9,7 @@ const AppList = () => {
   useEducationInit()
   const { systemFeatures } = useGlobalPublicStore()
   return (
-    <div className='relative flex h-0 shrink-0 grow flex-col overflow-y-auto bg-background-body'>
+    <div className='relative flex h-0 shrink-0 grow flex-col overflow-y-auto bg-AI-background-body'>
       <Apps />
       {/* 注释掉社区信息 */}
       {/* {!systemFeatures.branding.enabled && <footer className='shrink-0 grow-0 px-12 py-6'>

@@ -10,6 +10,7 @@ import {
 } from '@/app/components/base/portal-to-follow-elem'
 import { BubbleTextMod, ChatBot, ListSparkle, Logic } from '@/app/components/base/icons/src/vender/solid/communication'
 import type { AppMode } from '@/types/app'
+
 export type AppSelectorProps = {
   value: Array<AppMode>
   onChange: (value: AppSelectorProps['value']) => void
@@ -124,7 +125,7 @@ export function AppTypeIcon({ type, className, wrapperClassName, style }: AppTyp
     </div>
   }
   if (type === 'agent-chat') {
-    return <div style={style} className={cn(wrapperClassNames, 'bg-components-icon-bg-violet-solid')}>
+    return <div style={style} className={cn(wrapperClassNames, 'bg-AI-components-icon-bg-indigo-solid')}>
       <Logic className={iconClassNames} />
     </div>
   }
@@ -134,7 +135,7 @@ export function AppTypeIcon({ type, className, wrapperClassName, style }: AppTyp
     </div>
   }
   if (type === 'workflow') {
-    return <div style={style} className={cn(wrapperClassNames, 'bg-components-icon-bg-indigo-solid')}>
+    return <div style={style} className={cn(wrapperClassNames, 'bg-AI-components-icon-bg-indigo-solid')}>
       <RiExchange2Fill className={iconClassNames} />
     </div>
   }

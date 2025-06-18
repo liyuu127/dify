@@ -44,7 +44,7 @@ const Header = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedSegment])
   return (
-    <div className='relative flex flex-1 items-center justify-between bg-background-body'>
+    <div className='relative flex flex-1 items-center justify-between bg-AI-background-body'>
       <div className='flex items-center'>
          <div className='flex shrink-0 items-center gap-1.5 self-stretch pl-3'>
             <AILogo />

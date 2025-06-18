@@ -4,12 +4,8 @@ import { useUnmount } from 'ahooks'
 import React, { useCallback, useEffect, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import {
-  RiDashboard2Fill,
-  RiDashboard2Line,
   RiFileList3Fill,
   RiFileList3Line,
-  RiTerminalBoxFill,
-  RiTerminalBoxLine,
   RiTerminalWindowFill,
   RiTerminalWindowLine,
 } from '@remixicon/react'
@@ -114,7 +110,10 @@ const AppDetailLayout: FC<IAppDetailLayoutProps> = (props) => {
   useEffect(() => {
     setAppDetail()
     setIsLoadingAppDetail(true)
-    fetchAppDetail({ url: '/apps', id: appId }).then((res) => {
+    fetchAppDetail({
+ url: '/apps',
+id: appId,
+}).then((res) => {
       setAppDetailRes(res)
     }).catch((e: any) => {
       if (e.status === 404)
@@ -142,7 +141,10 @@ const AppDetailLayout: FC<IAppDetailLayoutProps> = (props) => {
       router.replace(`/app/${appId}/configuration`)
     }
     else {
-      setAppDetail({ ...res, enable_sso: false })
+      setAppDetail({
+ ...res,
+enable_sso: false,
+})
       setNavigation(getNavigations(appId, isCurrentWorkspaceEditor, res.mode))
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

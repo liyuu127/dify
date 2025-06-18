@@ -78,7 +78,7 @@ const TagFilter: FC<TagFilterProps> = ({
           className='block'
         >
           <div className={cn(
-            'flex h-8 cursor-pointer items-center gap-1 rounded-lg border-[0.5px] border-transparent bg-components-input-bg-normal px-2',
+            'flex h-8 cursor-pointer items-center gap-1 rounded-lg border-[0.5px] border-transparent bg-AI-components-input-bg-normal px-2 shadow-lg',
             !open && !!value.length && 'shadow-xs',
             open && !!value.length && 'shadow-xs',
           )}>

@@ -8,15 +8,15 @@ import { useGlobalPublicStore } from '@/context/global-public-context'
 export type LogoStyle = 'default' | 'monochromeWhite'
 
 export const logoPathMap: Record<LogoStyle, string> = {
-  default: '/logo/logo.svg',
-  monochromeWhite: '/logo/logo-monochrome-white.svg',
+  default: '/logo/AI-logo.png',
+  monochromeWhite: '/logo/AI-logo.png',
 }
 
 export type LogoSize = 'large' | 'medium' | 'small'
 
 export const logoSizeMap: Record<LogoSize, string> = {
   large: 'w-16 h-7',
-  medium: 'w-12 h-[22px]',
+  medium: 'w-96 h-[42px]',
   small: 'w-9 h-4',
 }
 
