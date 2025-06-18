@@ -10,7 +10,6 @@ import { useDebounceFn } from 'ahooks'
 import {
   RiApps2Line,
   RiExchange2Line,
-  RiRobot3Line,
 } from '@remixicon/react'
 import AppCard from './AppCard'
 import NewAppCard from './NewAppCard'
@@ -27,6 +26,7 @@ import { useStore as useTagStore } from '@/app/components/base/tag-management/st
 import TagManagementModal from '@/app/components/base/tag-management'
 import TagFilter from '@/app/components/base/tag-management/filter'
 import CheckboxWithLabel from '@/app/components/datasets/create/website/base/checkbox-with-label'
+import { Logic } from '@/app/components/base/icons/src/vender/solid/communication'
 
 const getKey = (
   pageIndex: number,
@@ -109,7 +109,7 @@ icon: <RiApps2Line className='mr-1 h-[14px] w-[14px]' />,
     {
  value: 'agent-chat',
 text: t('app.types.agent'),
-icon: <RiRobot3Line className='mr-1 h-[14px] w-[14px]' />,
+icon: <Logic className='mr-1 h-[14px] w-[14px]' />,
 },
     // { value: 'completion', text: t('app.types.completion'), icon: <RiFile4Line className='mr-1 h-[14px] w-[14px]' /> },
     // { value: 'advanced-chat', text: t('app.types.advanced'), icon: <RiMessage3Line className='mr-1 h-[14px] w-[14px]' /> },
@@ -179,7 +179,7 @@ isCreatedByMe: newValue,
 
   return (
     <>
-      <div className='sticky top-0 z-10 flex flex-wrap items-center justify-between gap-y-2 bg-background-body px-12 pb-2 pt-4 leading-[56px]'>
+      <div className='sticky top-0 z-10 flex flex-wrap items-center justify-between gap-y-2 bg-AI-background-body px-12 pb-2 pt-4 leading-[56px]'>
         <TabSliderNew
           value={activeTab}
           onChange={setActiveTab}

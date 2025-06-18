@@ -20,7 +20,7 @@ const Checkbox = ({
     indeterminate,
 }: CheckboxProps) => {
   const checkClassName = (checked || indeterminate)
-    ? 'bg-components-checkbox-bg text-components-checkbox-icon hover:bg-components-checkbox-bg-hover'
+    ? 'bg-AI-components-checkbox-bg text-components-checkbox-icon hover:bg-AI-components-checkbox-bg-hover'
     : 'border border-components-checkbox-border bg-components-checkbox-bg-unchecked hover:bg-components-checkbox-bg-unchecked-hover hover:border-components-checkbox-border-hover'
   const disabledClassName = (checked || indeterminate)
     ? 'cursor-not-allowed bg-components-checkbox-bg-disabled-checked text-components-checkbox-icon-disabled hover:bg-components-checkbox-bg-disabled-checked'

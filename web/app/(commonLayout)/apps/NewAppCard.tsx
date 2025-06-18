@@ -47,7 +47,7 @@ const CreateAppCard = (
   return (
     <div
       ref={ref}
-      className={cn('relative col-span-1 inline-flex h-[160px] flex-col justify-between rounded-xl border-[0.5px] border-components-card-border bg-components-card-bg', className)}
+      className={cn('relative col-span-1 inline-flex h-[160px] flex-col justify-between rounded-xl border-[0.5px] border-components-card-border bg-components-card-bg shadow-1xl', className)}
     >
       <div className='grow rounded-t-xl p-2'>
         <div className='px-6 pb-1 pt-2 text-xs font-medium leading-[18px] text-text-tertiary'>{t('app.createApp')}</div>

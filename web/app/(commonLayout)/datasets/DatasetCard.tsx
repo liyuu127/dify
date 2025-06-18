@@ -49,7 +49,10 @@ const DatasetCard = ({
     }
     catch (e: any) {
       const res = await e.json()
-      notify({ type: 'error', message: res?.message || 'Unknown error' })
+      notify({
+ type: 'error',
+message: res?.message || 'Unknown error',
+})
     }
 
     setShowConfirmDelete(true)
@@ -57,7 +60,10 @@ const DatasetCard = ({
   const onConfirmDelete = useCallback(async () => {
     try {
       await deleteDataset(dataset.id)
-      notify({ type: 'success', message: t('dataset.datasetDeleted') })
+      notify({
+ type: 'success',
+message: t('dataset.datasetDeleted'),
+})
       if (onSuccess)
         onSuccess()
     }
@@ -111,7 +117,7 @@ const DatasetCard = ({
   return (
     <>
       <div
-        className='group relative col-span-1 flex min-h-[171px] cursor-pointer flex-col rounded-xl border-[0.5px] border-solid border-components-card-border bg-components-card-bg shadow-sm transition-all duration-200 ease-in-out hover:shadow-lg'
+        className='group relative col-span-1 flex min-h-[171px] cursor-pointer flex-col rounded-xl border-[0.5px] border-solid border-components-card-border bg-components-card-bg shadow-1xl transition-all duration-200 ease-in-out hover:shadow-lg'
         data-disable-nprogress={true}
         onClick={(e) => {
           e.preventDefault()

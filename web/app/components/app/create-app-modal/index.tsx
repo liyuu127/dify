@@ -136,7 +136,7 @@ message: t('app.newApp.appCreateFailed'),
                   active={appMode === 'workflow'}
                   title={t('app.types.workflow')}
                   description={t('app.newApp.workflowShortDescription')}
-                  icon={<div className='flex h-6 w-6 items-center justify-center rounded-md bg-components-icon-bg-indigo-solid'>
+                  icon={<div className='flex h-6 w-6 items-center justify-center rounded-md bg-AI-components-icon-bg-indigo-solid'>
                     <RiExchange2Fill className='h-4 w-4 text-components-avatar-shape-fill-stop-100' />
                   </div>}
                   onClick={() => {
@@ -146,7 +146,7 @@ message: t('app.newApp.appCreateFailed'),
                     active={appMode === 'agent-chat'}
                     title={t('app.types.agent')}
                     description={t('app.newApp.agentShortDescription')}
-                    icon={<div className='flex h-6 w-6 items-center justify-center rounded-md bg-components-icon-bg-violet-solid'>
+                    icon={<div className='flex h-6 w-6 items-center justify-center rounded-md bg-AI-components-icon-bg-indigo-solid'>
                       <Logic className='h-4 w-4 text-components-avatar-shape-fill-stop-100' />
                     </div>}
                     onClick={() => {
