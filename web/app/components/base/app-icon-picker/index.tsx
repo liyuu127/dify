@@ -45,14 +45,28 @@ const AppIconPicker: FC<AppIconPickerProps> = ({
   const { t } = useTranslation()
 
   const tabs = [
-    { key: 'emoji', label: t('app.iconPicker.emoji'), icon: <span className="text-lg">🤖</span> },
-    { key: 'image', label: t('app.iconPicker.image'), icon: <ImagePlus /> },
+    {
+ key: 'emoji',
+label: t('app.iconPicker.emoji'),
+icon: <span className="text-lg">🤖</span>,
+},
+    {
+ key: 'image',
+label: t('app.iconPicker.image'),
+icon: <ImagePlus />,
+},
   ]
-  const [activeTab, setActiveTab] = useState<AppIconType>('emoji')
+  const [activeTab, setActiveTab] = useState<AppIconType>('image')
 
-  const [emoji, setEmoji] = useState<{ emoji: string; background: string }>()
+  const [emoji, setEmoji] = useState<{
+ emoji: string;
+background: string
+}>()
   const handleSelectEmoji = useCallback((emoji: string, background: string) => {
-    setEmoji({ emoji, background })
+    setEmoji({
+ emoji,
+background,
+})
   }, [setEmoji])
 
   const [uploading, setUploading] = useState<boolean>()
@@ -72,13 +86,21 @@ const AppIconPicker: FC<AppIconPickerProps> = ({
     },
   })
 
-  type InputImageInfo = { file: File } | { tempUrl: string; croppedAreaPixels: Area; fileName: string }
+  type InputImageInfo = { file: File } | {
+ tempUrl: string;
+croppedAreaPixels: Area;
+fileName: string
+}
   const [inputImageInfo, setInputImageInfo] = useState<InputImageInfo>()
 
   const handleImageInput: OnImageInput = async (isCropped: boolean, fileOrTempUrl: string | File, croppedAreaPixels?: Area, fileName?: string) => {
     setInputImageInfo(
       isCropped
-        ? { tempUrl: fileOrTempUrl as string, croppedAreaPixels: croppedAreaPixels!, fileName: fileName! }
+        ? {
+ tempUrl: fileOrTempUrl as string,
+croppedAreaPixels: croppedAreaPixels!,
+fileName: fileName!,
+}
         : { file: fileOrTempUrl as File },
     )
   }

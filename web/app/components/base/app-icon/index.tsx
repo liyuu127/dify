@@ -54,16 +54,22 @@ const AppIcon: FC<AppIconProps> = ({
   onClick,
 }) => {
   const isValidImageIcon = iconType === 'image' && imageUrl
-
+  console.log(iconType, imageUrl, '===============')
   return <span
-    className={classNames(appIconVariants({ size, rounded }), className)}
+    className={classNames(appIconVariants({
+ size,
+rounded,
+}), className)}
     style={{ background: isValidImageIcon ? undefined : (background || '#FFEAD5') }}
     onClick={onClick}
   >
     {isValidImageIcon
 
       ? <img src={imageUrl} className="h-full w-full" alt="app icon" />
-      : (innerIcon || ((icon && icon !== '') ? <em-emoji id={icon} /> : <em-emoji id='🤖' />))
+      : iconType === 'emoji' ? (innerIcon || ((icon && icon !== '') ? <em-emoji id={icon} /> : <em-emoji id='🤖' />)) : <div style={{
+ color: '#000',
+fontSize: '12px',
+}}>上传图片</div>
     }
   </span>
 }

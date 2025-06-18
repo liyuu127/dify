@@ -14,6 +14,7 @@ const vars = {
   'components-input-border-hover': 'var(--color-components-input-border-hover)',
   'components-input-border-active-prompt-1': 'var(--color-components-input-border-active-prompt-1)',
   'components-input-border-active-prompt-2': 'var(--color-components-input-border-active-prompt-2)',
+  'AI-components-input-bg-normal': 'var(--AI-color-components-input-bg-normal)',
 
   'components-kbd-bg-gray': 'var(--color-components-kbd-bg-gray)',
   'components-kbd-bg-white': 'var(--color-components-kbd-bg-white)',
@@ -100,6 +101,8 @@ const vars = {
   'components-checkbox-bg-unchecked': 'var(--color-components-checkbox-bg-unchecked)',
   'components-checkbox-bg-unchecked-hover': 'var(--color-components-checkbox-bg-unchecked-hover)',
   'components-checkbox-bg-disabled-checked': 'var(--color-components-checkbox-bg-disabled-checked)',
+  'AI-components-checkbox-bg': 'var(--AI-color-components-checkbox-bg)',
+  'AI-components-checkbox-bg-hover': 'var(--AI-color-components-checkbox-bg-hover)',
 
   'components-radio-border-checked': 'var(--color-components-radio-border-checked)',
   'components-radio-border-checked-hover': 'var(--color-components-radio-border-checked-hover)',
@@ -354,6 +357,7 @@ const vars = {
   'components-icon-bg-red-soft': 'var(--color-components-icon-bg-red-soft)',
   'components-icon-bg-orange-solid': 'var(--color-components-icon-bg-orange-solid)',
   'components-icon-bg-orange-soft': 'var(--color-components-icon-bg-orange-soft)',
+  'AI-components-icon-bg-indigo-solid': 'var(--AI-color-components-icon-bg-indigo-solid)',
 
   'text-primary': 'var(--color-text-primary)',
   'text-secondary': 'var(--color-text-secondary)',
