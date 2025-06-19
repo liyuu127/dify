@@ -8,11 +8,9 @@ import Modal from '@/app/components/base/modal'
 import Button from '@/app/components/base/button'
 import Input from '@/app/components/base/input'
 import Textarea from '@/app/components/base/textarea'
-import Switch from '@/app/components/base/switch'
 import Toast from '@/app/components/base/toast'
 import AppIcon from '@/app/components/base/app-icon'
 import { useProviderContext } from '@/context/provider-context'
-import AppsFull from '@/app/components/billing/apps-full-in-dialog'
 import type { AppIconType } from '@/types/app'
 import { noop } from 'lodash-es'
 
@@ -29,8 +27,8 @@ export type CreateAppModalProps = {
   appUseIconAsAnswerIcon?: boolean
   onConfirm: (info: {
     name: string
-    icon_type: AppIconType
-    icon: string
+    icon_type: AppIconType | string
+    icon: string | undefined
     icon_background?: string
     description: string
     use_icon_as_answer_icon?: boolean
@@ -58,10 +56,20 @@ const CreateAppModal = ({
 
   const [name, setName] = React.useState(appName)
   const [appIcon, setAppIcon] = useState(
-    () => appIconType === 'image'
-      ? { type: 'image' as const, fileId: _appIcon, url: appIconUrl }
-      : { type: 'emoji' as const, icon: _appIcon, background: appIconBackground },
+    () => !appIconType ? { type: '' }
+      : appIconType === 'image'
+      ? {
+ type: 'image' as const,
+fileId: _appIcon,
+url: appIconUrl,
+}
+      : {
+ type: 'emoji' as const,
+icon: _appIcon,
+background: appIconBackground,
+},
   )
+  console.log(appIconType, '==============')
   const [showAppIconPicker, setShowAppIconPicker] = useState(false)
   const [description, setDescription] = useState(appDescription || '')
   const [useIconAsAnswerIcon, setUseIconAsAnswerIcon] = useState(appUseIconAsAnswerIcon || false)
@@ -71,7 +79,10 @@ const CreateAppModal = ({
 
   const submit = useCallback(() => {
     if (!name.trim()) {
-      Toast.notify({ type: 'error', message: t('explore.appCustomize.nameRequired') })
+      Toast.notify({
+ type: 'error',
+message: t('explore.appCustomize.nameRequired'),
+})
       return
     }
     onConfirm({
@@ -146,7 +157,8 @@ const CreateAppModal = ({
             />
           </div>
           {/* answer icon */}
-          {isEditModal && (appMode === 'chat' || appMode === 'advanced-chat' || appMode === 'agent-chat') && (
+          {/* 注释掉webapp图标，暂时不删除，以防后续需要 */}
+          {/* {isEditModal && (appMode === 'chat' || appMode === 'advanced-chat' || appMode === 'agent-chat') && (
             <div className='pt-2'>
               <div className='flex items-center justify-between'>
                 <div className='py-2 text-sm font-medium leading-[20px] text-text-primary'>{t('app.answerIcon.title')}</div>
@@ -158,7 +170,7 @@ const CreateAppModal = ({
               <p className='body-xs-regular text-text-tertiary'>{t('app.answerIcon.descriptionInExplore')}</p>
             </div>
           )}
-          {!isEditModal && isAppsFull && <AppsFull className='mt-4' loc='app-explore-create' />}
+          {!isEditModal && isAppsFull && <AppsFull className='mt-4' loc='app-explore-create' />} */}
         </div>
         <div className='flex flex-row-reverse'>
           <Button
@@ -183,8 +195,16 @@ const CreateAppModal = ({
         }}
         onClose={() => {
           setAppIcon(appIconType === 'image'
-            ? { type: 'image' as const, url: appIconUrl, fileId: _appIcon }
-            : { type: 'emoji' as const, icon: _appIcon, background: appIconBackground })
+            ? {
+ type: 'image' as const,
+url: appIconUrl,
+fileId: _appIcon,
+}
+            : {
+ type: 'emoji' as const,
+icon: _appIcon,
+background: appIconBackground,
+})
           setShowAppIconPicker(false)
         }}
       />}

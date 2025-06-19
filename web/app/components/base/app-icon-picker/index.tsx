@@ -29,7 +29,12 @@ export type AppIconImageSelection = {
   url: string
 }
 
-export type AppIconSelection = AppIconEmojiSelection | AppIconImageSelection
+export type AppIconDefaultSelection = {
+  type: '',
+  fileId: string
+}
+
+export type AppIconSelection = AppIconEmojiSelection | AppIconImageSelection | AppIconDefaultSelection
 
 type AppIconPickerProps = {
   onSelect?: (payload: AppIconSelection) => void
