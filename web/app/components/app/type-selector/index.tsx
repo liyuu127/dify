@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import React, { useState } from 'react'
-import { RiArrowDownSLine, RiCloseCircleFill, RiExchange2Fill, RiFilter3Line } from '@remixicon/react'
+import { RiArrowDownSLine, RiCloseCircleFill, RiFilter3Line } from '@remixicon/react'
 import Checkbox from '../../base/checkbox'
 import cn from '@/utils/classnames'
 import {
@@ -8,7 +8,7 @@ import {
   PortalToFollowElemContent,
   PortalToFollowElemTrigger,
 } from '@/app/components/base/portal-to-follow-elem'
-import { BubbleTextMod, ChatBot, ListSparkle, Logic } from '@/app/components/base/icons/src/vender/solid/communication'
+import { Agent, BubbleTextMod, ChatBot, ListSparkle, Workflow } from '@/app/components/base/icons/src/vender/solid/communication'
 import type { AppMode } from '@/types/app'
 
 export type AppSelectorProps = {
@@ -126,7 +126,8 @@ export function AppTypeIcon({ type, className, wrapperClassName, style }: AppTyp
   }
   if (type === 'agent-chat') {
     return <div style={style} className={cn(wrapperClassNames, 'bg-AI-components-icon-bg-indigo-solid')}>
-      <Logic className={iconClassNames} />
+      {/* <Logic className={iconClassNames} /> */}
+      <Agent className={iconClassNames} />
     </div>
   }
   if (type === 'advanced-chat') {
@@ -136,7 +137,8 @@ export function AppTypeIcon({ type, className, wrapperClassName, style }: AppTyp
   }
   if (type === 'workflow') {
     return <div style={style} className={cn(wrapperClassNames, 'bg-AI-components-icon-bg-indigo-solid')}>
-      <RiExchange2Fill className={iconClassNames} />
+      {/* <RiExchange2Fill className={iconClassNames} /> */}
+      <Workflow className={iconClassNames} />
     </div>
   }
   if (type === 'completion') {
