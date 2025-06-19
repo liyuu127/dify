@@ -6,13 +6,14 @@ import data from '@emoji-mart/data'
 import { cva } from 'class-variance-authority'
 import type { AppIconType } from '@/types/app'
 import classNames from '@/utils/classnames'
+import AppLogo from '@/app/components/base/logo/App-logo'
 
 init({ data })
 
 export type AppIconProps = {
   size?: 'xs' | 'tiny' | 'small' | 'medium' | 'large' | 'xl' | 'xxl'
   rounded?: boolean
-  iconType?: AppIconType | null
+  iconType?: AppIconType | null | string
   icon?: string
   background?: string | null
   imageUrl?: string | null
@@ -54,24 +55,20 @@ const AppIcon: FC<AppIconProps> = ({
   onClick,
 }) => {
   const isValidImageIcon = iconType === 'image' && imageUrl
-  console.log(iconType, imageUrl, '===============')
-  return <span
-    className={classNames(appIconVariants({
- size,
-rounded,
-}), className)}
-    style={{ background: isValidImageIcon ? undefined : (background || '#FFEAD5') }}
+  return <div
+    className={classNames(appIconVariants({ size, rounded }), className)}
+    style={{
+      background: isValidImageIcon ? undefined : (background || '#FFEAD5'),
+    }}
     onClick={onClick}
   >
-    {isValidImageIcon
-
-      ? <img src={imageUrl} className="h-full w-full" alt="app icon" />
-      : iconType === 'emoji' ? (innerIcon || ((icon && icon !== '') ? <em-emoji id={icon} /> : <em-emoji id='🤖' />)) : <div style={{
- color: '#000',
-fontSize: '12px',
-}}>上传图片</div>
+    {!iconType
+      ? <AppLogo size='large' />
+      : iconType === 'image' && imageUrl ? <img src={imageUrl} className="h-full w-full" alt="app icon" />
+        : (innerIcon || ((icon && icon !== '') ? <em-emoji id={icon}></em-emoji> : <em-emoji id='🤖'></em-emoji>))
     }
-  </span>
+    {/* <AppLogo size='large' /> */}
+  </div>
 }
 
 export default AppIcon

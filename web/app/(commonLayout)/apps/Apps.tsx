@@ -26,7 +26,7 @@ import { useStore as useTagStore } from '@/app/components/base/tag-management/st
 import TagManagementModal from '@/app/components/base/tag-management'
 import TagFilter from '@/app/components/base/tag-management/filter'
 import CheckboxWithLabel from '@/app/components/datasets/create/website/base/checkbox-with-label'
-import { Logic } from '@/app/components/base/icons/src/vender/solid/communication'
+import { Logic, Workflow, Agent } from '@/app/components/base/icons/src/vender/solid/communication'
 
 const getKey = (
   pageIndex: number,
@@ -109,14 +109,16 @@ icon: <RiApps2Line className='mr-1 h-[14px] w-[14px]' />,
     {
  value: 'agent-chat',
 text: t('app.types.agent'),
-icon: <Logic className='mr-1 h-[14px] w-[14px]' />,
+// icon: <Logic className='mr-1 h-[14px] w-[14px]' />,
+icon: <Agent className='mr-1 h-[14px] w-[14px]' />,
 },
     // { value: 'completion', text: t('app.types.completion'), icon: <RiFile4Line className='mr-1 h-[14px] w-[14px]' /> },
     // { value: 'advanced-chat', text: t('app.types.advanced'), icon: <RiMessage3Line className='mr-1 h-[14px] w-[14px]' /> },
     {
  value: 'workflow',
 text: t('app.types.workflow'),
-icon: <RiExchange2Line className='mr-1 h-[14px] w-[14px]' />,
+// icon: <RiExchange2Line className='mr-1 h-[14px] w-[14px]' />,
+icon: <Workflow className='mr-1 h-[14px] w-[14px]' />,
 },
   ]
 

@@ -23,7 +23,7 @@ import Input from '@/app/components/base/input'
 import Textarea from '@/app/components/base/textarea'
 import AppIcon from '@/app/components/base/app-icon'
 import AppsFull from '@/app/components/billing/apps-full-in-dialog'
-import { Logic } from '@/app/components/base/icons/src/vender/solid/communication'
+import { Agent, Workflow } from '@/app/components/base/icons/src/vender/solid/communication'
 import { NEED_REFRESH_APP_LIST_KEY } from '@/config'
 import { getRedirection } from '@/utils/app-redirection'
 import FullScreenModal from '@/app/components/base/fullscreen-modal'
@@ -43,9 +43,8 @@ function CreateApp({ onClose, onSuccess, onCreateFromTemplate }: CreateAppProps)
 
   const [appMode, setAppMode] = useState<AppMode>('workflow')
   const [appIcon, setAppIcon] = useState<AppIconSelection>({
- type: 'emoji',
-icon: '🤖',
-background: '#FFEAD5',
+ type: '',
+ fileId: '',
 })
   const [showAppIconPicker, setShowAppIconPicker] = useState(false)
   const [name, setName] = useState('')
@@ -136,8 +135,9 @@ message: t('app.newApp.appCreateFailed'),
                   active={appMode === 'workflow'}
                   title={t('app.types.workflow')}
                   description={t('app.newApp.workflowShortDescription')}
-                  icon={<div className='flex h-6 w-6 items-center justify-center rounded-md bg-AI-components-icon-bg-indigo-solid'>
-                    <RiExchange2Fill className='h-4 w-4 text-components-avatar-shape-fill-stop-100' />
+                  icon={<div className='bg-AI-components-icon-bg-indigo-solid flex h-6 w-6 items-center justify-center rounded-md'>
+                    {/* <RiExchange2Fill className='h-4 w-4 text-components-avatar-shape-fill-stop-100' /> */}
+                    <Workflow className='h-4 w-4 text-components-avatar-shape-fill-stop-100' />
                   </div>}
                   onClick={() => {
                     setAppMode('workflow')
@@ -146,8 +146,9 @@ message: t('app.newApp.appCreateFailed'),
                     active={appMode === 'agent-chat'}
                     title={t('app.types.agent')}
                     description={t('app.newApp.agentShortDescription')}
-                    icon={<div className='flex h-6 w-6 items-center justify-center rounded-md bg-AI-components-icon-bg-indigo-solid'>
-                      <Logic className='h-4 w-4 text-components-avatar-shape-fill-stop-100' />
+                    icon={<div className='bg-AI-components-icon-bg-indigo-solid flex h-6 w-6 items-center justify-center rounded-md'>
+                      {/* <Logic className='h-4 w-4 text-components-avatar-shape-fill-stop-100' /> */}
+                      <Agent className='h-4 w-4 text-components-avatar-shape-fill-stop-100' />
                     </div>}
                     onClick={() => {
                       setAppMode('agent-chat')
@@ -226,9 +227,9 @@ message: t('app.newApp.appCreateFailed'),
               <AppIcon
                 iconType={appIcon.type}
                 icon={appIcon.type === 'emoji' ? appIcon.icon : appIcon.fileId}
-                background={appIcon.type === 'emoji' ? appIcon.background : undefined}
+                background={appIcon.type === 'emoji' ? appIcon.background : '#fff'}
                 imageUrl={appIcon.type === 'image' ? appIcon.url : undefined}
-                size='xxl' className='cursor-pointer rounded-2xl'
+                size='xxl' className='rounded-1xl cursor-pointer'
                 onClick={() => { setShowAppIconPicker(true) }}
               />
               {showAppIconPicker && <AppIconPicker

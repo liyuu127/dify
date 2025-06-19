@@ -8,8 +8,9 @@ import {
   PortalToFollowElemContent,
   PortalToFollowElemTrigger,
 } from '@/app/components/base/portal-to-follow-elem'
-import { BubbleTextMod, ChatBot, ListSparkle, Logic } from '@/app/components/base/icons/src/vender/solid/communication'
+import { BubbleTextMod, ChatBot, ListSparkle, Logic, Workflow, Agent } from '@/app/components/base/icons/src/vender/solid/communication'
 import type { AppMode } from '@/types/app'
+
 
 export type AppSelectorProps = {
   value: Array<AppMode>
@@ -126,7 +127,8 @@ export function AppTypeIcon({ type, className, wrapperClassName, style }: AppTyp
   }
   if (type === 'agent-chat') {
     return <div style={style} className={cn(wrapperClassNames, 'bg-AI-components-icon-bg-indigo-solid')}>
-      <Logic className={iconClassNames} />
+      {/* <Logic className={iconClassNames} /> */}
+      <Agent className={iconClassNames} />
     </div>
   }
   if (type === 'advanced-chat') {
@@ -136,7 +138,8 @@ export function AppTypeIcon({ type, className, wrapperClassName, style }: AppTyp
   }
   if (type === 'workflow') {
     return <div style={style} className={cn(wrapperClassNames, 'bg-AI-components-icon-bg-indigo-solid')}>
-      <RiExchange2Fill className={iconClassNames} />
+      {/* <RiExchange2Fill className={iconClassNames} /> */}
+      <Workflow className={iconClassNames} />
     </div>
   }
   if (type === 'completion') {

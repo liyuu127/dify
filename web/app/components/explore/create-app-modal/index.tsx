@@ -29,8 +29,8 @@ export type CreateAppModalProps = {
   appUseIconAsAnswerIcon?: boolean
   onConfirm: (info: {
     name: string
-    icon_type: AppIconType
-    icon: string
+    icon_type: AppIconType | string
+    icon: string | undefined
     icon_background?: string
     description: string
     use_icon_as_answer_icon?: boolean
@@ -58,10 +58,12 @@ const CreateAppModal = ({
 
   const [name, setName] = React.useState(appName)
   const [appIcon, setAppIcon] = useState(
-    () => appIconType === 'image'
+    () => !appIconType ? { type: '' }
+      : appIconType === 'image'
       ? { type: 'image' as const, fileId: _appIcon, url: appIconUrl }
       : { type: 'emoji' as const, icon: _appIcon, background: appIconBackground },
   )
+  console.log(appIconType, '==============')
   const [showAppIconPicker, setShowAppIconPicker] = useState(false)
   const [description, setDescription] = useState(appDescription || '')
   const [useIconAsAnswerIcon, setUseIconAsAnswerIcon] = useState(appUseIconAsAnswerIcon || false)
@@ -146,7 +148,8 @@ const CreateAppModal = ({
             />
           </div>
           {/* answer icon */}
-          {isEditModal && (appMode === 'chat' || appMode === 'advanced-chat' || appMode === 'agent-chat') && (
+          {/* 注释掉webapp图标，暂时不删除，以防后续需要 */}
+          {/* {isEditModal && (appMode === 'chat' || appMode === 'advanced-chat' || appMode === 'agent-chat') && (
             <div className='pt-2'>
               <div className='flex items-center justify-between'>
                 <div className='py-2 text-sm font-medium leading-[20px] text-text-primary'>{t('app.answerIcon.title')}</div>
@@ -158,7 +161,7 @@ const CreateAppModal = ({
               <p className='body-xs-regular text-text-tertiary'>{t('app.answerIcon.descriptionInExplore')}</p>
             </div>
           )}
-          {!isEditModal && isAppsFull && <AppsFull className='mt-4' loc='app-explore-create' />}
+          {!isEditModal && isAppsFull && <AppsFull className='mt-4' loc='app-explore-create' />} */}
         </div>
         <div className='flex flex-row-reverse'>
           <Button
