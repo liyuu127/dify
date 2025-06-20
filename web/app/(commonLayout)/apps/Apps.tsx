@@ -9,7 +9,6 @@ import { useTranslation } from 'react-i18next'
 import { useDebounceFn } from 'ahooks'
 import {
   RiApps2Line,
-  RiExchange2Line,
 } from '@remixicon/react'
 import AppCard from './AppCard'
 import NewAppCard from './NewAppCard'
@@ -26,7 +25,7 @@ import { useStore as useTagStore } from '@/app/components/base/tag-management/st
 import TagManagementModal from '@/app/components/base/tag-management'
 import TagFilter from '@/app/components/base/tag-management/filter'
 import CheckboxWithLabel from '@/app/components/datasets/create/website/base/checkbox-with-label'
-import { Logic, Workflow, Agent } from '@/app/components/base/icons/src/vender/solid/communication'
+import { Agent, Workflow } from '@/app/components/base/icons/src/vender/solid/communication'
 
 const getKey = (
   pageIndex: number,

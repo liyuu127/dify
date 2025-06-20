@@ -117,7 +117,7 @@ message: t('dataset.datasetDeleted'),
   return (
     <>
       <div
-        className='group relative col-span-1 flex min-h-[171px] cursor-pointer flex-col rounded-xl border-[0.5px] border-solid border-components-card-border bg-components-card-bg shadow-1xl transition-all duration-200 ease-in-out hover:shadow-lg'
+        className='group relative col-span-1 flex min-h-[171px] cursor-pointer flex-col rounded-xl border-[0.5px] border-solid border-components-card-border bg-components-card-bg shadow-1xl  transition-all duration-200 ease-in-out hover:shadow-lg'
         data-disable-nprogress={true}
         onClick={(e) => {
           e.preventDefault()
@@ -132,10 +132,10 @@ message: t('dataset.datasetDeleted'),
             'flex shrink-0 items-center justify-center rounded-md border-[0.5px] border-[#E0EAFF] bg-[#F5F8FF] p-2.5',
             !dataset.embedding_available && 'opacity-50 hover:opacity-100',
           )}>
-            <Folder className='h-5 w-5 text-[#444CE7]' />
+            <Folder className='h-5 w-5 text-[#122543]' />
           </div>
           <div className='w-0 grow py-[1px]'>
-            <div className='flex items-center text-sm font-semibold leading-5 text-text-secondary'>
+            <div className='flex items-center text-sm font-semibold leading-5 text-AI-text-secondary'>
               <div className={cn('truncate', !dataset.embedding_available && 'text-text-tertiary opacity-50 hover:opacity-100')} title={dataset.name}>{dataset.name}</div>
               {!dataset.embedding_available && (
                 <Tooltip

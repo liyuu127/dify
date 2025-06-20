@@ -331,7 +331,7 @@ message: `${e.message || e}`,
           e.preventDefault()
           getRedirection(isCurrentWorkspaceEditor, app, push)
         }}
-        className='shadow-1xl group relative col-span-1 inline-flex h-[160px] cursor-pointer flex-col rounded-xl border-[1px] border-solid border-components-card-border bg-components-card-bg  transition-all duration-200 ease-in-out hover:shadow-lg'
+        className='group relative col-span-1 inline-flex h-[160px] cursor-pointer flex-col rounded-xl border-[1px] border-solid border-components-card-border bg-components-card-bg shadow-1xl  transition-all duration-200 ease-in-out hover:shadow-lg'
       >
         <div className='flex h-[66px] shrink-0 grow-0 items-center gap-3 px-[14px] pb-3 pt-[14px]'>
           <div className='relative shrink-0'>
@@ -345,7 +345,7 @@ message: `${e.message || e}`,
             <AppTypeIcon type={app.mode} wrapperClassName='absolute -bottom-0.5 -right-0.5 w-4 h-4 shadow-sm' className='h-3 w-3' />
           </div>
           <div className='w-0 grow py-[1px]'>
-            <div className='text-AI-text-secondary flex items-center text-sm font-semibold leading-5'>
+            <div className='flex items-center text-sm font-semibold leading-5 text-AI-text-secondary'>
               <div className='truncate' title={app.name}>{app.name}</div>
             </div>
             <div className='flex items-center gap-1 text-[10px] font-medium leading-[18px] text-text-tertiary'>

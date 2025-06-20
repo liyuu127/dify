@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import React, { useState } from 'react'
-import { RiArrowDownSLine, RiCloseCircleFill, RiExchange2Fill, RiFilter3Line } from '@remixicon/react'
+import { RiArrowDownSLine, RiCloseCircleFill, RiFilter3Line } from '@remixicon/react'
 import Checkbox from '../../base/checkbox'
 import cn from '@/utils/classnames'
 import {
@@ -8,9 +8,8 @@ import {
   PortalToFollowElemContent,
   PortalToFollowElemTrigger,
 } from '@/app/components/base/portal-to-follow-elem'
-import { BubbleTextMod, ChatBot, ListSparkle, Logic, Workflow, Agent } from '@/app/components/base/icons/src/vender/solid/communication'
+import { Agent, BubbleTextMod, ChatBot, ListSparkle, Workflow } from '@/app/components/base/icons/src/vender/solid/communication'
 import type { AppMode } from '@/types/app'
-
 
 export type AppSelectorProps = {
   value: Array<AppMode>

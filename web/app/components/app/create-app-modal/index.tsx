@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useContext, useContextSelector } from 'use-context-selector'
-import { RiCommandLine, RiCornerDownLeftLine, RiExchange2Fill } from '@remixicon/react'
+import { RiCommandLine, RiCornerDownLeftLine } from '@remixicon/react'
 import { useDebounceFn, useKeyPress } from 'ahooks'
 import Image from 'next/image'
 import AppIconPicker from '../../base/app-icon-picker'
@@ -135,7 +135,7 @@ message: t('app.newApp.appCreateFailed'),
                   active={appMode === 'workflow'}
                   title={t('app.types.workflow')}
                   description={t('app.newApp.workflowShortDescription')}
-                  icon={<div className='bg-AI-components-icon-bg-indigo-solid flex h-6 w-6 items-center justify-center rounded-md'>
+                  icon={<div className='flex h-6 w-6 items-center justify-center rounded-md bg-AI-components-icon-bg-indigo-solid'>
                     {/* <RiExchange2Fill className='h-4 w-4 text-components-avatar-shape-fill-stop-100' /> */}
                     <Workflow className='h-4 w-4 text-components-avatar-shape-fill-stop-100' />
                   </div>}
@@ -146,7 +146,7 @@ message: t('app.newApp.appCreateFailed'),
                     active={appMode === 'agent-chat'}
                     title={t('app.types.agent')}
                     description={t('app.newApp.agentShortDescription')}
-                    icon={<div className='bg-AI-components-icon-bg-indigo-solid flex h-6 w-6 items-center justify-center rounded-md'>
+                    icon={<div className='flex h-6 w-6 items-center justify-center rounded-md bg-AI-components-icon-bg-indigo-solid'>
                       {/* <Logic className='h-4 w-4 text-components-avatar-shape-fill-stop-100' /> */}
                       <Agent className='h-4 w-4 text-components-avatar-shape-fill-stop-100' />
                     </div>}

@@ -121,6 +121,10 @@ const translation = {
       accessibleAddress: 'API 访问凭据',
       doc: '查阅 API 文档',
     },
+    permission: {
+      title: '可见权限',
+      explanation: '只有拥有权限的账号可见',
+    },
     status: {
       running: '运行中',
       disable: '已停用',

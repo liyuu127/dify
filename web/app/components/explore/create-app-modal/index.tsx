@@ -8,11 +8,9 @@ import Modal from '@/app/components/base/modal'
 import Button from '@/app/components/base/button'
 import Input from '@/app/components/base/input'
 import Textarea from '@/app/components/base/textarea'
-import Switch from '@/app/components/base/switch'
 import Toast from '@/app/components/base/toast'
 import AppIcon from '@/app/components/base/app-icon'
 import { useProviderContext } from '@/context/provider-context'
-import AppsFull from '@/app/components/billing/apps-full-in-dialog'
 import type { AppIconType } from '@/types/app'
 import { noop } from 'lodash-es'
 
@@ -60,8 +58,16 @@ const CreateAppModal = ({
   const [appIcon, setAppIcon] = useState(
     () => !appIconType ? { type: '' }
       : appIconType === 'image'
-      ? { type: 'image' as const, fileId: _appIcon, url: appIconUrl }
-      : { type: 'emoji' as const, icon: _appIcon, background: appIconBackground },
+      ? {
+ type: 'image' as const,
+fileId: _appIcon,
+url: appIconUrl,
+}
+      : {
+ type: 'emoji' as const,
+icon: _appIcon,
+background: appIconBackground,
+},
   )
   console.log(appIconType, '==============')
   const [showAppIconPicker, setShowAppIconPicker] = useState(false)
@@ -73,7 +79,10 @@ const CreateAppModal = ({
 
   const submit = useCallback(() => {
     if (!name.trim()) {
-      Toast.notify({ type: 'error', message: t('explore.appCustomize.nameRequired') })
+      Toast.notify({
+ type: 'error',
+message: t('explore.appCustomize.nameRequired'),
+})
       return
     }
     onConfirm({
@@ -186,8 +195,16 @@ const CreateAppModal = ({
         }}
         onClose={() => {
           setAppIcon(appIconType === 'image'
-            ? { type: 'image' as const, url: appIconUrl, fileId: _appIcon }
-            : { type: 'emoji' as const, icon: _appIcon, background: appIconBackground })
+            ? {
+ type: 'image' as const,
+url: appIconUrl,
+fileId: _appIcon,
+}
+            : {
+ type: 'emoji' as const,
+icon: _appIcon,
+background: appIconBackground,
+})
           setShowAppIconPicker(false)
         }}
       />}
