@@ -1,6 +1,6 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
-import AppIcon from '../base/app-icon'
+import AppAiIcon from '../base/app-AI-icon'
 import Tooltip from '@/app/components/base/tooltip'
 
 export type IAppBasicProps = {
@@ -11,7 +11,10 @@ export type IAppBasicProps = {
   name: string
   type: string | React.ReactNode
   hoverTip?: string
-  textStyle?: { main?: string; extra?: string }
+  textStyle?: {
+ main?: string;
+extra?: string
+}
   isExtraInLine?: boolean
   mode?: string
 }
@@ -46,22 +49,23 @@ const NotionSvg = <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xm
   </defs>
 </svg>
 
-const ICON_MAP = {
-  app: <AppIcon className='border !border-[rgba(0,0,0,0.05)]' />,
-  api: <AppIcon innerIcon={ApiSvg} className='border !border-purple-200 !bg-purple-50' />,
-  dataset: <AppIcon innerIcon={DatasetSvg} className='!border-[0.5px] !border-indigo-100 !bg-indigo-25' />,
-  webapp: <AppIcon innerIcon={WebappSvg} className='border !border-primary-200 !bg-primary-100' />,
-  notion: <AppIcon innerIcon={NotionSvg} className='!border-[0.5px] !border-indigo-100 !bg-white' />,
-}
+const PermissionSvg = <svg viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5078" width="18" height="18"><path d="M810.666667 426.666667h-42.666667V341.333333c0-145.066667-110.933333-256-256-256S256 196.266667 256 341.333333v85.333334H213.333333c-25.6 0-42.666667 17.066667-42.666666 42.666666v426.666667c0 25.6 17.066667 42.666667 42.666666 42.666667h597.333334c25.6 0 42.666667-17.066667 42.666666-42.666667V469.333333c0-25.6-17.066667-42.666667-42.666666-42.666666zM341.333333 341.333333c0-93.866667 76.8-170.666667 170.666667-170.666666s170.666667 76.8 170.666667 170.666666v85.333334H341.333333V341.333333z m426.666667 512H256v-341.333333h512v341.333333z" fill="#4095e5" p-id="5079"></path><path d="M512 597.333333c-25.6 0-42.666667 21.333333-42.666667 42.666667v85.333333c0 25.6 17.066667 42.666667 42.666667 42.666667s42.666667-17.066667 42.666667-42.666667v-85.333333c0-25.6-21.333333-42.666667-42.666667-42.666667z" fill="#4095e5" p-id="5080"></path></svg>
 
+const ICON_MAP = {
+  app: <AppAiIcon className='border !border-[rgba(0,0,0,0.05)]' />,
+  api: <AppAiIcon innerIcon={ApiSvg} className='border !border-purple-200 !bg-purple-50' />,
+  dataset: <AppAiIcon innerIcon={DatasetSvg} className='!border-[0.5px] !border-indigo-100 !bg-indigo-25' />,
+  webapp: <AppAiIcon innerIcon={WebappSvg} className='border !border-primary-200 !bg-primary-100' />,
+  notion: <AppAiIcon innerIcon={NotionSvg} className='!border-[0.5px] !border-indigo-100 !bg-white' />,
+  PermissionSvg: <AppAiIcon innerIcon={PermissionSvg} className='border !border-primary-200 !bg-primary-100' />,
+}
 export default function AppBasic({ icon, icon_background, name, isExternal, type, hoverTip, textStyle, isExtraInLine, mode = 'expand', iconType = 'app' }: IAppBasicProps) {
   const { t } = useTranslation()
-
   return (
     <div className="flex grow items-center">
       {icon && icon_background && iconType === 'app' && (
         <div className='mr-3 shrink-0'>
-          <AppIcon icon={icon} background={icon_background} />
+          <AppAiIcon icon={icon} background={icon_background} />
         </div>
       )}
       {iconType !== 'app'

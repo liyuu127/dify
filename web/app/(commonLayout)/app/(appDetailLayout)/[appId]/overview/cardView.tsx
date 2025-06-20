@@ -4,6 +4,7 @@ import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { useContext } from 'use-context-selector'
 import AppCard from '@/app/components/app/overview/appCard'
+import AppPermission from '@/app/components/app/overview/appPermission'
 import Loading from '@/app/components/base/loading'
 import { ToastContext } from '@/app/components/base/toast'
 import {
@@ -33,7 +34,10 @@ const CardView: FC<ICardViewProps> = ({ appId, isInPanel, className }) => {
 
   const updateAppDetail = async () => {
     try {
-      const res = await fetchAppDetail({ url: '/apps', id: appId })
+      const res = await fetchAppDetail({
+ url: '/apps',
+id: appId,
+})
       setAppDetail({ ...res })
     }
     catch (error) { console.error(error) }
@@ -113,6 +117,12 @@ const CardView: FC<ICardViewProps> = ({ appId, isInPanel, className }) => {
       />
       <AppCard
         cardType="api"
+        appInfo={appDetail}
+        isInPanel={isInPanel}
+        onChangeStatus={onChangeApiStatus}
+      />
+      <AppPermission
+        cardType="PermissionSvg"
         appInfo={appDetail}
         isInPanel={isInPanel}
         onChangeStatus={onChangeApiStatus}
