@@ -37,6 +37,12 @@ if TYPE_CHECKING:
     from .workflow import Workflow
 
 
+class AppPermissionEnum(StrEnum):
+    ONLY_ME = "only_me"
+    ALL_TEAM = "all_team_members"
+    PARTIAL_TEAM = "partial_members"
+
+
 class DifySetup(Base):
     __tablename__ = "dify_setups"
     __table_args__ = (db.PrimaryKeyConstraint("version", name="dify_setup_pkey"),)
@@ -101,6 +107,7 @@ class App(Base):
     updated_by = db.Column(StringUUID, nullable=True)
     updated_at = db.Column(db.DateTime, nullable=False, server_default=func.current_timestamp())
     use_icon_as_answer_icon = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
+    permission = db.Column(db.String(50), nullable=False, server_default=db.text("'only_me'::character varying"))
 
     @property
     def desc_or_prompt(self):
@@ -302,6 +309,35 @@ class App(Base):
                 return account.name
 
         return None
+
+    @property
+    def partial_member_list(self):
+        if self.permission == "partial_members":
+            from services.app_service import AppPermissionService
+            part_users_list = AppPermissionService.get_app_partial_member_list(str(self.id))
+            if part_users_list:
+                return part_users_list
+            else:
+                return None
+        else:
+            return None
+
+
+class AppPermission(Base):
+    __tablename__ = "app_permissions"
+    __table_args__ = (
+        db.PrimaryKeyConstraint("id", name="app_permission_pkey"),
+        db.Index("idx_app_permissions_app_id", "app_id"),
+        db.Index("idx_app_permissions_account_id", "account_id"),
+        db.Index("idx_app_permissions_tenant_id", "tenant_id"),
+    )
+
+    id = db.Column(StringUUID, server_default=db.text("uuid_generate_v4()"), primary_key=True)
+    app_id = db.Column(StringUUID, nullable=False)
+    account_id = db.Column(StringUUID, nullable=False)
+    tenant_id = db.Column(StringUUID, nullable=False)
+    has_permission = db.Column(db.Boolean, nullable=False, server_default=db.text("true"))
+    created_at = db.Column(db.DateTime, nullable=False, server_default=func.current_timestamp())
 
 
 class AppModelConfig(Base):

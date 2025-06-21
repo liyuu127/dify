@@ -5,7 +5,8 @@ from flask_login import current_user
 from flask_restful import Resource, inputs, marshal, marshal_with, reqparse
 from sqlalchemy import select
 from sqlalchemy.orm import Session
-from werkzeug.exceptions import BadRequest, Forbidden, abort
+from werkzeug.exceptions import BadRequest, Forbidden, abort, NotFound
+from flask import request
 
 from controllers.console import api
 from controllers.console.app.wraps import get_app_model
@@ -20,8 +21,9 @@ from extensions.ext_database import db
 from fields.app_fields import app_detail_fields, app_detail_fields_with_site, app_pagination_fields
 from libs.login import login_required
 from models import Account, App
+from models.model import AppPermissionEnum
 from services.app_dsl_service import AppDslService, ImportMode
-from services.app_service import AppService
+from services.app_service import AppService, AppPermissionService
 from services.enterprise.enterprise_service import EnterpriseService
 from services.feature_service import FeatureService
 
@@ -143,6 +145,10 @@ class AppApi(Resource):
         # The role of the current user in the ta table must be admin, owner, or editor
         if not current_user.is_editor:
             raise Forbidden()
+        app_id = str(app_model.id)
+        app = AppService.get_app_by_id(app_id)
+        if app is None:
+            raise NotFound("App not found.")
 
         parser = reqparse.RequestParser()
         parser.add_argument("name", type=str, required=True, nullable=False, location="json")
@@ -151,10 +157,37 @@ class AppApi(Resource):
         parser.add_argument("icon", type=str, location="json")
         parser.add_argument("icon_background", type=str, location="json")
         parser.add_argument("use_icon_as_answer_icon", type=bool, location="json")
+        parser.add_argument(
+            "permission",
+            type=str,
+            location="json",
+            choices=(AppPermissionEnum.ONLY_ME, AppPermissionEnum.ALL_TEAM, AppPermissionEnum.PARTIAL_TEAM),
+            help="Invalid permission.",
+        )
+        parser.add_argument("partial_member_list", type=list, location="json", help="Invalid parent user list.")
+
         args = parser.parse_args()
+        data = request.get_json()
+
+        # The role of the current user in the ta table must be admin, owner, editor, or dataset_operator
+        AppPermissionService.check_permission(
+            current_user, app, data.get("permission"), data.get("partial_member_list")
+        )
 
         app_service = AppService()
         app_model = app_service.update_app(app_model, args)
+
+        tenant_id = current_user.current_tenant_id
+        if data.get("partial_member_list") and data.get("permission") == "partial_members":
+            AppPermissionService.update_partial_member_list(
+                tenant_id, app_id, data.get("partial_member_list")
+            )
+        # clear partial member list when permission is only_me or all_team_members
+        elif (
+            data.get("permission") == AppPermissionService.ONLY_ME
+            or data.get("permission") == AppPermissionService.ALL_TEAM
+        ):
+            AppPermissionService.clear_partial_member_list(app_id)
 
         return app_model
 

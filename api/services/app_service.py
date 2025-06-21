@@ -17,10 +17,11 @@ from core.tools.tool_manager import ToolManager
 from core.tools.utils.configuration import ToolParameterConfigurationManager
 from events.app_event import app_was_created
 from extensions.ext_database import db
-from models.account import Account
-from models.model import App, AppMode, AppModelConfig, Site
+from models.account import Account, TenantAccountRole
+from models.model import App, AppMode, AppModelConfig, Site, AppPermissionEnum, AppPermission
 from models.tools import ApiToolProvider
 from services.enterprise.enterprise_service import EnterpriseService
+from services.errors.account import NoPermissionError
 from services.feature_service import FeatureService
 from services.tag_service import TagService
 from tasks.remove_app_and_related_data_task import remove_app_and_related_data_task
@@ -35,7 +36,37 @@ class AppService:
         :param args: request args
         :return:
         """
+
+        user = current_user
         filters = [App.tenant_id == tenant_id, App.is_universal == False]
+        create_by_me = args.get("is_created_by_me", False)
+
+        # get permitted app ids
+        app_permission = (
+            db.session.query(AppPermission).filter_by(account_id=user.id, tenant_id=tenant_id).all()
+        )
+        permitted_app_ids = {dp.app_id for dp in app_permission} if app_permission else None
+
+        if user.current_role != TenantAccountRole.OWNER:
+            if permitted_app_ids:
+                # show all datasets that the user has permission to access
+                filters.append(db.or_(
+                    App.permission == AppPermissionEnum.ALL_TEAM,
+                    db.and_(
+                        App.permission == AppPermissionEnum.ONLY_ME, App.created_by == user_id
+                    ),
+                    db.and_(
+                        App.permission == AppPermissionEnum.PARTIAL_TEAM,
+                        App.id.in_(permitted_app_ids),
+                    ),
+                ))
+            else:
+                filters.append(db.or_(
+                    App.permission == AppPermissionEnum.ALL_TEAM,
+                    db.and_(
+                        App.permission == AppPermissionEnum.ONLY_ME, App.created_by == user_id
+                    ),
+                ))
 
         if args["mode"] == "workflow":
             filters.append(App.mode == AppMode.WORKFLOW.value)
@@ -49,8 +80,7 @@ class AppService:
             filters.append(App.mode == AppMode.AGENT_CHAT.value)
         elif args["mode"] == "channel":
             filters.append(App.mode == AppMode.CHANNEL.value)
-
-        if args.get("is_created_by_me", False):
+        if create_by_me:
             filters.append(App.created_by == user_id)
         if args.get("name"):
             name = args["name"][:30]
@@ -139,6 +169,7 @@ class AppService:
         app.api_rpm = args.get("api_rpm", 0)
         app.created_by = account.id
         app.updated_by = account.id
+        app.permission = AppPermissionEnum.ONLY_ME
 
         db.session.add(app)
         db.session.flush()
@@ -237,6 +268,9 @@ class AppService:
         app.use_icon_as_answer_icon = args.get("use_icon_as_answer_icon", False)
         app.updated_by = current_user.id
         app.updated_at = datetime.now(UTC).replace(tzinfo=None)
+        permission = args.get("permission")
+        if permission:
+            app.permission = permission
         db.session.commit()
 
         return app
@@ -395,3 +429,71 @@ class AppService:
         if not site:
             raise ValueError(f"App with id {app_id} not found")
         return str(site.code)
+
+    @staticmethod
+    def get_app_by_id(app_id) -> Optional[App]:
+        dataset: Optional[App] = db.session.query(App).filter_by(id=app_id).first()
+        return dataset
+
+
+class AppPermissionService:
+    @classmethod
+    def get_app_partial_member_list(cls, app_id):
+        user_list_query = (
+            db.session.query(
+                AppPermission.account_id,
+            )
+            .filter(AppPermission.app_id == app_id)
+            .all()
+        )
+
+        user_list = []
+        for user in user_list_query:
+            user_list.append(user.account_id)
+
+        return user_list
+
+    @classmethod
+    def update_partial_member_list(cls, tenant_id, app_id, user_list):
+        try:
+            db.session.query(AppPermission).filter(AppPermission.app_id == app_id).delete()
+            permissions = []
+            for user in user_list:
+                permission = AppPermission(
+                    tenant_id=tenant_id,
+                    app_id=app_id,
+                    account_id=user["user_id"],
+                )
+                permissions.append(permission)
+
+            db.session.add_all(permissions)
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            raise e
+
+    @classmethod
+    def check_permission(cls, user, app, requested_permission, requested_partial_member_list):
+        if not user.is_app_editor:
+            raise NoPermissionError("User does not have permission to edit this app.")
+
+        if user.is_app_operator and app.permission != requested_permission:
+            raise NoPermissionError("App operators cannot change the app permissions.")
+
+        if user.is_app_operator and requested_permission == "partial_members":
+            if not requested_partial_member_list:
+                raise ValueError("Partial member list is required when setting to partial members.")
+
+            local_member_list = cls.get_app_partial_member_list(app.id)
+            request_member_list = [user["user_id"] for user in requested_partial_member_list]
+            if set(local_member_list) != set(request_member_list):
+                raise ValueError("App operators cannot change the app permissions.")
+
+    @classmethod
+    def clear_partial_member_list(cls, app_id):
+        try:
+            db.session.query(AppPermission).filter(AppPermission.app_id == app_id).delete()
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            raise e
