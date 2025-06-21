@@ -1,10 +1,11 @@
 from urllib import parse
 
 from flask_login import current_user
-from flask_restful import Resource, abort, marshal_with, reqparse, marshal
+from flask_restful import Resource, abort, marshal_with, reqparse
 
 import services
 from configs import dify_config
+from constants.common import DEFAULT_PASSWORD
 from controllers.common.errors import ParameterValidationError
 from controllers.console import api
 from controllers.console.error import WorkspaceMembersLimitExceeded
@@ -14,13 +15,12 @@ from controllers.console.wraps import (
     setup_required,
 )
 from extensions.ext_database import db
-from fields.member_fields import account_with_role_list_fields, account_with_role_fields, account_with_role_field
+from fields.member_fields import account_with_role_field, account_with_role_list_fields
 from libs.login import login_required
-from models.account import Account, TenantAccountRole, AccountStatus
-from services.account_service import RegisterService, TenantService, AccountService
+from models.account import Account, AccountStatus, TenantAccountRole
+from services.account_service import AccountService, RegisterService, TenantService
 from services.errors.account import AccountAlreadyInTenantError
 from services.feature_service import FeatureService
-from constants.common import DEFAULT_PASSWORD
 
 
 class MemberListApi(Resource):

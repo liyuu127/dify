@@ -1,12 +1,12 @@
 import uuid
 from typing import cast
 
+from flask import request
 from flask_login import current_user
 from flask_restful import Resource, inputs, marshal, marshal_with, reqparse
 from sqlalchemy import select
 from sqlalchemy.orm import Session
-from werkzeug.exceptions import BadRequest, Forbidden, abort, NotFound
-from flask import request
+from werkzeug.exceptions import BadRequest, Forbidden, NotFound, abort
 
 from controllers.console import api
 from controllers.console.app.wraps import get_app_model
@@ -23,7 +23,7 @@ from libs.login import login_required
 from models import Account, App
 from models.model import AppPermissionEnum
 from services.app_dsl_service import AppDslService, ImportMode
-from services.app_service import AppService, AppPermissionService
+from services.app_service import AppPermissionService, AppService
 from services.enterprise.enterprise_service import EnterpriseService
 from services.feature_service import FeatureService
 

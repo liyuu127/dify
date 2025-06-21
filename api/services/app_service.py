@@ -18,7 +18,7 @@ from core.tools.utils.configuration import ToolParameterConfigurationManager
 from events.app_event import app_was_created
 from extensions.ext_database import db
 from models.account import Account, TenantAccountRole
-from models.model import App, AppMode, AppModelConfig, Site, AppPermissionEnum, AppPermission
+from models.model import App, AppMode, AppModelConfig, AppPermission, AppPermissionEnum, Site
 from models.tools import ApiToolProvider
 from services.enterprise.enterprise_service import EnterpriseService
 from services.errors.account import NoPermissionError
