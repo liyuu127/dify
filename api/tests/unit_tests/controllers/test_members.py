@@ -1,9 +1,7 @@
-import pytest
-from flask import json
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
+import pytest
 from api.controllers.console.workspace.members import MemberCreatApi
-from models.account import AccountStatus
 
 
 # 模拟成功创建的响应

@@ -104,7 +104,6 @@ app_partial_fields = {
     "author_name": fields.String,
 }
 
-
 app_pagination_fields = {
     "page": fields.Integer,
     "limit": fields.Integer(attribute="per_page"),
@@ -181,8 +180,9 @@ app_detail_fields_with_site = {
     "updated_at": TimestampField,
     "deleted_tools": fields.List(fields.Nested(deleted_tool_fields)),
     "access_mode": fields.String,
+    "permission": fields.String,
+    "partial_member_list": fields.List(fields.String)
 }
-
 
 app_site_fields = {
     "app_id": fields.String,
