@@ -40,14 +40,14 @@ const labelClass = `
 
 const getKey = (pageIndex: number, previousPageData: DataSetListResponse) => {
   if (!pageIndex || previousPageData.has_more) {
- return {
- url: 'datasets',
-params: {
- page: pageIndex + 1,
-limit: 30,
-},
-}
-}
+    return {
+      url: 'datasets',
+      params: {
+        page: pageIndex + 1,
+        limit: 30,
+      },
+    }
+  }
   return null
 }
 
@@ -86,9 +86,9 @@ const Form = () => {
 
   const getMembers = async () => {
     const { accounts } = await fetchMembers({
- url: '/workspaces/current/members',
-params: {},
-})
+      url: '/workspaces/current/members',
+      params: {},
+    })
     if (!accounts)
       setMemberList([])
     else
@@ -96,10 +96,10 @@ params: {},
   }
 
   const handleSettingsChange = (data: {
- top_k?: number;
-score_threshold?: number;
-score_threshold_enabled?: boolean
-}) => {
+    top_k?: number;
+    score_threshold?: number;
+    score_threshold_enabled?: boolean
+  }) => {
     if (data.top_k !== undefined)
       setTopK(data.top_k)
     if (data.score_threshold !== undefined)
@@ -117,9 +117,9 @@ score_threshold_enabled?: boolean
       return
     if (!name?.trim()) {
       notify({
- type: 'error',
-message: t('datasetSettings.form.nameError'),
-})
+        type: 'error',
+        message: t('datasetSettings.form.nameError'),
+      })
       return
     }
     if (
@@ -130,9 +130,9 @@ message: t('datasetSettings.form.nameError'),
       })
     ) {
       notify({
- type: 'error',
-message: t('appDebug.datasetConfig.rerankModelRequired'),
-})
+        type: 'error',
+        message: t('appDebug.datasetConfig.rerankModelRequired'),
+      })
       return
     }
     if (retrievalConfig.weights) {
@@ -175,9 +175,9 @@ message: t('appDebug.datasetConfig.rerankModelRequired'),
       }
       await updateDatasetSetting(requestParams)
       notify({
- type: 'success',
-message: t('common.actionMsg.modifiedSuccessfully'),
-})
+        type: 'success',
+        message: t('common.actionMsg.modifiedSuccessfully'),
+      })
       if (mutateDatasets) {
         await mutateDatasets()
         mutate(unstable_serialize(getKey))
@@ -185,15 +185,14 @@ message: t('common.actionMsg.modifiedSuccessfully'),
     }
     catch {
       notify({
- type: 'error',
-message: t('common.actionMsg.modifiedUnsuccessfully'),
-})
+        type: 'error',
+        message: t('common.actionMsg.modifiedUnsuccessfully'),
+      })
     }
     finally {
       setLoading(false)
     }
   }
-
   return (
     <div className='flex w-full flex-col gap-y-4 px-14 py-8 sm:w-[880px]'>
       <div className={rowClass}>

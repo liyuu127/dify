@@ -61,6 +61,7 @@ const PermissionSelector = ({ disabled, permission, value, memberList, onChange,
     return memberList.filter(member => (member.name.includes(searchKeywords) || member.email.includes(searchKeywords)) && member.id !== userProfile.id && ['owner', 'admin', 'editor', 'dataset_operator'].includes(member.role))
   }, [memberList, searchKeywords, userProfile])
 
+  // console.log(filteredMemberList, '11111111111111111111111111111111')
   const isOnlyMe = permission === DatasetPermission.onlyMe
   const isAllTeamMembers = permission === DatasetPermission.allTeamMembers
   const isPartialMembers = permission === DatasetPermission.partialMembers
