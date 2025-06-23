@@ -149,6 +149,7 @@ message: t('app.newApp.appCreateFailed'),
                     icon={<div className='flex h-6 w-6 items-center justify-center rounded-md bg-AI-components-icon-bg-indigo-solid'>
                       {/* <Logic className='h-4 w-4 text-components-avatar-shape-fill-stop-100' /> */}
                       <Agent className='h-4 w-4 text-components-avatar-shape-fill-stop-100' />
+
                     </div>}
                     onClick={() => {
                       setAppMode('agent-chat')
