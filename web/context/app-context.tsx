@@ -158,7 +158,7 @@ current_env,
     }}>
       <div className='flex h-full flex-col overflow-y-auto'>
         {globalThis.document?.body?.getAttribute('data-public-maintenance-notice') && <MaintenanceNotice />}
-        <div ref={pageContainerRef} className='relative flex grow flex-col overflow-y-auto overflow-x-hidden bg-AI-background-body'>
+        <div ref={pageContainerRef} className='bg-AI-background-body relative flex grow flex-col overflow-y-auto overflow-x-hidden'>
           {children}
         </div>
       </div>
