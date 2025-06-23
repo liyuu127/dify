@@ -8,6 +8,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 from werkzeug.exceptions import BadRequest, Forbidden, NotFound, abort
 
+import services
 from controllers.console import api
 from controllers.console.app.wraps import get_app_model
 from controllers.console.wraps import (
@@ -129,6 +130,14 @@ class AppApi(Resource):
 
         app_model = app_service.get_app(app_model)
 
+        if app_model is None:
+            raise NotFound("App not found.")
+
+        try:
+            AppService.check_app_permission(app_model, current_user)
+        except services.errors.account.NoPermissionError as e:
+            raise Forbidden(str(e))
+
         if FeatureService.get_system_features().webapp_auth.enabled:
             app_setting = EnterpriseService.WebAppAuth.get_app_access_mode_by_id(app_id=str(app_model.id))
             app_model.access_mode = app_setting.access_mode
@@ -149,6 +158,10 @@ class AppApi(Resource):
         app = AppService.get_app_by_id(app_id)
         if app is None:
             raise NotFound("App not found.")
+        try:
+            AppService.check_app_operator_permission(current_user,app_model)
+        except services.errors.account.NoPermissionError as e:
+            raise Forbidden(str(e))
 
         parser = reqparse.RequestParser()
         parser.add_argument("name", type=str, required=True, nullable=False, location="json")

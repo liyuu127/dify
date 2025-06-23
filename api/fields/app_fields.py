@@ -102,6 +102,7 @@ app_partial_fields = {
     "access_mode": fields.String,
     "create_user_name": fields.String,
     "author_name": fields.String,
+    "permission": fields.String,
 }
 
 app_pagination_fields = {
