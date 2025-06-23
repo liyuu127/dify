@@ -159,7 +159,7 @@ class AppApi(Resource):
         if app is None:
             raise NotFound("App not found.")
         try:
-            AppService.check_app_operator_permission(current_user,app_model)
+            AppService.check_app_operator_permission(current_user, app_model)
         except services.errors.account.NoPermissionError as e:
             raise Forbidden(str(e))
 
@@ -182,25 +182,25 @@ class AppApi(Resource):
         args = parser.parse_args()
         data = request.get_json()
 
-        # The role of the current user in the ta table must be admin, owner, editor, or dataset_operator
-        AppPermissionService.check_permission(
-            current_user, app, data.get("permission"), data.get("partial_member_list")
-        )
-
         app_service = AppService()
         app_model = app_service.update_app(app_model, args)
 
-        tenant_id = current_user.current_tenant_id
-        if data.get("partial_member_list") and data.get("permission") == "partial_members":
-            AppPermissionService.update_partial_member_list(
-                tenant_id, app_id, data.get("partial_member_list")
+        if data.get("permission"):
+            # The role of the current user in the ta table must be admin, owner, editor, or dataset_operator
+            AppPermissionService.check_permission(
+                current_user, app, data.get("permission"), data.get("partial_member_list")
             )
-        # clear partial member list when permission is only_me or all_team_members
-        elif (
-            data.get("permission") == AppPermissionService.ONLY_ME
-            or data.get("permission") == AppPermissionService.ALL_TEAM
-        ):
-            AppPermissionService.clear_partial_member_list(app_id)
+            tenant_id = current_user.current_tenant_id
+            if data.get("partial_member_list") and data.get("permission") == "partial_members":
+                AppPermissionService.update_partial_member_list(
+                    tenant_id, app_id, data.get("partial_member_list")
+                )
+            # clear partial member list when permission is only_me or all_team_members
+            elif (
+                data.get("permission") == AppPermissionService.ONLY_ME
+                or data.get("permission") == AppPermissionService.ALL_TEAM
+            ):
+                AppPermissionService.clear_partial_member_list(app_id)
 
         return app_model
 
