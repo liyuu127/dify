@@ -436,6 +436,45 @@ class AppService:
         return dataset
 
 
+    @staticmethod
+    def check_app_permission(app, user):
+        if app.tenant_id != user.current_tenant_id:
+            logging.debug(f"User {user.id} does not have permission to access app {app.id}")
+            raise NoPermissionError("You do not have permission to access this app.")
+        if user.current_role != TenantAccountRole.OWNER:
+            if app.permission == AppPermissionEnum.ONLY_ME and app.created_by != user.id:
+                logging.debug(f"User {user.id} does not have permission to access dataset {app.id}")
+                raise NoPermissionError("You do not have permission to access this dataset.")
+            if app.permission == AppPermissionEnum.PARTIAL_TEAM:
+                # For partial team permission, user needs explicit permission or be the creator
+                if app.created_by != user.id:
+                    user_permission = (
+                        db.session.query(AppPermissionEnum).filter_by(app_id=app.id, account_id=user.id).first()
+                    )
+                    if not user_permission:
+                        logging.debug(f"User {user.id} does not have permission to access app {app.id}")
+                        raise NoPermissionError("You do not have permission to access this app.")
+
+    @staticmethod
+    def check_app_operator_permission(user: Optional[Account] = None, app: Optional[App] = None):
+        if not app:
+            raise ValueError("App not found")
+
+        if not user:
+            raise ValueError("User not found")
+
+        if user.current_role != TenantAccountRole.OWNER:
+            if app.permission == AppPermissionEnum.ONLY_ME:
+                if app.created_by != user.id:
+                    raise NoPermissionError("You do not have permission to access this app.")
+
+            elif app.permission == AppPermissionEnum.PARTIAL_TEAM:
+                if not any(
+                    dp.app_id == app.id
+                    for dp in db.session.query(AppPermissionEnum).filter_by(account_id=user.id).all()
+                ):
+                    raise NoPermissionError("You do not have permission to access this app.")
+
 class AppPermissionService:
     @classmethod
     def get_app_partial_member_list(cls, app_id):
@@ -474,13 +513,13 @@ class AppPermissionService:
 
     @classmethod
     def check_permission(cls, user, app, requested_permission, requested_partial_member_list):
-        if not user.is_app_editor:
+        if not user.is_dataset_editor:
             raise NoPermissionError("User does not have permission to edit this app.")
 
-        if user.is_app_operator and app.permission != requested_permission:
+        if user.is_dataset_operator and app.permission != requested_permission:
             raise NoPermissionError("App operators cannot change the app permissions.")
 
-        if user.is_app_operator and requested_permission == "partial_members":
+        if user.is_dataset_operator and requested_permission == "partial_members":
             if not requested_partial_member_list:
                 raise ValueError("Partial member list is required when setting to partial members.")
 
