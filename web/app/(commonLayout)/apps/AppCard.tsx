@@ -66,9 +66,9 @@ const AppCard = ({ app, onRefresh }: AppCardProps) => {
     try {
       await deleteApp(app.id)
       notify({
- type: 'success',
-message: t('app.appDeleted'),
-})
+        type: 'success',
+        message: t('app.appDeleted'),
+      })
       if (onRefresh)
         onRefresh()
       mutateApps()
@@ -112,9 +112,9 @@ message: t('app.appDeleted'),
     }
     catch {
       notify({
- type: 'error',
-message: t('app.editFailed'),
-})
+        type: 'error',
+        message: t('app.editFailed'),
+      })
     }
   }, [app.id, mutateApps, notify, onRefresh, t])
 
@@ -142,9 +142,9 @@ message: t('app.editFailed'),
     }
     catch {
       notify({
- type: 'error',
-message: t('app.newApp.appCreateFailed'),
-})
+        type: 'error',
+        message: t('app.newApp.appCreateFailed'),
+      })
     }
   }
 
@@ -162,9 +162,9 @@ message: t('app.newApp.appCreateFailed'),
     }
     catch {
       notify({
- type: 'error',
-message: t('app.exportFailed'),
-})
+        type: 'error',
+        message: t('app.exportFailed'),
+      })
     }
   }
 
@@ -184,9 +184,9 @@ message: t('app.exportFailed'),
     }
     catch {
       notify({
- type: 'error',
-message: t('app.exportFailed'),
-})
+        type: 'error',
+        message: t('app.exportFailed'),
+      })
     }
   }
 
@@ -257,9 +257,9 @@ message: t('app.exportFailed'),
       }
       catch (e: any) {
         Toast.notify({
- type: 'error',
-message: `${e.message || e}`,
-})
+          type: 'error',
+          message: `${e.message || e}`,
+        })
       }
     }
     return (

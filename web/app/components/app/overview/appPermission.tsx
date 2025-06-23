@@ -1,6 +1,5 @@
 'use client'
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { usePathname, useRouter } from 'next/navigation'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   RiEqualizer2Line,
@@ -10,16 +9,22 @@ import {
 } from '@remixicon/react'
 import type { ConfigParams } from './settings'
 import AppBasic from '@/app/components/app-sidebar/basic'
-import { asyncRunSafe } from '@/utils'
-import { basePath } from '@/utils/var'
 import { useStore as useAppStore } from '@/app/components/app/store'
 import type { AppDetailResponse } from '@/models/app'
 import { useAppContext } from '@/context/app-context'
 import type { AppSSO } from '@/types/app'
-import { fetchAppDetail } from '@/service/apps'
 import { AccessMode } from '@/models/access-control'
 import { useAppWhiteListSubjects } from '@/service/access-control'
 import { useGlobalPublicStore } from '@/context/global-public-context'
+import DatasetDetailContext from '@/context/dataset-detail'
+import { useContext } from 'use-context-selector'
+import type { Member } from '@/models/common'
+import { fetchMembers } from '@/service/common'
+import { useMount } from 'ahooks'
+import Button from '@/app/components/base/button'
+import { DatasetPermission } from '@/models/datasets'
+// 引入组件
+import PermissionSelector from '@/app/components/datasets/settings/permission-selector'
 
 export type IAppCardProps = {
   className?: string
@@ -42,103 +47,78 @@ function AppPermission({
   onGenerateCode,
   className,
 }: IAppCardProps) {
-  const router = useRouter()
-  const pathname = usePathname()
+  // const router = useRouter()
+  // const pathname = usePathname()
   const { isCurrentWorkspaceManager, isCurrentWorkspaceEditor } = useAppContext()
   const appDetail = useAppStore(state => state.appDetail)
   const setAppDetail = useAppStore(state => state.setAppDetail)
-  const [showSettingsModal, setShowSettingsModal] = useState(false)
-  const [showEmbedded, setShowEmbedded] = useState(false)
-  const [showCustomizeModal, setShowCustomizeModal] = useState(false)
-  const [genLoading, setGenLoading] = useState(false)
-  const [showConfirmDelete, setShowConfirmDelete] = useState(false)
-  const [showAccessControl, setShowAccessControl] = useState<boolean>(false)
+  // const [showSettingsModal, setShowSettingsModal] = useState(false)
+  // const [showEmbedded, setShowEmbedded] = useState(false)
+  // const [showCustomizeModal, setShowCustomizeModal] = useState(false)
+  // const [genLoading, setGenLoading] = useState(false)
+  // const [showConfirmDelete, setShowConfirmDelete] = useState(false)
+  // const [showAccessControl, setShowAccessControl] = useState<boolean>(false)
+  const { dataset: currentDataset, mutateDatasetRes: mutateDatasets } = useContext(DatasetDetailContext)
+  const [selectedMemberIDs, setSelectedMemberIDs] = useState<string[]>(currentDataset?.partial_member_list || [])
   const { t } = useTranslation()
   const systemFeatures = useGlobalPublicStore(s => s.systemFeatures)
   const { data: appAccessSubjects } = useAppWhiteListSubjects(appDetail?.id, systemFeatures.webapp_auth.enabled && appDetail?.access_mode === AccessMode.SPECIFIC_GROUPS_MEMBERS)
-
+  // const { isCurrentWorkspaceDatasetOperator } = useAppContext()
+  const [permission, setPermission] = useState(currentDataset?.permission || DatasetPermission.onlyMe)
+  const [memberList, setMemberList] = useState<Member[]>([])
+  const getMembers = async () => {
+    const { accounts } = await fetchMembers({
+      url: '/workspaces/current/members',
+      params: {},
+    })
+    if (!accounts)
+      setMemberList([])
+    else
+      setMemberList(accounts)
+  }
   const OPERATIONS_MAP = useMemo(() => {
     const operationsMap = {
       webapp: [
         {
- opName: t('appOverview.overview.appInfo.launch'),
-opIcon: RiExternalLinkLine,
-},
+          opName: t('appOverview.overview.appInfo.launch'),
+          opIcon: RiExternalLinkLine,
+        },
       ] as {
- opName: string;
-opIcon: any
-}[],
+        opName: string;
+        opIcon: any
+      }[],
       // 注释掉API访问，因为不需要
       // api: [{ opName: t('appOverview.overview.apiInfo.doc'), opIcon: RiBookOpenLine }],
       api: [],
       app: [],
     }
     if (appInfo.mode !== 'completion' && appInfo.mode !== 'workflow') {
- operationsMap.webapp.push({
- opName: t('appOverview.overview.appInfo.embedded.entry'),
-opIcon: RiWindowLine,
-})
-}
+      operationsMap.webapp.push({
+        opName: t('appOverview.overview.appInfo.embedded.entry'),
+        opIcon: RiWindowLine,
+      })
+    }
 
     operationsMap.webapp.push({
- opName: t('appOverview.overview.appInfo.customize.entry'),
-opIcon: RiPaintBrushLine,
-})
+      opName: t('appOverview.overview.appInfo.customize.entry'),
+      opIcon: RiPaintBrushLine,
+    })
 
     if (isCurrentWorkspaceEditor) {
- operationsMap.webapp.push({
- opName: t('appOverview.overview.appInfo.settings.entry'),
-opIcon: RiEqualizer2Line,
-})
-}
+      operationsMap.webapp.push({
+        opName: t('appOverview.overview.appInfo.settings.entry'),
+        opIcon: RiEqualizer2Line,
+      })
+    }
 
     return operationsMap
   }, [isCurrentWorkspaceEditor, appInfo, t])
 
   const isApp = cardType === 'webapp'
   const basicName = t('appOverview.overview.permission.title')
-  const toggleDisabled = isApp ? !isCurrentWorkspaceEditor : !isCurrentWorkspaceManager
-  const runningStatus = isApp ? appInfo.enable_site : appInfo.enable_api
-  const { app_base_url, access_token } = appInfo.site ?? {}
-  const appMode = (appInfo.mode !== 'completion' && appInfo.mode !== 'workflow') ? 'chat' : appInfo.mode
-  const appUrl = `${app_base_url}${basePath}/${appMode}/${access_token}`
-  const apiUrl = appInfo?.api_base_url
-
-  const genClickFuncByName = (opName: string) => {
-    switch (opName) {
-      case t('appOverview.overview.appInfo.launch'):
-        return () => {
-          window.open(appUrl, '_blank')
-        }
-      case t('appOverview.overview.appInfo.customize.entry'):
-        return () => {
-          setShowCustomizeModal(true)
-        }
-      case t('appOverview.overview.appInfo.settings.entry'):
-        return () => {
-          setShowSettingsModal(true)
-        }
-      case t('appOverview.overview.appInfo.embedded.entry'):
-        return () => {
-          setShowEmbedded(true)
-        }
-      default:
-        // jump to page develop
-        return () => {
-          const pathSegments = pathname.split('/')
-          pathSegments.pop()
-          router.push(`${pathSegments.join('/')}/develop`)
-        }
-    }
-  }
-
-  const onGenCode = async () => {
-    if (onGenerateCode) {
-      setGenLoading(true)
-      await asyncRunSafe(onGenerateCode())
-      setGenLoading(false)
-    }
-  }
+  useMount(() => {
+    getMembers()
+  })
 
   const [isAppAccessSet, setIsAppAccessSet] = useState(true)
   useEffect(() => {
@@ -152,22 +132,7 @@ opIcon: RiEqualizer2Line,
       setIsAppAccessSet(true)
     }
   }, [appAccessSubjects, appDetail])
-
-  const handleClickAccessControl = useCallback(() => {
-    if (!appDetail)
-      return
-    setShowAccessControl(true)
-  }, [appDetail])
-  const handleAccessControlUpdate = useCallback(() => {
-    fetchAppDetail({
- url: '/apps',
-id: appDetail!.id,
-}).then((res) => {
-      setAppDetail(res)
-      setShowAccessControl(false)
-    })
-  }, [appDetail, setAppDetail])
-
+  console.log(selectedMemberIDs, '=======================')
   return (
     <div
       className={
@@ -185,15 +150,23 @@ id: appDetail!.id,
                 t('appOverview.overview.permission.explanation')
               }
             />
-            {/* <div className='flex shrink-0 items-center gap-1'>
-              <Indicator color={runningStatus ? 'green' : 'yellow'} />
-              <div className={`${runningStatus ? 'text-text-success' : 'text-text-warning'} system-xs-semibold-uppercase`}>
-                {runningStatus
-                  ? t('appOverview.overview.status.running')
-                  : t('appOverview.overview.status.disable')}
-              </div>
-            </div> */}
-            {/* <Switch defaultValue={runningStatus} onChange={onChangeStatus} disabled={toggleDisabled} /> */}
+            <div>
+              <Button
+                className='min-w-12'
+                variant='primary'
+              >
+                {t('datasetSettings.form.save')}
+              </Button>
+            </div>
+          </div>
+          <div style={{ width: '100%' }}>
+            <PermissionSelector
+              permission={permission}
+              value={selectedMemberIDs}
+              onChange={v => setPermission(v)}
+              onMemberSelect={setSelectedMemberIDs}
+              memberList={memberList}
+            />
           </div>
         </div>
       </div>

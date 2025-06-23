@@ -4,13 +4,13 @@ import AppAiIcon from '../base/app-AI-icon'
 import Tooltip from '@/app/components/base/tooltip'
 
 export type IAppBasicProps = {
-  iconType?: 'app' | 'api' | 'dataset' | 'webapp' | 'notion'
   icon?: string
   icon_background?: string | null
   isExternal?: boolean
   name: string
   type: string | React.ReactNode
   hoverTip?: string
+  iconType?: 'api' | 'webapp' | 'app' | 'dataset' | 'notion' | 'PermissionSvg'
   textStyle?: {
  main?: string;
 extra?: string
@@ -70,7 +70,7 @@ export default function AppBasic({ icon, icon_background, name, isExternal, type
       )}
       {iconType !== 'app'
         && <div className='mr-3 shrink-0'>
-          {ICON_MAP[iconType]}
+          {ICON_MAP[iconType as keyof typeof ICON_MAP]}
         </div>
 
       }
