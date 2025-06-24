@@ -31,7 +31,6 @@ const CardView: FC<ICardViewProps> = ({ appId, isInPanel, className }) => {
   const { notify } = useContext(ToastContext)
   const appDetail = useAppStore(state => state.appDetail)
   const setAppDetail = useAppStore(state => state.setAppDetail)
-
   const updateAppDetail = async () => {
     try {
       const res = await fetchAppDetail({
