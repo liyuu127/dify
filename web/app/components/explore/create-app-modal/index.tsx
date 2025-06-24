@@ -58,18 +58,17 @@ const CreateAppModal = ({
   const [appIcon, setAppIcon] = useState(
     () => !appIconType ? { type: '' }
       : appIconType === 'image'
-      ? {
- type: 'image' as const,
-fileId: _appIcon,
-url: appIconUrl,
-}
-      : {
- type: 'emoji' as const,
-icon: _appIcon,
-background: appIconBackground,
-},
+        ? {
+          type: 'image' as const,
+          fileId: _appIcon,
+          url: appIconUrl,
+        }
+        : {
+          type: 'emoji' as const,
+          icon: _appIcon,
+          background: appIconBackground,
+        },
   )
-  console.log(appIconType, '==============')
   const [showAppIconPicker, setShowAppIconPicker] = useState(false)
   const [description, setDescription] = useState(appDescription || '')
   const [useIconAsAnswerIcon, setUseIconAsAnswerIcon] = useState(appUseIconAsAnswerIcon || false)
@@ -80,9 +79,9 @@ background: appIconBackground,
   const submit = useCallback(() => {
     if (!name.trim()) {
       Toast.notify({
- type: 'error',
-message: t('explore.appCustomize.nameRequired'),
-})
+        type: 'error',
+        message: t('explore.appCustomize.nameRequired'),
+      })
       return
     }
     onConfirm({
@@ -196,15 +195,15 @@ message: t('explore.appCustomize.nameRequired'),
         onClose={() => {
           setAppIcon(appIconType === 'image'
             ? {
- type: 'image' as const,
-url: appIconUrl,
-fileId: _appIcon,
-}
+              type: 'image' as const,
+              url: appIconUrl,
+              fileId: _appIcon,
+            }
             : {
- type: 'emoji' as const,
-icon: _appIcon,
-background: appIconBackground,
-})
+              type: 'emoji' as const,
+              icon: _appIcon,
+              background: appIconBackground,
+            })
           setShowAppIconPicker(false)
         }}
       />}

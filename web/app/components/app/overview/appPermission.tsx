@@ -13,6 +13,7 @@ import { useStore as useAppStore } from '@/app/components/app/store'
 import type { AppDetailResponse } from '@/models/app'
 import { useAppContext } from '@/context/app-context'
 import type { AppSSO } from '@/types/app'
+import { updateAppInfo } from '@/service/apps'
 import { AccessMode } from '@/models/access-control'
 import { useAppWhiteListSubjects } from '@/service/access-control'
 import { useGlobalPublicStore } from '@/context/global-public-context'
@@ -132,7 +133,19 @@ function AppPermission({
       setIsAppAccessSet(true)
     }
   }, [appAccessSubjects, appDetail])
-  console.log(selectedMemberIDs, '=======================')
+  // 保存权限
+  const handleSave = async () => {
+    console.log(selectedMemberIDs, permission, appInfo, '=======================')
+    const res = await updateAppInfo({
+        appID: appInfo.id,
+        name: appInfo.name,
+        icon_type: appInfo.icon_type,
+        icon: appInfo.icon,
+        description: appInfo.description,
+        use_icon_as_answer_icon: appInfo.use_icon_as_answer_icon,
+      })
+      console.log(res, '----------------------')
+  }
   return (
     <div
       className={
@@ -154,6 +167,7 @@ function AppPermission({
               <Button
                 className='min-w-12'
                 variant='primary'
+                onClick={handleSave}
               >
                 {t('datasetSettings.form.save')}
               </Button>
