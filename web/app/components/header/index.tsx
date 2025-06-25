@@ -2,11 +2,11 @@
 import { useCallback, useEffect } from 'react'
 import { useBoolean } from 'ahooks'
 import { useSelectedLayoutSegment } from 'next/navigation'
-import AccountDropdown from './account-dropdown'
 import AppNav from './app-nav'
 import DatasetNav from './dataset-nav'
 import { useAppContext } from '@/context/app-context'
 import AILogo from '@/app/components/base/logo/AI-logo'
+import SwitchPlatform from '@/app/components/base/logo/SwitchPlatform'
 import useBreakpoints, { MediaType } from '@/hooks/use-breakpoints'
 import { useProviderContext } from '@/context/provider-context'
 import { useModalContext } from '@/context/modal-context'
@@ -37,6 +37,8 @@ const Header = () => {
   }, [isFreePlan, setShowAccountSettingModal, setShowPricingModal])
 
   const switchPlatform = () => {
+    // 跳转到外部链接
+    // window.open('https://www.baidu.com', '_blank')
     console.log('点击了===============')
   }
   useEffect(() => {
@@ -103,14 +105,17 @@ const Header = () => {
       {/* 注释掉环境变量和插件，因为这两个功能暂时不需要 */}
       <div className='flex shrink-0 items-center pr-3'>
         {/* <EnvNav /> */}
-        <div className='mr-2'>
-          {/* <PluginsNav /> */}
-        </div>
-        <AccountDropdown />
-        {/* 点击切换平台 */}
-        {/* <div onClick={switchPlatform}>
-          应用平台
+        {/* <div className='mr-2'>
+          <PluginsNav />
         </div> */}
+        {/* <AccountDropdown /> */}
+        {/* 点击切换平台 */}
+        <div className='mr-6 flex cursor-pointer items-center font-semibold text-AI-text-secondary' onClick={switchPlatform}>
+          <SwitchPlatform size='small' className='mr-2'/>
+          <div className='text-AI-text-secondary'>
+            应用平台
+          </div>
+        </div>
       </div>
       {/* 注释掉探索和工具栏，因为这两个功能暂时不需要 */}
       {

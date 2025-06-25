@@ -15,6 +15,7 @@ import { useAppContext } from '@/context/app-context'
 import type { AppSSO } from '@/types/app'
 import { updateAppInfo } from '@/service/apps'
 import { AccessMode } from '@/models/access-control'
+import { ToastContext } from '@/app/components/base/toast'
 import { useAppWhiteListSubjects } from '@/service/access-control'
 import { useGlobalPublicStore } from '@/context/global-public-context'
 import DatasetDetailContext from '@/context/dataset-detail'
@@ -48,24 +49,18 @@ function AppPermission({
   onGenerateCode,
   className,
 }: IAppCardProps) {
-  // const router = useRouter()
-  // const pathname = usePathname()
+  const { notify } = useContext(ToastContext)
   const { isCurrentWorkspaceManager, isCurrentWorkspaceEditor } = useAppContext()
   const appDetail = useAppStore(state => state.appDetail)
   const setAppDetail = useAppStore(state => state.setAppDetail)
-  // const [showSettingsModal, setShowSettingsModal] = useState(false)
-  // const [showEmbedded, setShowEmbedded] = useState(false)
-  // const [showCustomizeModal, setShowCustomizeModal] = useState(false)
-  // const [genLoading, setGenLoading] = useState(false)
-  // const [showConfirmDelete, setShowConfirmDelete] = useState(false)
-  // const [showAccessControl, setShowAccessControl] = useState<boolean>(false)
+  const [loading, setLoading] = useState(false)
   const { dataset: currentDataset, mutateDatasetRes: mutateDatasets } = useContext(DatasetDetailContext)
-  const [selectedMemberIDs, setSelectedMemberIDs] = useState<string[]>(currentDataset?.partial_member_list || [])
+  const [selectedMemberIDs, setSelectedMemberIDs] = useState<string[]>(appInfo?.partial_member_list || [])
   const { t } = useTranslation()
   const systemFeatures = useGlobalPublicStore(s => s.systemFeatures)
   const { data: appAccessSubjects } = useAppWhiteListSubjects(appDetail?.id, systemFeatures.webapp_auth.enabled && appDetail?.access_mode === AccessMode.SPECIFIC_GROUPS_MEMBERS)
   // const { isCurrentWorkspaceDatasetOperator } = useAppContext()
-  const [permission, setPermission] = useState(currentDataset?.permission || DatasetPermission.onlyMe)
+  const [permission, setPermission] = useState(appInfo?.permission || DatasetPermission.onlyMe)
   const [memberList, setMemberList] = useState<Member[]>([])
   const getMembers = async () => {
     const { accounts } = await fetchMembers({
@@ -135,16 +130,45 @@ function AppPermission({
   }, [appAccessSubjects, appDetail])
   // 保存权限
   const handleSave = async () => {
-    console.log(selectedMemberIDs, permission, appInfo, '=======================')
-    const res = await updateAppInfo({
+    if (loading)
+      return
+    try {
+      setLoading(true)
+      let partial_member_list = null
+      if (permission === DatasetPermission.partialMembers) {
+        partial_member_list = selectedMemberIDs.map((id) => {
+          return {
+            user_id: id,
+            role: memberList.find(member => member.id === id)?.role,
+          }
+        })
+      }
+      // console.log(partial_member_list, 'partial_member_list')
+      await updateAppInfo({
         appID: appInfo.id,
         name: appInfo.name,
         icon_type: appInfo.icon_type,
         icon: appInfo.icon,
+        icon_background: appInfo.icon_background,
         description: appInfo.description,
         use_icon_as_answer_icon: appInfo.use_icon_as_answer_icon,
+        permission,
+        partial_member_list: partial_member_list || null,
       })
-      console.log(res, '----------------------')
+      notify({
+        type: 'success',
+        message: t('common.actionMsg.modifiedSuccessfully'),
+      })
+    }
+    catch {
+      notify({
+        type: 'error',
+        message: t('common.actionMsg.modifiedUnsuccessfully'),
+      })
+    }
+    finally {
+      setLoading(false)
+    }
   }
   return (
     <div

@@ -20,11 +20,13 @@ const SwrInitor = ({
   const searchParams = useSearchParams()
   const consoleToken = decodeURIComponent(searchParams.get('access_token') || '')
   const refreshToken = decodeURIComponent(searchParams.get('refresh_token') || '')
+  // 应用平台登录token
+  const appPlatformConsoleToken = decodeURIComponent(searchParams.get('app_platform_console_token') || '')
   const consoleTokenFromLocalStorage = localStorage?.getItem('console_token')
   const refreshTokenFromLocalStorage = localStorage?.getItem('refresh_token')
   const pathname = usePathname()
   const [init, setInit] = useState(false)
-
+  console.log(appPlatformConsoleToken, 'appPlatformConsoleToken')
   const isSetupFinished = useCallback(async () => {
     try {
       if (localStorage.getItem('setup_status') === 'finished')
@@ -42,7 +44,7 @@ const SwrInitor = ({
       return false
     }
   }, [])
-
+  // console.log(process.env.NEXT_APPLICATION_PLATFORM, '============')
   useEffect(() => {
     (async () => {
       const action = searchParams.get('action')
