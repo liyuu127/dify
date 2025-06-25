@@ -443,13 +443,13 @@ class AppService:
             raise NoPermissionError("You do not have permission to access this app.")
         if user.current_role != TenantAccountRole.OWNER:
             if app.permission == AppPermissionEnum.ONLY_ME and app.created_by != user.id:
-                logging.debug(f"User {user.id} does not have permission to access dataset {app.id}")
-                raise NoPermissionError("You do not have permission to access this dataset.")
+                logging.debug(f"User {user.id} does not have permission to access app {app.id}")
+                raise NoPermissionError("You do not have permission to access this app.")
             if app.permission == AppPermissionEnum.PARTIAL_TEAM:
                 # For partial team permission, user needs explicit permission or be the creator
                 if app.created_by != user.id:
                     user_permission = (
-                        db.session.query(AppPermissionEnum).filter_by(app_id=app.id, account_id=user.id).first()
+                        db.session.query(AppPermission).filter_by(app_id=app.id, account_id=user.id).first()
                     )
                     if not user_permission:
                         logging.debug(f"User {user.id} does not have permission to access app {app.id}")
@@ -471,7 +471,7 @@ class AppService:
             elif app.permission == AppPermissionEnum.PARTIAL_TEAM:
                 if not any(
                     dp.app_id == app.id
-                    for dp in db.session.query(AppPermissionEnum).filter_by(account_id=user.id).all()
+                    for dp in db.session.query(AppPermission).filter_by(account_id=user.id).all()
                 ):
                     raise NoPermissionError("You do not have permission to access this app.")
 
