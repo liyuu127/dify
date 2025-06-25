@@ -197,8 +197,8 @@ class AppApi(Resource):
                 )
             # clear partial member list when permission is only_me or all_team_members
             elif (
-                data.get("permission") == AppPermissionService.ONLY_ME
-                or data.get("permission") == AppPermissionService.ALL_TEAM
+                data.get("permission") == AppPermissionEnum.ONLY_ME
+                or data.get("permission") == AppPermissionEnum.ALL_TEAM
             ):
                 AppPermissionService.clear_partial_member_list(app_id)
 
