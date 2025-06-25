@@ -304,7 +304,7 @@ export type SiteConfig = {
   use_icon_as_answer_icon: boolean
 }
 
-export type AppIconType = 'image' | 'emoji'
+export type AppIconType = 'image' | 'emoji' | any
 
 /**
  * App
@@ -366,6 +366,10 @@ export type App = {
   }
   /** access control */
   access_mode: AccessMode
+  /** permission */
+  permission?: any
+  /** partial_member_list */
+  partial_member_list?: any
 }
 
 export type AppSSO = {
