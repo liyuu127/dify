@@ -41,14 +41,21 @@ const DuplicateAppModal = ({
   onHide,
 }: DuplicateAppModalProps) => {
   const { t } = useTranslation()
-
   const [name, setName] = React.useState(appName)
 
   const [showAppIconPicker, setShowAppIconPicker] = useState(false)
   const [appIcon, setAppIcon] = useState(
     icon_type === 'image'
-      ? { type: 'image' as const, url: icon_url, fileId: icon }
-      : { type: 'emoji' as const, icon, background: icon_background },
+      ? {
+ type: 'image' as const,
+url: icon_url,
+fileId: icon,
+}
+      : icon_type === 'emoji' ? {
+ type: 'emoji' as const,
+icon,
+background: icon_background,
+} : { type: '' },
   )
 
   const { plan, enableBilling } = useProviderContext()
@@ -56,7 +63,10 @@ const DuplicateAppModal = ({
 
   const submit = () => {
     if (!name.trim()) {
-      Toast.notify({ type: 'error', message: t('explore.appCustomize.nameRequired') })
+      Toast.notify({
+ type: 'error',
+message: t('explore.appCustomize.nameRequired'),
+})
       return
     }
     onConfirm({
@@ -111,8 +121,16 @@ const DuplicateAppModal = ({
         }}
         onClose={() => {
           setAppIcon(icon_type === 'image'
-            ? { type: 'image', url: icon_url!, fileId: icon }
-            : { type: 'emoji', icon, background: icon_background! })
+            ? {
+ type: 'image',
+url: icon_url!,
+fileId: icon,
+}
+            : {
+ type: 'emoji',
+icon,
+background: icon_background!,
+})
           setShowAppIconPicker(false)
         }}
       />}

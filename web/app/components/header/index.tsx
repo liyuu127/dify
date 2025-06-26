@@ -12,6 +12,7 @@ import { useProviderContext } from '@/context/provider-context'
 import { useModalContext } from '@/context/modal-context'
 import { Plan } from '../billing/type'
 import { useGlobalPublicStore } from '@/context/global-public-context'
+import { useTranslation } from 'react-i18next'
 
 const navClassName = `
   flex items-center relative mr-0 sm:mr-3 px-3 h-8 rounded-xl
@@ -29,6 +30,7 @@ const Header = () => {
   const { setShowPricingModal, setShowAccountSettingModal } = useModalContext()
   const systemFeatures = useGlobalPublicStore(s => s.systemFeatures)
   const isFreePlan = plan.type === Plan.sandbox
+  const { t } = useTranslation()
   const handlePlanClick = useCallback(() => {
     if (isFreePlan)
       setShowPricingModal()
@@ -38,8 +40,7 @@ const Header = () => {
 
   const switchPlatform = () => {
     // 跳转到外部链接
-    // window.open('https://www.baidu.com', '_blank')
-    console.log('点击了===============')
+    window.location.replace(`${process.env.NEXT_PUBLIC_APPLICATION_PLATFORM}`)
   }
   useEffect(() => {
     hideNavMenu()
@@ -113,7 +114,7 @@ const Header = () => {
         <div className='mr-6 flex cursor-pointer items-center font-semibold text-AI-text-secondary' onClick={switchPlatform}>
           <SwitchPlatform size='small' className='mr-2'/>
           <div className='text-AI-text-secondary'>
-            应用平台
+            {t('app.switchPlatform')}
           </div>
         </div>
       </div>

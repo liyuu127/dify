@@ -236,6 +236,7 @@ const translation = {
     notSetDesc: '当前任何人都无法访问 Web 应用。请设置访问权限。',
   },
   noAccessPermission: '没有权限访问 web 应用',
+  switchPlatform: '应用平台',
 }
 
 export default translation
