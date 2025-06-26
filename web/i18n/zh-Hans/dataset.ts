@@ -66,7 +66,7 @@ const translation = {
     helper5: '。',
   },
   connectDataset: '连接外部知识库',
-  createDatasetIntro: '导入您自己的文本数据或通过 Webhook 实时写入数据以增强 LLM 的上下文。',
+  createDatasetIntro: '导入您自己的文本数据。',
   deleteDatasetConfirmTitle: '要删除知识库吗？',
   deleteDatasetConfirmContent:
     '删除知识库是不可逆的。用户将无法再访问您的知识库,所有的提示配置和日志将被永久删除。',

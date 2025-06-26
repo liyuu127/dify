@@ -58,8 +58,8 @@ const NavSelector = ({ curNav, navs, createText, isApp, onCreate, onLoadmore }: 
         {({ open }) => (
           <>
             <MenuButton className={cn(
-              'hover:hover:bg-components-main-nav-nav-button-bg-active-hover group inline-flex h-7 w-full items-center justify-center rounded-[10px] pl-2 pr-2.5 text-[14px] font-semibold text-components-main-nav-nav-button-text-active',
-              open && 'bg-components-main-nav-nav-button-bg-active',
+              'hover:hover:bg-components-main-nav-nav-button-bg-active-hover group inline-flex h-7 w-full items-center justify-center rounded-[10px] pl-2 pr-2.5 text-[14px] font-semibold text-AI-components-main-nav-nav-button-text-active',
+              open && 'bg-components-main-nav-nav-button-bg-active text-components-main-nav-nav-button-text-active',
             )}>
               <div className='max-w-[180px] truncate' title={curNav?.name}>{curNav?.name}</div>
               <RiArrowDownSLine
@@ -116,7 +116,8 @@ const NavSelector = ({ curNav, navs, createText, isApp, onCreate, onLoadmore }: 
                   ))
                 }
               </div>
-              {!isApp && isCurrentWorkspaceEditor && (
+              {/* 注释掉创建知识库 */}
+              {/* {!isApp && isCurrentWorkspaceEditor && (
                 <MenuItem as="div" className='w-full p-1'>
                   <div onClick={() => onCreate('')} className={cn(
                     'flex cursor-pointer items-center gap-2 rounded-lg px-3 py-[6px] hover:bg-state-base-hover ',
@@ -127,7 +128,7 @@ const NavSelector = ({ curNav, navs, createText, isApp, onCreate, onLoadmore }: 
                     <div className='grow text-left text-[14px] font-normal text-text-secondary'>{createText}</div>
                   </div>
                 </MenuItem>
-              )}
+              )} */}
               {isApp && isCurrentWorkspaceEditor && (
                 <Menu as="div" className="relative h-full w-full">
                   {({ open }) => (

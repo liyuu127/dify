@@ -26,7 +26,7 @@ const SwrInitor = ({
   const refreshTokenFromLocalStorage = localStorage?.getItem('refresh_token')
   const pathname = usePathname()
   const [init, setInit] = useState(false)
-  console.log(appPlatformConsoleToken, 'appPlatformConsoleToken')
+  // console.log(appPlatformConsoleToken, 'appPlatformConsoleToken')
   const isSetupFinished = useCallback(async () => {
     try {
       if (localStorage.getItem('setup_status') === 'finished')
@@ -44,7 +44,7 @@ const SwrInitor = ({
       return false
     }
   }, [])
-  // console.log(process.env.NEXT_APPLICATION_PLATFORM, '============')
+  // console.log(process.env.NEXT_PUBLIC_APPLICATION_PLATFORM, '============')
   useEffect(() => {
     (async () => {
       const action = searchParams.get('action')

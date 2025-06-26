@@ -17,8 +17,6 @@ import cn from '@/utils/classnames'
 import { useGetLanguage } from '@/context/i18n'
 import type { ListRef } from '@/app/components/workflow/block-selector/market-place-plugin/list'
 import PluginList, { type ListProps } from '@/app/components/workflow/block-selector/market-place-plugin/list'
-import ActionButton from '../../base/action-button'
-import { RiAddLine } from '@remixicon/react'
 import { PluginType } from '../../plugins/types'
 import { useMarketplacePlugins } from '../../plugins/marketplace/hooks'
 import { useGlobalPublicStore } from '@/context/global-public-context'
@@ -125,7 +123,8 @@ const AllTools = ({
           }
         </div>
         <ViewTypeSelect viewType={activeView} onChange={setActiveView} />
-        {supportAddCustomTool && (
+        {/* 注释创建自定义工具 */}
+        {/* {supportAddCustomTool && (
           <div className='flex items-center'>
             <div className='mr-1.5 h-3.5 w-px  bg-divider-regular'></div>
             <ActionButton
@@ -135,7 +134,7 @@ const AllTools = ({
               <RiAddLine className='h-4 w-4' />
             </ActionButton>
           </div>
-        )}
+        )} */}
       </div>
       <div
         ref={wrapElemRef}
