@@ -125,7 +125,7 @@ export function AppTypeIcon({ type, className, wrapperClassName, style }: AppTyp
     </div>
   }
   if (type === 'agent-chat') {
-    return <div style={style} className={cn(wrapperClassNames, 'bg-AI-components-icon-bg-indigo-solid')}>
+    return <div style={style} className={cn(wrapperClassNames, 'bg-components-icon-bg-blue-solid')}>
       {/* <Logic className={iconClassNames} /> */}
       <Agent className={iconClassNames} />
     </div>
@@ -136,7 +136,7 @@ export function AppTypeIcon({ type, className, wrapperClassName, style }: AppTyp
     </div>
   }
   if (type === 'workflow') {
-    return <div style={style} className={cn(wrapperClassNames, 'bg-AI-components-icon-bg-indigo-solid')}>
+    return <div style={style} className={cn(wrapperClassNames, 'bg-components-icon-bg-blue-solid')}>
       {/* <RiExchange2Fill className={iconClassNames} /> */}
       <Workflow className={iconClassNames} />
     </div>
