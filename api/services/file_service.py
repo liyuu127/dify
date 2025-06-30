@@ -2,6 +2,7 @@ import datetime
 import hashlib
 import os
 import uuid
+from pathlib import Path
 from typing import Any, Literal, Union
 
 from flask_login import current_user
@@ -14,6 +15,7 @@ from constants import (
     IMAGE_EXTENSIONS,
     VIDEO_EXTENSIONS,
 )
+from constants.common import DEFAULT_AGENT_ICORN_USED_BY, DEFAULT_AGENT_ICORN_PATH
 from core.file import helpers as file_helpers
 from core.rag.extractor.extract_processor import ExtractProcessor
 from extensions.ext_database import db
@@ -214,3 +216,62 @@ class FileService:
         generator = storage.load(upload_file.key)
 
         return generator, upload_file.mime_type
+
+    @staticmethod
+    def get_app_default_icon():
+        upload_file = db.session.query(UploadFile).filter(UploadFile.used_by == DEFAULT_AGENT_ICORN_USED_BY).first()
+        if not upload_file:
+            if not Path(DEFAULT_AGENT_ICORN_PATH).exists():
+                raise FileNotFoundError(f"文件 {DEFAULT_AGENT_ICORN_PATH} 不存在")
+            filename = Path(DEFAULT_AGENT_ICORN_PATH).name
+            with open(DEFAULT_AGENT_ICORN_PATH, "rb") as f:
+                content = f.read()
+            # 获取 MIME 类型（可以根据扩展名推断）
+            extension = filename.split('.')[-1].lower()
+            mimetype = f"image/{extension}" if extension in IMAGE_EXTENSIONS else "application/octet-stream"
+            # get file size
+            file_size = len(content)
+
+            # check if the file size is exceeded
+            if not FileService.is_file_size_within_limit(extension=extension, file_size=file_size):
+                raise FileTooLargeError
+
+            # generate file key
+            file_uuid = str(uuid.uuid4())
+            current_tenant_id = current_user.current_tenant_id
+
+            file_key = "upload_files/" + (current_tenant_id or "") + "/" + file_uuid + "." + extension
+
+            # save file to storage
+            storage.save(file_key, content)
+
+            # save file to db
+            upload_file = UploadFile(
+                tenant_id=current_tenant_id or "",
+                storage_type=dify_config.STORAGE_TYPE,
+                key=file_key,
+                name=filename,
+                size=file_size,
+                extension=extension,
+                mime_type=mimetype,
+                created_by_role=CreatorUserRole.ACCOUNT,
+                created_by=current_user.id,
+                created_at=datetime.datetime.now(datetime.UTC).replace(tzinfo=None),
+                used=False,
+                used_by=DEFAULT_AGENT_ICORN_USED_BY,
+                used_at=datetime.datetime.now(datetime.UTC).replace(tzinfo=None),
+                hash=hashlib.sha3_256(content).hexdigest(),
+                source_url="",
+            )
+
+            db.session.add(upload_file)
+            db.session.commit()
+
+            if not upload_file.source_url:
+                upload_file.source_url = file_helpers.get_signed_file_url(upload_file_id=upload_file.id)
+                db.session.add(upload_file)
+                db.session.commit()
+
+            return upload_file
+
+        return upload_file

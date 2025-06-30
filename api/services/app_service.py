@@ -23,6 +23,7 @@ from models.tools import ApiToolProvider
 from services.enterprise.enterprise_service import EnterpriseService
 from services.errors.account import NoPermissionError
 from services.feature_service import FeatureService
+from services.file_service import FileService
 from services.tag_service import TagService
 from tasks.remove_app_and_related_data_task import remove_app_and_related_data_task
 
@@ -161,9 +162,16 @@ class AppService:
         app.name = args["name"]
         app.description = args.get("description", "")
         app.mode = args["mode"]
-        app.icon_type = args.get("icon_type", "emoji")
-        app.icon = args["icon"]
-        app.icon_background = args["icon_background"]
+        icon = args.get("icon")
+        if not icon:
+            app.icon_type = "image"
+            default_icon = FileService.get_app_default_icon()
+            app.icon = default_icon.id
+            app.icon_background = args["icon_background"]
+        else:
+            app.icon_type = args.get("icon_type", "emoji")
+            app.icon = args["icon"]
+            app.icon_background = args["icon_background"]
         app.tenant_id = tenant_id
         app.api_rph = args.get("api_rph", 0)
         app.api_rpm = args.get("api_rpm", 0)
@@ -435,7 +443,6 @@ class AppService:
         dataset: Optional[App] = db.session.query(App).filter_by(id=app_id).first()
         return dataset
 
-
     @staticmethod
     def check_app_permission(app, user):
         if app.tenant_id != user.current_tenant_id:
@@ -474,6 +481,7 @@ class AppService:
                     for dp in db.session.query(AppPermission).filter_by(account_id=user.id).all()
                 ):
                     raise NoPermissionError("You do not have permission to access this app.")
+
 
 class AppPermissionService:
     @classmethod
