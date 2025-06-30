@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Literal
 
 from flask import request
@@ -100,3 +101,12 @@ class FileSupportTypeApi(Resource):
     @account_initialization_required
     def get(self):
         return {"allowed_extensions": DOCUMENT_EXTENSIONS}
+
+class FileAppDefaultIcron(Resource):
+    @setup_required
+    @login_required
+    @account_initialization_required
+    @marshal_with(file_fields)
+    def get(self):
+        default_icon = FileService.get_app_default_icon()
+        return default_icon, 201
