@@ -167,7 +167,7 @@ class AppService:
             app.icon_type = "image"
             default_icon = FileService.get_app_default_icon()
             app.icon = default_icon.id
-            app.icon_background = args["icon_background"]
+            # app.icon_background = args["icon_background"]
         else:
             app.icon_type = args.get("icon_type", "emoji")
             app.icon = args["icon"]
