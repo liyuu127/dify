@@ -15,7 +15,7 @@ from constants import (
     IMAGE_EXTENSIONS,
     VIDEO_EXTENSIONS,
 )
-from constants.common import DEFAULT_AGENT_ICORN_USED_BY, DEFAULT_AGENT_ICORN_PATH
+from constants.common import DEFAULT_AGENT_ICORN_PATH, DEFAULT_AGENT_ICORN_USED_BY
 from core.file import helpers as file_helpers
 from core.rag.extractor.extract_processor import ExtractProcessor
 from extensions.ext_database import db
