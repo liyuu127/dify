@@ -109,3 +109,46 @@ class FileAppDefaultIcron(Resource):
     def get(self):
         default_icon = FileService.get_app_default_icon()
         return default_icon, 201
+
+
+class FileAnalysisApi(Resource):
+
+    @setup_required
+    @login_required
+    @account_initialization_required
+    @marshal_with(file_fields)
+    @cloud_edition_billing_resource_check("documents")
+    def post(self):
+        file = request.files["file"]
+        source_str = request.form.get("source")
+        source: Literal["datasets"] | None = "datasets" if source_str == "datasets" else None
+
+        if "file" not in request.files:
+            raise NoFileUploadedError()
+
+        if len(request.files) > 1:
+            raise TooManyFilesError()
+
+        if not file.filename:
+            raise FilenameNotExistsError
+
+        if source == "datasets" and not current_user.is_dataset_editor:
+            raise Forbidden()
+
+        if source not in ("datasets", None):
+            source = None
+        # TODO 调用三方接口解析文件
+        # try:
+        #     upload_file = FileService.upload_file(
+        #         filename=file.filename,
+        #         content=file.read(),
+        #         mimetype=file.mimetype,
+        #         user=current_user,
+        #         source=source,
+        #     )
+        # except services.errors.file.FileTooLargeError as file_too_large_error:
+        #     raise FileTooLargeError(file_too_large_error.description)
+        # except services.errors.file.UnsupportedFileTypeError:
+        #     raise UnsupportedFileTypeError()
+
+        return file, 201
