@@ -155,7 +155,7 @@ const BasePanel: FC<BasePanelProps> = ({
                 )
               }
               <NodePosition nodePosition={position} nodeWidth={width} nodeHeight={height}></NodePosition>
-              <HelpLink nodeType={data.type} />
+              {/* <HelpLink nodeType={data.type} /> */}
               <PanelOperator id={id} data={data} showHelpLink={false} />
               <div className='mx-3 h-3.5 w-[1px] bg-divider-regular' />
               <div
