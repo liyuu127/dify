@@ -7,9 +7,6 @@ WORKDIR /app/api
 ENV UV_VERSION=0.6.14
 ENV UV_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple
 
-
-RUN pip install --no-cache-dir uv==${UV_VERSION}
-
 RUN rm -f /etc/apt/sources.list && \
     rm -rf /etc/apt/sources.list.d/* && \
     echo 'deb https://mirrors.tuna.tsinghua.edu.cn/debian bookworm main contrib non-free non-free-firmware\n\
@@ -31,6 +28,8 @@ RUN mkdir -p /root/.config/pip && \
 index-url = https://pypi.tuna.tsinghua.edu.cn/simple\n\
 [install]\n\
 trusted-host = pypi.tuna.tsinghua.edu.cn' > /root/.config/pip/pip.conf
+
+RUN pip install --no-cache-dir uv==${UV_VERSION}
 
 # Install Python dependencies
 COPY pyproject.toml uv.lock ./
