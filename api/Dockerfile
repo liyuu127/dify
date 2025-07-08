@@ -8,11 +8,13 @@ ENV UV_VERSION=0.6.14
 
 RUN pip install --no-cache-dir uv==${UV_VERSION}
 
-# 创建并写入清华源配置
-RUN echo 'deb https://mirrors.tuna.tsinghua.edu.cn/debian bookworm main contrib non-free non-free-firmware\n\
+RUN rm -f /etc/apt/sources.list && \
+    rm -rf /etc/apt/sources.list.d/* && \
+    echo 'deb https://mirrors.tuna.tsinghua.edu.cn/debian bookworm main contrib non-free non-free-firmware\n\
 deb https://mirrors.tuna.tsinghua.edu.cn/debian bookworm-updates main contrib non-free non-free-firmware\n\
 deb https://mirrors.tuna.tsinghua.edu.cn/debian-security bookworm-security main contrib non-free non-free-firmware\n\
 deb https://mirrors.tuna.tsinghua.edu.cn/debian bookworm-backports main contrib non-free non-free-firmware' > /etc/apt/sources.list
+
 
 FROM base AS packages
 
