@@ -37,6 +37,12 @@ class ConversationListApi(Resource):
     @marshal_with(upload_config_fields)
     def get(self):
         parser = reqparse.RequestParser()
+        parser.add_argument(
+            "session_id",
+            type=str,
+            required=True,
+            location="args"
+        )
         parser.add_argument("last_id", type=uuid_value, location="args")
         parser.add_argument("limit", type=int_range(1, 100), required=False, default=20, location="args")
         parser.add_argument(
