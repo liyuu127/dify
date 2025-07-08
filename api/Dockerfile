@@ -33,6 +33,7 @@ RUN pip install --no-cache-dir uv==${UV_VERSION}
 
 # Install Python dependencies
 COPY pyproject.toml uv.lock ./
+RUN uv lock
 RUN uv sync --locked
 
 # production stage
