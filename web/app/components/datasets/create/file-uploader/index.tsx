@@ -18,17 +18,24 @@ import { LanguagesSupported } from '@/i18n/language'
 import { IS_CE_EDITION } from '@/config'
 import { Theme } from '@/types/app'
 import useTheme from '@/hooks/use-theme'
+import { post } from '@/service/base'
 
 const FILES_NUMBER_LIMIT = 20
 
+// 扩展FileItem类型，添加解析类型属性
+type ExtendedFileItem = FileItem & {
+  parseType?: 'fast' | 'multimodal'
+}
+
 type IFileUploaderProps = {
-  fileList: FileItem[]
+  fileList: ExtendedFileItem[]
   titleClassName?: string
-  prepareFileList: (files: FileItem[]) => void
-  onFileUpdate: (fileItem: FileItem, progress: number, list: FileItem[]) => void
-  onFileListUpdate?: (files: FileItem[]) => void
+  prepareFileList: (files: ExtendedFileItem[]) => void
+  onFileUpdate: (fileItem: ExtendedFileItem, progress: number, list: ExtendedFileItem[]) => void
+  onFileListUpdate?: (files: ExtendedFileItem[]) => void
   onPreview: (file: File) => void
   notSupportBatchUpload?: boolean
+  onParseTypeChange?: (fileID: string, parseType: 'fast' | 'multimodal') => void
 }
 
 const FileUploader = ({
@@ -39,6 +46,7 @@ const FileUploader = ({
   onFileListUpdate,
   onPreview,
   notSupportBatchUpload,
+  onParseTypeChange,
 }: IFileUploaderProps) => {
   const { t } = useTranslation()
   const { notify } = useContext(ToastContext)
@@ -74,7 +82,7 @@ const FileUploader = ({
     batch_count_limit: 5,
   }, [fileUploadConfigResponse])
 
-  const fileListRef = useRef<FileItem[]>([])
+  const fileListRef = useRef<ExtendedFileItem[]>([])
 
   // utils
   const getFileType = (currentFile: File) => {
@@ -96,17 +104,25 @@ const FileUploader = ({
     const { size } = file
     const ext = `.${getFileType(file)}`
     const isValidType = ACCEPTS.includes(ext.toLowerCase())
-    if (!isValidType)
-      notify({ type: 'error', message: t('datasetCreation.stepOne.uploader.validation.typeError') })
+    if (!isValidType) {
+      notify({
+        type: 'error',
+        message: t('datasetCreation.stepOne.uploader.validation.typeError'),
+      })
+    }
 
     const isValidSize = size <= fileUploadConfig.file_size_limit * 1024 * 1024
-    if (!isValidSize)
-      notify({ type: 'error', message: t('datasetCreation.stepOne.uploader.validation.size', { size: fileUploadConfig.file_size_limit }) })
+    if (!isValidSize) {
+      notify({
+        type: 'error',
+        message: t('datasetCreation.stepOne.uploader.validation.size', { size: fileUploadConfig.file_size_limit }),
+      })
+    }
 
     return isValidType && isValidSize
   }, [fileUploadConfig, notify, t, ACCEPTS])
 
-  const fileUpload = useCallback(async (fileItem: FileItem): Promise<FileItem> => {
+  const fileUpload = useCallback(async (fileItem: ExtendedFileItem): Promise<ExtendedFileItem> => {
     const formData = new FormData()
     formData.append('file', fileItem.file)
     const onProgress = (e: ProgressEvent) => {
@@ -122,10 +138,11 @@ const FileUploader = ({
       onprogress: onProgress,
     }, false, undefined, '?source=datasets')
       .then((res: File) => {
-        const completeFile = {
+        const completeFile: ExtendedFileItem = {
           fileID: fileItem.fileID,
           file: res,
           progress: -1,
+          parseType: fileItem.parseType || 'fast',
         }
         const index = fileListRef.current.findIndex(item => item.fileID === fileItem.fileID)
         fileListRef.current[index] = completeFile
@@ -133,19 +150,22 @@ const FileUploader = ({
         return Promise.resolve({ ...completeFile })
       })
       .catch((e) => {
-        notify({ type: 'error', message: e?.response?.code === 'forbidden' ? e?.response?.message : t('datasetCreation.stepOne.uploader.failed') })
+        notify({
+          type: 'error',
+          message: e?.response?.code === 'forbidden' ? e?.response?.message : t('datasetCreation.stepOne.uploader.failed'),
+        })
         onFileUpdate(fileItem, -2, fileListRef.current)
         return Promise.resolve({ ...fileItem })
       })
       .finally()
   }, [fileListRef, notify, onFileUpdate, t])
 
-  const uploadBatchFiles = useCallback((bFiles: FileItem[]) => {
+  const uploadBatchFiles = useCallback((bFiles: ExtendedFileItem[]) => {
     bFiles.forEach(bf => (bf.progress = 0))
     return Promise.all(bFiles.map(fileUpload))
   }, [fileUpload])
 
-  const uploadMultipleFiles = useCallback(async (files: FileItem[]) => {
+  const uploadMultipleFiles = useCallback(async (files: ExtendedFileItem[]) => {
     const batchCountLimit = fileUploadConfig.batch_count_limit
     const length = files.length
     let start = 0
@@ -167,14 +187,18 @@ const FileUploader = ({
       return false
 
     if (files.length + fileList.length > FILES_NUMBER_LIMIT && !IS_CE_EDITION) {
-      notify({ type: 'error', message: t('datasetCreation.stepOne.uploader.validation.filesNumber', { filesNumber: FILES_NUMBER_LIMIT }) })
+      notify({
+        type: 'error',
+        message: t('datasetCreation.stepOne.uploader.validation.filesNumber', { filesNumber: FILES_NUMBER_LIMIT }),
+      })
       return false
     }
 
-    const preparedFiles = files.map((file, index) => ({
+    const preparedFiles: ExtendedFileItem[] = files.map((file, index) => ({
       fileID: `file${index}-${Date.now()}`,
       file,
       progress: -1,
+      parseType: 'fast',
     }))
     const newFiles = [...fileListRef.current, ...preparedFiles]
     prepareFileList(newFiles)
@@ -278,6 +302,89 @@ const FileUploader = ({
   const { theme } = useTheme()
   const chartColor = useMemo(() => theme === Theme.dark ? '#5289ff' : '#296dff', [theme])
 
+  const handleRadioChange = (e: React.ChangeEvent<HTMLInputElement>, fileID: string, parseType: 'fast' | 'multimodal') => {
+    // 查找当前文件
+    const fileItem: any = fileListRef.current.find(item => item.fileID === fileID)
+    if (!fileItem || !fileItem.file.id) return
+
+    // 更新文件解析类型
+    fileItem.parseType = parseType
+
+    // 设置文件中的resolveMethod属性，用于预览组件判断使用哪个ID
+    fileItem.file.resolveMethod = parseType
+    if (parseType === 'fast') {
+      // 快速解析不调用接口，只更新状态
+      if (fileItem.file.analysisId) delete fileItem.file.analysisId
+
+      onFileUpdate(
+        {
+          ...fileItem,
+          progress: 100,
+        },
+        100,
+        fileListRef.current,
+      )
+
+      // 通知父组件解析类型变化
+      onParseTypeChange?.(fileID, parseType)
+    }
+    else {
+      // 多模态解析，需要调用接口
+      onFileUpdate(
+        {
+          ...fileItem,
+          progress: 0,
+        },
+        0,
+        fileListRef.current,
+      )
+
+      // 只有多模态解析才调用接口
+      post('/files/analysis', {
+        body: {
+          file_id: fileItem.file.id,
+          analysis_type: parseType,
+        },
+      })
+        .then((res: any) => {
+          // 保存后端返回的analysisId
+          if (res && res.analysis_id) fileItem.file.analysisId = res.analysis_id
+
+          onFileUpdate(
+            {
+              ...fileItem,
+              progress: 100,
+            },
+            100,
+            fileListRef.current,
+          )
+
+          notify({
+            type: 'success',
+            message: '多模态解析已开始',
+          })
+
+          // 通知父组件解析类型变化
+          onParseTypeChange?.(fileID, parseType)
+        })
+        .catch((e) => {
+          onFileUpdate(
+            {
+              ...fileItem,
+              progress: -2,
+            },
+            -2,
+            fileListRef.current,
+          )
+
+          notify({
+            type: 'error',
+            message: e?.response?.code === 'forbidden' ? e?.response?.message : '解析请求失败',
+          })
+        })
+    }
+  }
+
   useEffect(() => {
     dropRef.current?.addEventListener('dragenter', handleDragEnter)
     dropRef.current?.addEventListener('dragover', handleDragOver)
@@ -360,8 +467,37 @@ const FileUploader = ({
               {/* <span className="flex justify-center items-center w-6 h-6 cursor-pointer">
                   <RiErrorWarningFill className='size-4 text-text-warning' />
                 </span> */}
+
+              {/* 添加两个单选框 */}
+              <label
+                className="mr-2 flex cursor-pointer items-center gap-1 text-xs"
+                onClick={e => e.stopPropagation()}
+              >
+                <input
+                  type="radio"
+                  name={`radio-group-${fileItem.fileID}`}
+                  checked={fileItem.parseType === 'fast' || fileItem.parseType === undefined}
+                  onChange={e => handleRadioChange(e, fileItem.fileID, 'fast')}
+                  className="size-4 cursor-pointer"
+                />
+                <span className="whitespace-nowrap">快速解析</span>
+              </label>
+
+              <label
+                className="mr-2 flex cursor-pointer items-center gap-1 text-xs"
+                onClick={e => e.stopPropagation()}
+              >
+                <input
+                  type="radio"
+                  name={`radio-group-${fileItem.fileID}`}
+                  checked={fileItem.parseType === 'multimodal'}
+                  onChange={e => handleRadioChange(e, fileItem.fileID, 'multimodal')}
+                  className="size-4 cursor-pointer"
+                />
+                <span className="whitespace-nowrap">多模态解析</span>
+              </label>
+
               {(fileItem.progress < 100 && fileItem.progress >= 0) && (
-                // <div className={s.percent}>{`${fileItem.progress}%`}</div>
                 <SimplePieChart percentage={fileItem.progress} stroke={chartColor} fill={chartColor} animationDuration={0} />
               )}
               <span className="flex h-6 w-6 cursor-pointer items-center justify-center" onClick={(e) => {
