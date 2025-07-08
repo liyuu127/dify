@@ -1,7 +1,7 @@
 'use client'
 import { useCallback, useEffect } from 'react'
 import { useBoolean } from 'ahooks'
-import { useSelectedLayoutSegment } from 'next/navigation'
+import { useRouter, useSelectedLayoutSegment } from 'next/navigation'
 import AppNav from './app-nav'
 import DatasetNav from './dataset-nav'
 import { useAppContext } from '@/context/app-context'
@@ -21,6 +21,7 @@ const navClassName = `
 `
 
 const Header = () => {
+  const router = useRouter()
   const { isCurrentWorkspaceEditor, isCurrentWorkspaceDatasetOperator } = useAppContext()
   const selectedSegment = useSelectedLayoutSegment()
   const media = useBreakpoints()
@@ -40,7 +41,8 @@ const Header = () => {
 
   const switchPlatform = () => {
     // 跳转到外部链接
-    window.location.replace(`${process.env.NEXT_PUBLIC_APPLICATION_PLATFORM}`)
+    // window.location.replace(`${process.env.NEXT_PUBLIC_APPLICATION_PLATFORM}`)
+    router.replace(`${process.env.NEXT_PUBLIC_APPLICATION_PLATFORM}`)
   }
   useEffect(() => {
     hideNavMenu()

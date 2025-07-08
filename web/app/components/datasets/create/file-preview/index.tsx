@@ -6,10 +6,16 @@ import Loading from '@/app/components/base/loading'
 import s from './index.module.css'
 import cn from '@/utils/classnames'
 import type { CustomFile as File } from '@/models/datasets'
+
+// 扩展File类型，添加analysisId属性和resolveMethod标识
+type ExtendedFile = File & {
+  analysisId?: string
+  resolveMethod?: 'fast' | 'multimodal'
+}
 import { fetchFilePreview } from '@/service/common'
 
 type IProps = {
-  file?: File
+  file?: ExtendedFile
   hidePreview: () => void
 }
 
@@ -29,7 +35,6 @@ const FilePreview = ({
     }
     catch { }
   }
-
   const getFileName = (currentFile?: File) => {
     if (!currentFile)
       return ''
@@ -40,7 +45,13 @@ const FilePreview = ({
   useEffect(() => {
     if (file?.id) {
       setLoading(true)
-      getPreviewContent(file.id)
+
+      // 根据resolveMethod属性决定使用哪个ID
+      let previewID = file.id
+      // 如果是多模态解析且有analysisId，就使用analysisId
+      if ((file as ExtendedFile).resolveMethod === 'multimodal' && (file as ExtendedFile).analysisId) previewID = (file as ExtendedFile).analysisId as string
+
+      getPreviewContent(previewID)
     }
   }, [file])
 

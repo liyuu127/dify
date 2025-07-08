@@ -8,7 +8,6 @@ import Modal from '@/app/components/base/modal'
 import Button from '@/app/components/base/button'
 import EmojiPicker from '@/app/components/base/emoji-picker'
 import ApiBasedExtensionSelector from '@/app/components/header/account-setting/api-based-extension-page/selector'
-import { BookOpen01 } from '@/app/components/base/icons/src/vender/line/education'
 import { fetchCodeBasedExtensionList } from '@/service/common'
 import { SimpleSelect } from '@/app/components/base/select'
 import I18n from '@/context/i18n'
@@ -42,7 +41,10 @@ const ExternalDataToolModal: FC<ExternalDataToolModalProps> = ({
   const { t } = useTranslation()
   const { notify } = useToastContext()
   const { locale } = useContext(I18n)
-  const [localeData, setLocaleData] = useState(data.type ? data : { ...data, type: 'api' })
+  const [localeData, setLocaleData] = useState(data.type ? data : {
+ ...data,
+type: 'api',
+})
   const [showEmojiPicker, setShowEmojiPicker] = useState(false)
   const { data: codeBasedExtensionList } = useSWR(
     '/code-based-extension?module=external_data_tool',
@@ -137,27 +139,42 @@ const ExternalDataToolModal: FC<ExternalDataToolModalProps> = ({
 
   const handleSave = () => {
     if (!localeData.type) {
-      notify({ type: 'error', message: t('appDebug.errorMessage.valueOfVarRequired', { key: t('appDebug.feature.tools.modal.toolType.title') }) })
+      notify({
+ type: 'error',
+message: t('appDebug.errorMessage.valueOfVarRequired', { key: t('appDebug.feature.tools.modal.toolType.title') }),
+})
       return
     }
 
     if (!localeData.label) {
-      notify({ type: 'error', message: t('appDebug.errorMessage.valueOfVarRequired', { key: t('appDebug.feature.tools.modal.name.title') }) })
+      notify({
+ type: 'error',
+message: t('appDebug.errorMessage.valueOfVarRequired', { key: t('appDebug.feature.tools.modal.name.title') }),
+})
       return
     }
 
     if (!localeData.variable) {
-      notify({ type: 'error', message: t('appDebug.errorMessage.valueOfVarRequired', { key: t('appDebug.feature.tools.modal.variableName.title') }) })
+      notify({
+ type: 'error',
+message: t('appDebug.errorMessage.valueOfVarRequired', { key: t('appDebug.feature.tools.modal.variableName.title') }),
+})
       return
     }
 
     if (localeData.variable && !/[a-zA-Z_]\w{0,29}/g.test(localeData.variable)) {
-      notify({ type: 'error', message: t('appDebug.varKeyError.notValid', { key: t('appDebug.feature.tools.modal.variableName.title') }) })
+      notify({
+ type: 'error',
+message: t('appDebug.varKeyError.notValid', { key: t('appDebug.feature.tools.modal.variableName.title') }),
+})
       return
     }
 
     if (localeData.type === 'api' && !localeData.config?.api_based_extension_id) {
-      notify({ type: 'error', message: t('appDebug.errorMessage.valueOfVarRequired', { key: locale !== LanguagesSupported[1] ? 'API Extension' : 'API 扩展' }) })
+      notify({
+ type: 'error',
+message: t('appDebug.errorMessage.valueOfVarRequired', { key: locale !== LanguagesSupported[1] ? 'API Extension' : 'API 扩展' }),
+})
       return
     }
 
@@ -242,14 +259,14 @@ const ExternalDataToolModal: FC<ExternalDataToolModalProps> = ({
           <div className='py-2'>
             <div className='flex h-9 items-center justify-between text-sm font-medium text-gray-900'>
               {t('common.apiBasedExtension.selector.title')}
-              <a
+              {/* <a
                 href={t('common.apiBasedExtension.linkUrl') || '/'}
                 target='_blank' rel='noopener noreferrer'
                 className='group flex items-center text-xs font-normal text-gray-500 hover:text-primary-600'
               >
                 <BookOpen01 className='mr-1 h-3 w-3 text-gray-500 group-hover:text-primary-600' />
                 {t('common.apiBasedExtension.link')}
-              </a>
+              </a> */}
             </div>
             <ApiBasedExtensionSelector
               value={localeData.config?.api_based_extension_id || ''}
@@ -287,11 +304,17 @@ const ExternalDataToolModal: FC<ExternalDataToolModalProps> = ({
         showEmojiPicker && (
           <EmojiPicker
             onSelect={(icon, icon_background) => {
-              handleValueChange({ icon, icon_background })
+              handleValueChange({
+ icon,
+icon_background,
+})
               setShowEmojiPicker(false)
             }}
             onClose={() => {
-              handleValueChange({ icon: '', icon_background: '' })
+              handleValueChange({
+ icon: '',
+icon_background: '',
+})
               setShowEmojiPicker(false)
             }}
           />
