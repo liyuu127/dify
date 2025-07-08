@@ -44,7 +44,6 @@ const SwrInitor = ({
       return false
     }
   }, [])
-  // console.log(process.env.NEXT_PUBLIC_APPLICATION_PLATFORM, '============')
   useEffect(() => {
     (async () => {
       const action = searchParams.get('action')
@@ -55,11 +54,11 @@ const SwrInitor = ({
       try {
         const isFinished = await isSetupFinished()
         if (!isFinished) {
-          router.replace('/install')
+          router.replace(`${process.env.NEXT_PUBLIC_APPLICATION_PLATFORM}`)
           return
         }
         if (!((consoleToken && refreshToken) || (consoleTokenFromLocalStorage && refreshTokenFromLocalStorage))) {
-          router.replace('/signin')
+          router.replace(`${process.env.NEXT_PUBLIC_APPLICATION_PLATFORM}`)
           return
         }
         if (searchParams.has('access_token') || searchParams.has('refresh_token')) {
@@ -71,7 +70,7 @@ const SwrInitor = ({
         setInit(true)
       }
       catch {
-        router.replace('/signin')
+        router.replace(`${process.env.NEXT_PUBLIC_APPLICATION_PLATFORM}`)
       }
     })()
   }, [isSetupFinished, router, pathname, searchParams, consoleToken, refreshToken, consoleTokenFromLocalStorage, refreshTokenFromLocalStorage])
