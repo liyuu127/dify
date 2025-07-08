@@ -5,14 +5,8 @@ WORKDIR /app/api
 
 # Install uv
 ENV UV_VERSION=0.6.14
-ENV UV_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple
 
-RUN rm -f /etc/apt/sources.list && \
-    rm -rf /etc/apt/sources.list.d/* && \
-    echo 'deb https://mirrors.tuna.tsinghua.edu.cn/debian bookworm main contrib non-free non-free-firmware\n\
-deb https://mirrors.tuna.tsinghua.edu.cn/debian bookworm-updates main contrib non-free non-free-firmware\n\
-deb https://mirrors.tuna.tsinghua.edu.cn/debian-security bookworm-security main contrib non-free non-free-firmware\n\
-deb https://mirrors.tuna.tsinghua.edu.cn/debian bookworm-backports main contrib non-free non-free-firmware' > /etc/apt/sources.list
+RUN pip install --no-cache-dir uv==${UV_VERSION}
 
 
 FROM base AS packages
@@ -23,17 +17,8 @@ FROM base AS packages
 RUN apt-get update \
     && apt-get install -y --no-install-recommends gcc g++ libc-dev libffi-dev libgmp-dev libmpfr-dev libmpc-dev
 
-RUN mkdir -p /root/.config/pip && \
-    echo '[global]\n\
-index-url = https://pypi.tuna.tsinghua.edu.cn/simple\n\
-[install]\n\
-trusted-host = pypi.tuna.tsinghua.edu.cn' > /root/.config/pip/pip.conf
-
-RUN pip install --no-cache-dir uv==${UV_VERSION}
-
 # Install Python dependencies
 COPY pyproject.toml uv.lock ./
-RUN uv lock
 RUN uv sync --locked
 
 # production stage
