@@ -34,7 +34,6 @@ class ConversationService:
         include_ids: Optional[Sequence[str]] = None,
         exclude_ids: Optional[Sequence[str]] = None,
         sort_by: str = "-updated_at",
-        keyword: str,
     ) -> InfiniteScrollPagination:
         if not user:
             return InfiniteScrollPagination(data=[], limit=limit, has_more=False)
@@ -51,9 +50,7 @@ class ConversationService:
             stmt = stmt.where(Conversation.id.in_(include_ids))
         if exclude_ids is not None:
             stmt = stmt.where(~Conversation.id.in_(exclude_ids))
-        if keyword:
-            keyword = f"%{keyword}%"
-            stmt = stmt.where(Conversation.name.like(keyword))
+
         # define sort fields and directions
         sort_field, sort_direction = cls._get_sort_params(sort_by)
 

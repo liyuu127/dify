@@ -53,7 +53,6 @@ class ConversationApi(Resource):
                     limit=args["limit"],
                     invoke_from=InvokeFrom.SERVICE_API,
                     sort_by=args["sort_by"],
-                    keyword=args["keyword"],
                 )
         except services.errors.conversation.LastConversationNotExistsError:
             raise NotFound("Last Conversation Not Exists.")
