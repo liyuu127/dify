@@ -181,3 +181,6 @@ from .workspace import (
     tool_providers,
     workspace,
 )
+
+from .conversation import ConversationListApi
+api.add_resource(ConversationListApi, "/conversations")
