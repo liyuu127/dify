@@ -10,7 +10,6 @@ import ApiBasedExtensionSelector from '@/app/components/header/account-setting/a
 import Modal from '@/app/components/base/modal'
 import Button from '@/app/components/base/button'
 import Divider from '@/app/components/base/divider'
-import { BookOpen01 } from '@/app/components/base/icons/src/vender/line/education'
 import type { ModerationConfig, ModerationContentConfig } from '@/models/debug'
 import { useToastContext } from '@/app/components/base/toast'
 import {
@@ -20,7 +19,6 @@ import {
 import type { CodeBasedExtensionItem } from '@/models/common'
 import I18n from '@/context/i18n'
 import { LanguagesSupported } from '@/i18n/language'
-import { InfoCircle } from '@/app/components/base/icons/src/vender/line/general'
 import { useModalContext } from '@/context/modal-context'
 import { CustomConfigurationStatusEnum } from '@/app/components/header/account-setting/model-provider-page/declarations'
 import cn from '@/utils/classnames'
@@ -198,17 +196,26 @@ const ModerationSettingModal: FC<ModerationSettingModalProps> = ({
       return
 
     if (!localeData.config?.inputs_config?.enabled && !localeData.config?.outputs_config?.enabled) {
-      notify({ type: 'error', message: t('appDebug.feature.moderation.modal.content.condition') })
+      notify({
+ type: 'error',
+message: t('appDebug.feature.moderation.modal.content.condition'),
+})
       return
     }
 
     if (localeData.type === 'keywords' && !localeData.config.keywords) {
-      notify({ type: 'error', message: t('appDebug.errorMessage.valueOfVarRequired', { key: locale !== LanguagesSupported[1] ? 'keywords' : '关键词' }) })
+      notify({
+ type: 'error',
+message: t('appDebug.errorMessage.valueOfVarRequired', { key: locale !== LanguagesSupported[1] ? 'keywords' : '关键词' }),
+})
       return
     }
 
     if (localeData.type === 'api' && !localeData.config.api_based_extension_id) {
-      notify({ type: 'error', message: t('appDebug.errorMessage.valueOfVarRequired', { key: locale !== LanguagesSupported[1] ? 'API Extension' : 'API 扩展' }) })
+      notify({
+ type: 'error',
+message: t('appDebug.errorMessage.valueOfVarRequired', { key: locale !== LanguagesSupported[1] ? 'API Extension' : 'API 扩展' }),
+})
       return
     }
 
@@ -225,12 +232,18 @@ const ModerationSettingModal: FC<ModerationSettingModalProps> = ({
     }
 
     if (localeData.config.inputs_config?.enabled && !localeData.config.inputs_config.preset_response && localeData.type !== 'api') {
-      notify({ type: 'error', message: t('appDebug.feature.moderation.modal.content.errorMessage') })
+      notify({
+ type: 'error',
+message: t('appDebug.feature.moderation.modal.content.errorMessage'),
+})
       return
     }
 
     if (localeData.config.outputs_config?.enabled && !localeData.config.outputs_config.preset_response && localeData.type !== 'api') {
-      notify({ type: 'error', message: t('appDebug.feature.moderation.modal.content.errorMessage') })
+      notify({
+ type: 'error',
+message: t('appDebug.feature.moderation.modal.content.errorMessage'),
+})
       return
     }
 
@@ -273,7 +286,8 @@ const ModerationSettingModal: FC<ModerationSettingModalProps> = ({
             ))
           }
         </div>
-        {
+        {/* TODO: 暂时隐藏，后续再添加 */}
+        {/* {
           !isLoading && !isOpenAIProviderConfigured && localeData.type === 'openai_moderation' && (
             <div className='mt-2 flex items-center rounded-lg border border-[#FEF0C7] bg-[#FFFAEB] px-3 py-2'>
               <InfoCircle className='mr-1 h-4 w-4 text-[#F79009]' />
@@ -289,7 +303,7 @@ const ModerationSettingModal: FC<ModerationSettingModalProps> = ({
               </div>
             </div>
           )
-        }
+        } */}
       </div>
       {
         localeData.type === 'keywords' && (
@@ -315,14 +329,14 @@ const ModerationSettingModal: FC<ModerationSettingModalProps> = ({
           <div className='py-2'>
             <div className='flex h-9 items-center justify-between'>
               <div className='text-sm font-medium text-text-primary'>{t('common.apiBasedExtension.selector.title')}</div>
-              <a
+              {/* <a
                 href={t('common.apiBasedExtension.linkUrl') || '/'}
                 target='_blank' rel='noopener noreferrer'
                 className='group flex items-center text-xs text-text-tertiary hover:text-primary-600'
               >
                 <BookOpen01 className='mr-1 h-3 w-3 text-text-tertiary group-hover:text-primary-600' />
                 {t('common.apiBasedExtension.link')}
-              </a>
+              </a> */}
             </div>
             <ApiBasedExtensionSelector
               value={localeData.config?.api_based_extension_id || ''}
@@ -345,14 +359,20 @@ const ModerationSettingModal: FC<ModerationSettingModalProps> = ({
       <Divider bgStyle='gradient' className='my-3 h-px' />
       <ModerationContent
         title={t('appDebug.feature.moderation.modal.content.input') || ''}
-        config={localeData.config?.inputs_config || { enabled: false, preset_response: '' }}
+        config={localeData.config?.inputs_config || {
+ enabled: false,
+preset_response: '',
+}}
         onConfigChange={config => handleDataContentChange('inputs_config', config)}
         info={(localeData.type === 'api' && t('appDebug.feature.moderation.modal.content.fromApi')) || ''}
         showPreset={localeData.type !== 'api'}
       />
       <ModerationContent
         title={t('appDebug.feature.moderation.modal.content.output') || ''}
-        config={localeData.config?.outputs_config || { enabled: false, preset_response: '' }}
+        config={localeData.config?.outputs_config || {
+ enabled: false,
+preset_response: '',
+}}
         onConfigChange={config => handleDataContentChange('outputs_config', config)}
         info={(localeData.type === 'api' && t('appDebug.feature.moderation.modal.content.fromApi')) || ''}
         showPreset={localeData.type !== 'api'}
