@@ -55,10 +55,6 @@ class ConversationListApi(Resource):
         )
         args = parser.parse_args()
 
-        pinned = None
-        if "pinned" in args and args["pinned"] is not None:
-            pinned = args["pinned"] == "true"
-
         end_user = db.session.query(EndUser).filter(EndUser.session_id == args["session_id"]).first()
         if not end_user:
             raise BadRequest("Session ID does not exist.")
@@ -70,7 +66,6 @@ class ConversationListApi(Resource):
                     end_user_id=end_user.id,
                     last_id=args["last_id"],
                     limit=args["limit"],
-                    pinned=pinned,
                     sort_by=args["sort_by"],
                 ), 200
         except LastConversationNotExistsError:
