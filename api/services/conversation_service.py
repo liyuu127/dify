@@ -88,54 +88,36 @@ class ConversationService:
     def pagination_by_end_user(
         cls,
         *,
-        session: Session,
         end_user_id: Optional[str],
-        last_id: Optional[str],
+        page: int,
         limit: int,
         sort_by: str = "-updated_at",
         keyword: Optional[str] = None,
     ) -> InfiniteScrollPagination:
 
-        stmt = select(Conversation).where(
+        query = select(Conversation).where(
             Conversation.is_deleted == False,
             Conversation.from_end_user_id == end_user_id,
         )
         if keyword:
             keyword = f"%{keyword}%"
-            stmt = stmt.where(Conversation.name.ilike(keyword))
+            query = query.where(Conversation.name.ilike(keyword))
 
-        # define sort fields and directions
-        sort_field, sort_direction = cls._get_sort_params(sort_by)
+        match sort_by:
+            case "created_at":
+                query = query.order_by(Conversation.created_at.asc())
+            case "-created_at":
+                query = query.order_by(Conversation.created_at.desc())
+            case "updated_at":
+                query = query.order_by(Conversation.updated_at.asc())
+            case "-updated_at":
+                query = query.order_by(Conversation.updated_at.desc())
+            case _:
+                query = query.order_by(Conversation.created_at.desc())
 
-        if last_id:
-            last_conversation = session.scalar(stmt.where(Conversation.id == last_id))
-            if not last_conversation:
-                raise LastConversationNotExistsError()
+        conversations = db.paginate(query, page=page, per_page=limit, error_out=False)
 
-            # build filters based on sorting
-            filter_condition = cls._build_filter_condition(
-                sort_field=sort_field,
-                sort_direction=sort_direction,
-                reference_conversation=last_conversation,
-            )
-            stmt = stmt.where(filter_condition)
-        query_stmt = stmt.order_by(sort_direction(getattr(Conversation, sort_field))).limit(limit)
-        conversations = session.scalars(query_stmt).all()
-
-        has_more = False
-        if len(conversations) == limit:
-            current_page_last_conversation = conversations[-1]
-            rest_filter_condition = cls._build_filter_condition(
-                sort_field=sort_field,
-                sort_direction=sort_direction,
-                reference_conversation=current_page_last_conversation,
-            )
-            count_stmt = select(func.count()).select_from(stmt.where(rest_filter_condition).subquery())
-            rest_count = session.scalar(count_stmt) or 0
-            if rest_count > 0:
-                has_more = True
-
-        return InfiniteScrollPagination(data=conversations, limit=limit, has_more=has_more)
+        return conversations
 
     @classmethod
     def _get_sort_params(cls, sort_by: str):

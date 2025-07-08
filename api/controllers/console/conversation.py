@@ -1,9 +1,7 @@
 from flask_restful import reqparse
-from flask_restful.inputs import int_range
 
 from services.conversation_service import ConversationService
-from flask_restful import Resource, marshal_with
-from sqlalchemy.orm import Session
+from flask_restful import Resource, marshal_with, inputs
 
 from libs.helper import uuid_value
 
@@ -26,7 +24,7 @@ from extensions.ext_database import db
 
 from models.model import EndUser
 from services.errors.conversation import ConversationNotExistsError, LastConversationNotExistsError
-from fields.conversation_fields import conversation_infinite_scroll_pagination_fields
+from fields.conversation_fields import conversation_with_summary_pagination_fields
 
 PREVIEW_WORDS_LIMIT = 3000
 
@@ -35,7 +33,7 @@ class ConversationListApi(Resource):
     @setup_required
     @login_required
     @account_initialization_required
-    @marshal_with(conversation_infinite_scroll_pagination_fields)
+    @marshal_with(conversation_with_summary_pagination_fields)
     def get(self):
         parser = reqparse.RequestParser()
         parser.add_argument(
@@ -44,8 +42,8 @@ class ConversationListApi(Resource):
             required=True,
             location="args"
         )
-        parser.add_argument("last_id", type=uuid_value, location="args")
-        parser.add_argument("limit", type=int_range(1, 100), required=False, default=20, location="args")
+        parser.add_argument("page", type=inputs.int_range(1, 99999), required=False, default=1, location="args")
+        parser.add_argument("limit", type=inputs.int_range(1, 100), required=False, default=20, location="args")
         parser.add_argument(
             "sort_by",
             type=str,
@@ -61,13 +59,11 @@ class ConversationListApi(Resource):
             raise BadRequest("Session ID does not exist.")
 
         try:
-            with Session(db.engine) as session:
-                return ConversationService.pagination_by_end_user(
-                    session=session,
-                    end_user_id=end_user.id,
-                    last_id=args["last_id"],
-                    limit=args["limit"],
-                    sort_by=args["sort_by"],
-                ), 200
+            return ConversationService.pagination_by_end_user(
+                end_user_id=end_user.id,
+                page=args["page"],
+                limit=args["limit"],
+                sort_by=args["sort_by"],
+            ), 200
         except LastConversationNotExistsError:
             raise NotFound("Last Conversation Not Exists.")
