@@ -26,6 +26,7 @@ from extensions.ext_database import db
 
 from models.model import EndUser
 from services.errors.conversation import ConversationNotExistsError, LastConversationNotExistsError
+from fields.conversation_fields import conversation_infinite_scroll_pagination_fields
 
 PREVIEW_WORDS_LIMIT = 3000
 
@@ -34,7 +35,7 @@ class ConversationListApi(Resource):
     @setup_required
     @login_required
     @account_initialization_required
-    @marshal_with(upload_config_fields)
+    @marshal_with(conversation_infinite_scroll_pagination_fields)
     def get(self):
         parser = reqparse.RequestParser()
         parser.add_argument(

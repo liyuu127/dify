@@ -2,7 +2,7 @@ from typing import Literal
 
 from flask import request
 from flask_login import current_user
-from flask_restful import Resource, marshal_with
+from flask_restful import Resource, marshal_with, reqparse
 from werkzeug.exceptions import Forbidden
 
 import services
@@ -116,10 +116,17 @@ class FileAnalysisApi(Resource):
     @setup_required
     @login_required
     @account_initialization_required
-    def get(self, file_id):
-
+    def get(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument(
+            "file_id",
+            type=str,
+            required=True,
+            location="args"
+        )
+        args = parser.parse_args()
         try:
-            upload_file = FileService.analysis_file(file_id)
+            upload_file = FileService.analysis_file(args["file_id"])
         except services.errors.file.FileTooLargeError as file_too_large_error:
             raise FileTooLargeError(file_too_large_error.description)
         except services.errors.file.UnsupportedFileTypeError:
