@@ -42,6 +42,12 @@ class ConversationListApi(Resource):
             required=True,
             location="args"
         )
+        parser.add_argument(
+            "keyword",
+            type=str,
+            required=True,
+            location="args"
+        )
         parser.add_argument("page", type=inputs.int_range(1, 99999), required=False, default=1, location="args")
         parser.add_argument("limit", type=inputs.int_range(1, 100), required=False, default=20, location="args")
         parser.add_argument(
@@ -61,6 +67,7 @@ class ConversationListApi(Resource):
         try:
             return ConversationService.pagination_by_end_user(
                 end_user_id=end_user.id,
+                keyword=args["keyword"],
                 page=args["page"],
                 limit=args["limit"],
                 sort_by=args["sort_by"],
