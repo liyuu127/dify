@@ -62,7 +62,13 @@ class ConversationListApi(Resource):
 
         end_user = db.session.query(EndUser).filter(EndUser.session_id == args["session_id"]).first()
         if not end_user:
-            raise BadRequest("Session ID does not exist.")
+            return {
+                "page": args["page"],
+                "limit": args["limit"],
+                "total": 0,
+                "has_more": False,
+                "data": [],
+            }, 200
 
         try:
             return ConversationService.pagination_by_end_user(
