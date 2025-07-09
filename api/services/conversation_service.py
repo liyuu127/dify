@@ -88,13 +88,13 @@ class ConversationService:
     def pagination_by_end_user(
         cls,
         *,
-        end_user_id: Optional[str],
+        end_users: Optional[list[EndUser]],
         page: int,
         limit: int,
         sort_by: str = "-updated_at",
         keyword: Optional[str] = None,
     ) -> InfiniteScrollPagination:
-
+        user_ids = [user.id for user in end_users]
         message_ranked = (
             db.session.query(
                 Message,
@@ -105,7 +105,7 @@ class ConversationService:
             )
             .join(Conversation, Message.conversation_id == Conversation.id)
             .filter(Conversation.is_deleted == False)
-            .filter(Conversation.from_end_user_id == end_user_id)
+            .filter(Conversation.from_end_user_id.in_(user_ids))
             .subquery()
         )
 

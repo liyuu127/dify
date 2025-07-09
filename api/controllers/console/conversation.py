@@ -61,13 +61,13 @@ class ConversationListApi(Resource):
         )
         args = parser.parse_args()
 
-        end_user = db.session.query(EndUser).filter(EndUser.session_id == args["session_id"]).first()
-        if not end_user:
+        end_users = db.session.query(EndUser).filter(EndUser.session_id == args["session_id"]).all()
+        if not end_users:
             return InfiniteScrollPagination(data=[], limit=args["limit"], has_more=False), 200
 
         try:
             return ConversationService.pagination_by_end_user(
-                end_user_id=end_user.id,
+                end_users=end_users,
                 keyword=args["keyword"],
                 page=args["page"],
                 limit=args["limit"],
