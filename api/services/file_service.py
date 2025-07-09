@@ -196,7 +196,7 @@ class FileService:
         # TODO 调用三方接口解析文件
         new_file = file
         new_file.name = f"new_{file.name}"
-        generator = storage.load(new_file.key, stream=True)
+        generator = storage.load_once(new_file.key)
 
         return FileService.upload_file(
             filename=new_file.name,

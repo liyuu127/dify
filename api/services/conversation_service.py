@@ -101,7 +101,7 @@ class ConversationService:
         )
         if keyword:
             keyword = f"%{keyword}%"
-            query = query.where(Conversation.summary.ilike(keyword))
+            query = query.where(Conversation.first_message.ilike(keyword))
 
         match sort_by:
             case "created_at":

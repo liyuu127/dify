@@ -45,7 +45,7 @@ class ConversationListApi(Resource):
         parser.add_argument(
             "keyword",
             type=str,
-            required=True,
+            required=False,
             location="args"
         )
         parser.add_argument("page", type=inputs.int_range(1, 99999), required=False, default=1, location="args")
