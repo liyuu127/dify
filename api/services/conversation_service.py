@@ -95,33 +95,34 @@ class ConversationService:
         keyword: Optional[str] = None,
     ) -> InfiniteScrollPagination:
 
-        # 使用CTE获取每个会话的第一条消息
-        first_messages = (
+        message_ranked = (
             db.session.query(
-                Message.conversation_id,
-                Message.query.label('first_query'),
-                Message.created_at.label('first_created_at')
+                Message,
+                func.row_number().over(
+                    partition_by=Message.conversation_id,
+                    order_by=Message.created_at.asc()
+                ).label('rn')
             )
             .join(Conversation, Message.conversation_id == Conversation.id)
             .filter(Conversation.is_deleted == False)
             .filter(Conversation.from_end_user_id == end_user_id)
-            .group_by(Message.conversation_id)
-            .order_by(Message.conversation_id, Message.created_at.asc())
-            .cte()
+            .subquery()
         )
 
         # 主查询：只选择Conversation，并关联first_messages获取第一条消息的属性
         query = (
             db.session.query(Conversation)
             .outerjoin(
-                first_messages,
-                Conversation.id == first_messages.c.conversation_id
+                message_ranked,
+                and_(
+                    message_ranked.c.conversation_id == Conversation.id,
+                    message_ranked.c.rn == 1
+                )
             )
         )
 
-        # 动态添加关键字筛选（针对第一条消息的query字段）
         if keyword:
-            query = query.filter(first_messages.c.first_query.ilike(f"%{keyword}%"))
+            query = query.filter(message_ranked.c.query.ilike(f"%{keyword}%"))
 
         match sort_by:
             case "created_at":

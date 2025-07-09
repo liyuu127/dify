@@ -198,7 +198,7 @@ class FileService:
         generator = storage.load_once(new_file.key)
 
         return FileService.upload_file(
-            filename="new_" + new_file.name,
+            filename=new_file.name,
             content=generator,
             mimetype=new_file.mime_type,
             user=current_user,

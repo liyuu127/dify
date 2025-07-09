@@ -116,6 +116,8 @@ class FileAnalysisApi(Resource):
     @setup_required
     @login_required
     @account_initialization_required
+    @marshal_with(file_fields)
+    @cloud_edition_billing_resource_check("documents")
     def get(self):
         parser = reqparse.RequestParser()
         parser.add_argument(
