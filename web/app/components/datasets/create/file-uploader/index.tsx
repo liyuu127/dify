@@ -18,7 +18,7 @@ import { LanguagesSupported } from '@/i18n/language'
 import { IS_CE_EDITION } from '@/config'
 import { Theme } from '@/types/app'
 import useTheme from '@/hooks/use-theme'
-import { post } from '@/service/base'
+import { fetchFileAnalysis } from '@/service/common'
 
 const FILES_NUMBER_LIMIT = 20
 
@@ -302,7 +302,7 @@ const FileUploader = ({
   const { theme } = useTheme()
   const chartColor = useMemo(() => theme === Theme.dark ? '#5289ff' : '#296dff', [theme])
 
-  const handleRadioChange = (e: React.ChangeEvent<HTMLInputElement>, fileID: string, parseType: 'fast' | 'multimodal') => {
+  const handleRadioChange = async (e: React.ChangeEvent<HTMLInputElement>, fileID: string, parseType: 'fast' | 'multimodal') => {
     // 查找当前文件
     const fileItem: any = fileListRef.current.find(item => item.fileID === fileID)
     if (!fileItem || !fileItem.file.id) return
@@ -330,58 +330,53 @@ const FileUploader = ({
     }
     else {
       // 多模态解析，需要调用接口
-      onFileUpdate(
-        {
-          ...fileItem,
-          progress: 0,
-        },
-        0,
-        fileListRef.current,
-      )
+      try {
+        onFileUpdate(
+          {
+            ...fileItem,
+            progress: 0,
+          },
+          0,
+          fileListRef.current,
+        )
 
-      // 只有多模态解析才调用接口
-      post('/files/analysis', {
-        body: {
-          file_id: fileItem.file.id,
-          analysis_type: parseType,
-        },
-      })
-        .then((res: any) => {
-          // 保存后端返回的analysisId
-          if (res && res.analysis_id) fileItem.file.analysisId = res.analysis_id
+        // 只有多模态解析才调用接口
+        const res = await fetchFileAnalysis({ params: { file_id: fileItem.file.id } })
 
-          onFileUpdate(
-            {
-              ...fileItem,
-              progress: 100,
-            },
-            100,
-            fileListRef.current,
-          )
+        // 保存后端返回的analysisId
+        if (res && res.id) fileItem.file.analysisId = res.id
+        onFileUpdate(
+          {
+            ...fileItem,
+            progress: 100,
+          },
+          100,
+          fileListRef.current,
+        )
 
-          notify({
-            type: 'success',
-            message: '多模态解析已开始',
-          })
-
-          // 通知父组件解析类型变化
-          onParseTypeChange?.(fileID, parseType)
+        notify({
+          type: 'success',
+          message: '多模态解析已开始',
         })
-        .catch((e) => {
-          onFileUpdate(
-            {
-              ...fileItem,
-              progress: -2,
-            },
-            -2,
-            fileListRef.current,
-          )
 
-          notify({
-            type: 'error',
-            message: e?.response?.code === 'forbidden' ? e?.response?.message : '解析请求失败',
-          })
+        // 通知父组件解析类型变化
+        onParseTypeChange?.(fileID, parseType)
+      }
+      catch (e: any) {
+        onFileUpdate(
+          {
+            ...fileItem,
+            progress: -2,
+          },
+          -2,
+          fileListRef.current,
+        )
+
+        notify({
+          type: 'error',
+          message: e?.response?.code === 'forbidden' ? e?.response?.message : '解析请求失败',
         })
+      }
     }
   }
 
