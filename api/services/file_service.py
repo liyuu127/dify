@@ -187,6 +187,25 @@ class FileService:
         return generator, upload_file.mime_type
 
     @staticmethod
+    def analysis_file(file_id: str):
+        file = db.session.query(UploadFile).filter(UploadFile.id == file_id).first()
+
+        if not file:
+            raise NotFound("File not found or signature is invalid")
+
+        # TODO 调用三方接口解析文件
+        new_file = file
+        generator = storage.load_once(new_file.key)
+
+        return FileService.upload_file(
+            filename=new_file.name,
+            content=generator,
+            mimetype=new_file.mime_type,
+            user=current_user,
+            source_url=new_file.source_url,
+        )
+
+    @staticmethod
     def get_file_generator_by_file_id(file_id: str, timestamp: str, nonce: str, sign: str):
         result = file_helpers.verify_file_signature(upload_file_id=file_id, timestamp=timestamp, nonce=nonce, sign=sign)
         if not result:

@@ -32,6 +32,7 @@ type IFileUploaderProps = {
   titleClassName?: string
   prepareFileList: (files: ExtendedFileItem[]) => void
   onFileUpdate: (fileItem: ExtendedFileItem, progress: number, list: ExtendedFileItem[]) => void
+  updateFileByOldId: (oldId: string, fileItem: ExtendedFileItem, progress: number, list: ExtendedFileItem[]) => void
   onFileListUpdate?: (files: ExtendedFileItem[]) => void
   onPreview: (file: File) => void
   notSupportBatchUpload?: boolean
@@ -39,18 +40,19 @@ type IFileUploaderProps = {
 }
 
 const FileUploader = ({
-  fileList,
-  titleClassName,
-  prepareFileList,
-  onFileUpdate,
-  onFileListUpdate,
-  onPreview,
-  notSupportBatchUpload,
-  onParseTypeChange,
-}: IFileUploaderProps) => {
-  const { t } = useTranslation()
-  const { notify } = useContext(ToastContext)
-  const { locale } = useContext(I18n)
+                        fileList,
+                        titleClassName,
+                        prepareFileList,
+                        onFileUpdate,
+                        updateFileByOldId,
+                        onFileListUpdate,
+                        onPreview,
+                        notSupportBatchUpload,
+                        onParseTypeChange,
+                      }: IFileUploaderProps) => {
+  const {t} = useTranslation()
+  const {notify} = useContext(ToastContext)
+  const {locale} = useContext(I18n)
   const [dragging, setDragging] = useState(false)
   const dropRef = useRef<HTMLDivElement>(null)
   const dragRef = useRef<HTMLDivElement>(null)
@@ -301,6 +303,24 @@ const FileUploader = ({
 
   const { theme } = useTheme()
   const chartColor = useMemo(() => theme === Theme.dark ? '#5289ff' : '#296dff', [theme])
+
+  // 当前页面两种状态的ID缓存
+  type FileParseCache = {
+    fastId?: string,
+    fastItem?: FileItem
+    multimodalId?: string,
+    multimodalItem?: FileItem,
+  }
+  // 首次文件上传后，默认快速模式，把fastId缓存起来，此时调用onFileUpdate方法，更新dify全局缓存的文件信息。
+  // 点击多模态模式调用接口后，把multimodalId缓存起来。此时不要调用onFileUpdate方法，调用新的updateFileByOldId方法，把缓存的fastId和新的文件以及文件集合传过去，把旧的那个文件信息替换成新的文件。
+  // 再点击快速模式切换后，一样的把multimodalId缓存和旧的文件传过去，执行替换操作
+  // 再次切换都同理
+  const fileParseCache :FileParseCache = {
+    fastId: undefined,
+    fastItem: undefined,
+    multimodalId: undefined,
+    multimodalItem: undefined,
+  }
 
   const handleRadioChange = async (e: React.ChangeEvent<HTMLInputElement>, fileID: string, parseType: 'fast' | 'multimodal') => {
     // 查找当前文件

@@ -2,7 +2,7 @@ from typing import Literal
 
 from flask import request
 from flask_login import current_user
-from flask_restful import Resource, marshal_with
+from flask_restful import Resource, marshal_with, reqparse
 from werkzeug.exceptions import Forbidden
 
 import services
@@ -109,3 +109,29 @@ class FileAppDefaultIcron(Resource):
     def get(self):
         default_icon = FileService.get_app_default_icon()
         return default_icon, 201
+
+
+class FileAnalysisApi(Resource):
+
+    @setup_required
+    @login_required
+    @account_initialization_required
+    @marshal_with(file_fields)
+    @cloud_edition_billing_resource_check("documents")
+    def get(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument(
+            "file_id",
+            type=str,
+            required=True,
+            location="args"
+        )
+        args = parser.parse_args()
+        try:
+            upload_file = FileService.analysis_file(args["file_id"])
+        except services.errors.file.FileTooLargeError as file_too_large_error:
+            raise FileTooLargeError(file_too_large_error.description)
+        except services.errors.file.UnsupportedFileTypeError:
+            raise UnsupportedFileTypeError()
+
+        return upload_file, 201

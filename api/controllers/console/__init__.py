@@ -22,7 +22,7 @@ from .explore.workflow import (
     InstalledAppWorkflowRunApi,
     InstalledAppWorkflowTaskStopApi,
 )
-from .files import FileApi, FileAppDefaultIcron, FilePreviewApi, FileSupportTypeApi
+from .files import FileApi, FileAppDefaultIcron, FilePreviewApi, FileSupportTypeApi, FileAnalysisApi
 from .remote_files import RemoteFileInfoApi, RemoteFileUploadApi
 
 bp = Blueprint("console", __name__, url_prefix="/console/api")
@@ -30,6 +30,7 @@ api = ExternalApi(bp)
 
 # File
 api.add_resource(FileApi, "/files/upload")
+api.add_resource(FileAnalysisApi, "/files/analysis")
 api.add_resource(FilePreviewApi, "/files/<uuid:file_id>/preview")
 api.add_resource(FileSupportTypeApi, "/files/support-type")
 api.add_resource(FileAppDefaultIcron, "/files/app-icron/default")
@@ -141,7 +142,6 @@ api.add_resource(
     endpoint="installed_app_conversation_unpin",
 )
 
-
 # Explore Message
 api.add_resource(MessageListApi, "/installed-apps/<uuid:installed_app_id>/messages", endpoint="installed_app_messages")
 api.add_resource(
@@ -181,3 +181,6 @@ from .workspace import (
     tool_providers,
     workspace,
 )
+
+from .conversation import ConversationListApi
+api.add_resource(ConversationListApi, "/conversations")

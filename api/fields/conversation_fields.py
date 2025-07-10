@@ -147,6 +147,7 @@ conversation_message_detail_fields = {
 
 conversation_with_summary_fields = {
     "id": fields.String,
+    "app_id": fields.String,
     "status": fields.String,
     "from_source": fields.String,
     "from_end_user_id": fields.String,

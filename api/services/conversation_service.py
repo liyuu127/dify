@@ -2,7 +2,7 @@ from collections.abc import Callable, Sequence
 from datetime import UTC, datetime
 from typing import Optional, Union
 
-from sqlalchemy import asc, desc, func, or_, select
+from sqlalchemy import asc, desc, func, or_, select, and_
 from sqlalchemy.orm import Session
 
 from core.app.entities.app_invoke_entities import InvokeFrom
@@ -83,6 +83,87 @@ class ConversationService:
                 has_more = True
 
         return InfiniteScrollPagination(data=conversations, limit=limit, has_more=has_more)
+
+    @classmethod
+    def pagination_by_end_user(
+        cls,
+        *,
+        end_users: Optional[list[EndUser]],
+        page: int,
+        limit: int,
+        sort_by: str = "-updated_at",
+        keyword: Optional[str] = None,
+    ) -> InfiniteScrollPagination:
+        user_ids = [user.id for user in end_users]
+        message_ranked = (
+            db.session.query(
+                Message,
+                func.row_number().over(
+                    partition_by=Message.conversation_id,
+                    order_by=Message.created_at.asc()
+                ).label('rn')
+            )
+            .join(Conversation, Message.conversation_id == Conversation.id)
+            .filter(Conversation.is_deleted == False)
+            .subquery()
+        )
+
+        # 主查询：只选择Conversation，并关联first_messages获取第一条消息的属性
+        query = (
+            db.session.query(Conversation)
+            .outerjoin(
+                message_ranked,
+                and_(
+                    message_ranked.c.conversation_id == Conversation.id,
+                    message_ranked.c.rn == 1
+                )
+            )
+        )
+
+        query = query.filter(Conversation.from_end_user_id.in_(user_ids))
+
+        if keyword:
+            query = query.filter(message_ranked.c.query.ilike(f"%{keyword}%"))
+
+        match sort_by:
+            case "created_at":
+                query = query.order_by(Conversation.created_at.asc())
+            case "-created_at":
+                query = query.order_by(Conversation.created_at.desc())
+            case "updated_at":
+                query = query.order_by(Conversation.updated_at.asc())
+            case "-updated_at":
+                query = query.order_by(Conversation.updated_at.desc())
+            case _:
+                query = query.order_by(Conversation.created_at.desc())
+
+        conversations = db.paginate(query, page=page, per_page=limit, error_out=False)
+
+        return conversations
+        #
+        # query = select(Conversation).where(
+        #     Conversation.is_deleted == False,
+        #     Conversation.from_end_user_id == end_user_id,
+        # )
+        # if keyword:
+        #     keyword = f"%{keyword}%"
+        #     query = query.where(Conversation.name.ilike(keyword))
+        #
+        # match sort_by:
+        #     case "created_at":
+        #         query = query.order_by(Conversation.created_at.asc())
+        #     case "-created_at":
+        #         query = query.order_by(Conversation.created_at.desc())
+        #     case "updated_at":
+        #         query = query.order_by(Conversation.updated_at.asc())
+        #     case "-updated_at":
+        #         query = query.order_by(Conversation.updated_at.desc())
+        #     case _:
+        #         query = query.order_by(Conversation.created_at.desc())
+        #
+        # conversations = db.paginate(query, page=page, per_page=limit, error_out=False)
+        #
+        # return conversations
 
     @classmethod
     def _get_sort_params(cls, sort_by: str):
