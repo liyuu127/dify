@@ -314,8 +314,7 @@ const FileUploader = ({
     fileItem.file.resolveMethod = parseType
     if (parseType === 'fast') {
       // 快速解析不调用接口，只更新状态
-      if (fileItem.file.analysisId) delete fileItem.file.analysisId
-
+      // 注意：不再删除analysisId，保留之前的分析结果
       onFileUpdate(
         {
           ...fileItem,
@@ -329,7 +328,7 @@ const FileUploader = ({
       onParseTypeChange?.(fileID, parseType)
     }
     else {
-      // 多模态解析，需要调用接口
+      // 多模态解析
       try {
         onFileUpdate(
           {
@@ -340,11 +339,13 @@ const FileUploader = ({
           fileListRef.current,
         )
 
-        // 只有多模态解析才调用接口
-        const res = await fetchFileAnalysis({ params: { file_id: fileItem.file.id } })
+        // 只有第一次选择多模态解析且没有analysisId时才调用接口
+        if (!fileItem.file.analysisId) {
+          const res = await fetchFileAnalysis({ params: { file_id: fileItem.file.id } })
+          // 保存后端返回的analysisId
+          if (res && res.id) fileItem.file.analysisId = res.id
+        }
 
-        // 保存后端返回的analysisId
-        if (res && res.id) fileItem.file.analysisId = res.id
         onFileUpdate(
           {
             ...fileItem,
@@ -353,11 +354,6 @@ const FileUploader = ({
           100,
           fileListRef.current,
         )
-
-        notify({
-          type: 'success',
-          message: '多模态解析已开始',
-        })
 
         // 通知父组件解析类型变化
         onParseTypeChange?.(fileID, parseType)
@@ -371,11 +367,6 @@ const FileUploader = ({
           -2,
           fileListRef.current,
         )
-
-        notify({
-          type: 'error',
-          message: e?.response?.code === 'forbidden' ? e?.response?.message : '解析请求失败',
-        })
       }
     }
   }
