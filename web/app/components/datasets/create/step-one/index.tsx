@@ -30,6 +30,7 @@ type IStepOneProps = {
   files: FileItem[]
   updateFileList: (files: FileItem[]) => void
   updateFile: (fileItem: FileItem, progress: number, list: FileItem[]) => void
+  updateFileByOldId: (oldId:string, fileItem: FileItem, progress: number, list: FileItem[]) => void
   notionPages?: NotionPage[]
   updateNotionPages: (value: NotionPage[]) => void
   onStepChange: () => void
@@ -75,6 +76,7 @@ const StepOne = ({
   files,
   updateFileList,
   updateFile,
+  updateFileByOldId,
   notionPages = [],
   updateNotionPages,
   websitePages = [],
@@ -224,6 +226,7 @@ const StepOne = ({
                     prepareFileList={updateFileList}
                     onFileListUpdate={updateFileList}
                     onFileUpdate={updateFile}
+                    updateFileByOldId={updateFileByOldId}
                     onPreview={updateCurrentFile}
                     notSupportBatchUpload={notSupportBatchUpload}
                   />
