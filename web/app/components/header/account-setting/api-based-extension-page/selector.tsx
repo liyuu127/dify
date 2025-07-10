@@ -11,9 +11,7 @@ import {
   PortalToFollowElemContent,
   PortalToFollowElemTrigger,
 } from '@/app/components/base/portal-to-follow-elem'
-import {
-  ArrowUpRight,
-} from '@/app/components/base/icons/src/vender/line/arrows'
+
 import { useModalContext } from '@/context/modal-context'
 import { fetchApiBasedExtensionList } from '@/service/common'
 
@@ -79,7 +77,7 @@ const ApiBasedExtensionSelector: FC<ApiBasedExtensionSelectorProps> = ({
               <div className='text-xs font-medium text-text-tertiary'>
                 {t('common.apiBasedExtension.selector.title')}
               </div>
-              <div
+              {/* <div
                 className='flex cursor-pointer items-center text-xs text-text-accent'
                 onClick={() => {
                   setOpen(false)
@@ -88,7 +86,7 @@ const ApiBasedExtensionSelector: FC<ApiBasedExtensionSelectorProps> = ({
               >
                 {t('common.apiBasedExtension.selector.manage')}
                 <ArrowUpRight className='ml-0.5 h-3 w-3' />
-              </div>
+              </div> */}
             </div>
             <div className='max-h-[250px] overflow-y-auto'>
               {
@@ -111,7 +109,10 @@ const ApiBasedExtensionSelector: FC<ApiBasedExtensionSelectorProps> = ({
               className='flex h-8 cursor-pointer items-center px-3 text-sm text-text-accent'
               onClick={() => {
                 setOpen(false)
-                setShowApiBasedExtensionModal({ payload: {}, onSaveCallback: () => mutate() })
+                setShowApiBasedExtensionModal({
+ payload: {},
+onSaveCallback: () => mutate(),
+})
               }}
             >
               <RiAddLine className='mr-2 h-4 w-4' />

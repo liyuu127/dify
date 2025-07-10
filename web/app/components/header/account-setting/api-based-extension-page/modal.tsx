@@ -3,7 +3,6 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import Modal from '@/app/components/base/modal'
 import Button from '@/app/components/base/button'
-import { BookOpen01 } from '@/app/components/base/icons/src/vender/line/education'
 import type { ApiBasedExtension } from '@/models/common'
 import {
   addApiBasedExtension,
@@ -33,13 +32,19 @@ const ApiBasedExtensionModal: FC<ApiBasedExtensionModalProps> = ({
   const [loading, setLoading] = useState(false)
   const { notify } = useToastContext()
   const handleDataChange = (type: string, value: string) => {
-    setLocaleData({ ...localeData, [type]: value })
+    setLocaleData({
+ ...localeData,
+[type]: value,
+})
   }
   const handleSave = async () => {
     setLoading(true)
 
     if (localeData && localeData.api_key && localeData.api_key?.length < 5) {
-      notify({ type: 'error', message: t('common.apiBasedExtension.modal.apiKey.lengthError') })
+      notify({
+ type: 'error',
+message: t('common.apiBasedExtension.modal.apiKey.lengthError'),
+})
       setLoading(false)
       return
     }
@@ -61,7 +66,10 @@ const ApiBasedExtensionModal: FC<ApiBasedExtensionModalProps> = ({
           },
         })
 
-        notify({ type: 'success', message: t('common.actionMsg.modifiedSuccessfully') })
+        notify({
+ type: 'success',
+message: t('common.actionMsg.modifiedSuccessfully'),
+})
       }
 
       if (onSave)
@@ -99,14 +107,14 @@ const ApiBasedExtensionModal: FC<ApiBasedExtensionModalProps> = ({
       <div className='py-2'>
         <div className='flex h-9 items-center justify-between text-sm font-medium text-text-primary'>
           {t('common.apiBasedExtension.modal.apiEndpoint.title')}
-          <a
+          {/* <a
             href={t('common.apiBasedExtension.linkUrl') || '/'}
             target='_blank' rel='noopener noreferrer'
             className='group flex items-center text-xs font-normal text-text-accent'
           >
             <BookOpen01 className='mr-1 h-3 w-3' />
             {t('common.apiBasedExtension.link')}
-          </a>
+          </a> */}
         </div>
         <input
           value={localeData.api_endpoint || ''}

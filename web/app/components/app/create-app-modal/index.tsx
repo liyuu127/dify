@@ -21,7 +21,6 @@ import { AppModes } from '@/types/app'
 import { createApp } from '@/service/apps'
 import Input from '@/app/components/base/input'
 import Textarea from '@/app/components/base/textarea'
-import AppIcon from '@/app/components/base/app-icon'
 import AppsFull from '@/app/components/billing/apps-full-in-dialog'
 import { Agent, Workflow } from '@/app/components/base/icons/src/vender/solid/communication'
 import { NEED_REFRESH_APP_LIST_KEY } from '@/config'
@@ -225,14 +224,14 @@ message: t('app.newApp.appCreateFailed'),
                   placeholder={t('app.newApp.appNamePlaceholder') || ''}
                 />
               </div>
-              <AppIcon
+              {/* <AppIcon
                 iconType={appIcon.type}
                 icon={appIcon.type === 'emoji' ? appIcon.icon : appIcon.fileId}
                 background={appIcon.type === 'emoji' ? appIcon.background : '#fff'}
                 imageUrl={appIcon.type === 'image' ? appIcon.url : undefined}
                 size='xxl' className='rounded-1xl cursor-pointer'
                 onClick={() => { setShowAppIconPicker(true) }}
-              />
+              /> */}
               {showAppIconPicker && <AppIconPicker
                 onSelect={(payload) => {
                   setAppIcon(payload)
