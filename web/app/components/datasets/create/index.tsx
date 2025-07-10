@@ -75,6 +75,20 @@ const DatasetUpdateForm = ({ datasetId }: DatasetUpdateFormProps) => {
     // })
     // setFiles(newList)
   }
+
+
+  const updateFileByOldId = (oldId: string, fileItem: FileItem, progress: number, list: FileItem[]) => {
+    // 旧文件的下标
+    const targetIndex = list.findIndex(file => file.fileID === oldId)
+
+    // 替换旧文件为新文件
+    list[targetIndex] = {
+      ...fileItem,
+      progress,
+    }
+    setFiles([...list])
+  }
+
   const updateIndexingTypeCache = (type: string) => {
     setIndexTypeCache(type)
   }
@@ -134,6 +148,7 @@ const DatasetUpdateForm = ({ datasetId }: DatasetUpdateFormProps) => {
           changeType={setDataSourceType}
           files={fileList}
           updateFile={updateFile}
+          updateFileByOldId={updateFileByOldId}
           updateFileList={updateFileList}
           notionPages={notionPages}
           updateNotionPages={updateNotionPages}
