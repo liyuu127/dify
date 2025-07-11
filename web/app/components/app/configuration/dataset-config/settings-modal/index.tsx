@@ -75,12 +75,19 @@ const SettingsModal: FC<SettingsModalProps> = ({
   const [retrievalConfig, setRetrievalConfig] = useState(localeCurrentDataset?.retrieval_model_dict as RetrievalConfig)
 
   const handleValueChange = (type: string, value: string) => {
-    setLocaleCurrentDataset({ ...localeCurrentDataset, [type]: value })
+    setLocaleCurrentDataset({
+ ...localeCurrentDataset,
+[type]: value,
+})
   }
   const [isHideChangedTip, setIsHideChangedTip] = useState(false)
   const isRetrievalChanged = !isEqual(retrievalConfig, localeCurrentDataset?.retrieval_model_dict) || indexMethod !== localeCurrentDataset?.indexing_technique
 
-  const handleSettingsChange = (data: { top_k?: number; score_threshold?: number; score_threshold_enabled?: boolean }) => {
+  const handleSettingsChange = (data: {
+ top_k?: number;
+score_threshold?: number;
+score_threshold_enabled?: boolean
+}) => {
     if (data.top_k !== undefined)
       setTopK(data.top_k)
     if (data.score_threshold !== undefined)
@@ -101,7 +108,10 @@ const SettingsModal: FC<SettingsModalProps> = ({
     if (loading)
       return
     if (!localeCurrentDataset.name?.trim()) {
-      notify({ type: 'error', message: t('datasetSettings.form.nameError') })
+      notify({
+ type: 'error',
+message: t('datasetSettings.form.nameError'),
+})
       return
     }
     if (
@@ -111,7 +121,10 @@ const SettingsModal: FC<SettingsModalProps> = ({
         indexMethod,
       })
     ) {
-      notify({ type: 'error', message: t('appDebug.datasetConfig.rerankModelRequired') })
+      notify({
+ type: 'error',
+message: t('appDebug.datasetConfig.rerankModelRequired'),
+})
       return
     }
     try {
@@ -150,7 +163,10 @@ const SettingsModal: FC<SettingsModalProps> = ({
         })
       }
       await updateDatasetSetting(requestParams)
-      notify({ type: 'success', message: t('common.actionMsg.modifiedSuccessfully') })
+      notify({
+ type: 'success',
+message: t('common.actionMsg.modifiedSuccessfully'),
+})
       onSave({
         ...localeCurrentDataset,
         indexing_technique: indexMethod,
@@ -158,7 +174,10 @@ const SettingsModal: FC<SettingsModalProps> = ({
       })
     }
     catch {
-      notify({ type: 'error', message: t('common.actionMsg.modifiedUnsuccessfully') })
+      notify({
+ type: 'error',
+message: t('common.actionMsg.modifiedUnsuccessfully'),
+})
     }
     finally {
       setLoading(false)
@@ -166,7 +185,10 @@ const SettingsModal: FC<SettingsModalProps> = ({
   }
 
   const getMembers = async () => {
-    const { accounts } = await fetchMembers({ url: '/workspaces/current/members', params: {} })
+    const { accounts } = await fetchMembers({
+ url: '/workspaces/current/members',
+params: {},
+})
     if (!accounts)
       setMemberList([])
     else
@@ -271,10 +293,10 @@ const SettingsModal: FC<SettingsModalProps> = ({
                   modelList={embeddingsModelList}
                 />
               </div>
-              <div className='mt-2 w-full text-xs leading-6 text-text-tertiary'>
+              {/* <div className='mt-2 w-full text-xs leading-6 text-text-tertiary'>
                 {t('datasetSettings.form.embeddingModelTip')}
                 <span className='cursor-pointer text-text-accent' onClick={() => setShowAccountSettingModal({ payload: 'provider' })}>{t('datasetSettings.form.embeddingModelTipLink')}</span>
-              </div>
+              </div> */}
             </div>
           </div>
         )}
@@ -327,10 +349,10 @@ const SettingsModal: FC<SettingsModalProps> = ({
             <div className={cn(labelClass, 'w-auto min-w-[168px]')}>
               <div>
                 <div className='system-sm-semibold text-text-secondary'>{t('datasetSettings.form.retrievalSetting.title')}</div>
-                <div className='text-xs font-normal leading-[18px] text-text-tertiary'>
+                {/* <div className='text-xs font-normal leading-[18px] text-text-tertiary'>
                   <a target='_blank' rel='noopener noreferrer' href='https://docs.dify.ai/guides/knowledge-base/create-knowledge-and-upload-documents#id-4-retrieval-settings' className='text-text-accent'>{t('datasetSettings.form.retrievalSetting.learnMore')}</a>
                   {t('datasetSettings.form.retrievalSetting.description')}
-                </div>
+                </div> */}
               </div>
             </div>
             <div>

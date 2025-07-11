@@ -15,6 +15,11 @@ import { DataSourceProvider, type NotionPage } from '@/models/common'
 import { useModalContext } from '@/context/modal-context'
 import { useDefaultModel } from '@/app/components/header/account-setting/model-provider-page/hooks'
 
+// 扩展FileItem类型，添加解析类型属性
+type ExtendedFileItem = FileItem & {
+  parseType?: 'fast' | 'multimodal'
+}
+
 type DatasetUpdateFormProps = {
   datasetId?: string
 }
@@ -37,7 +42,7 @@ const DatasetUpdateForm = ({ datasetId }: DatasetUpdateFormProps) => {
   const [step, setStep] = useState(1)
   const [indexingTypeCache, setIndexTypeCache] = useState('')
   const [retrievalMethodCache, setRetrievalMethodCache] = useState('')
-  const [fileList, setFiles] = useState<FileItem[]>([])
+  const [fileList, setFiles] = useState<ExtendedFileItem[]>([])
   const [result, setResult] = useState<createDocumentResponse | undefined>()
   const [hasError, setHasError] = useState(false)
   const { data: embeddingsDefaultModel } = useDefaultModel(ModelTypeEnum.textEmbedding)
@@ -50,13 +55,14 @@ const DatasetUpdateForm = ({ datasetId }: DatasetUpdateFormProps) => {
   const [websitePages, setWebsitePages] = useState<CrawlResultItem[]>([])
   const [crawlOptions, setCrawlOptions] = useState<CrawlOptions>(DEFAULT_CRAWL_OPTIONS)
 
-  const updateFileList = (preparedFiles: FileItem[]) => {
+  const updateFileList = (preparedFiles: ExtendedFileItem[]) => {
     setFiles(preparedFiles)
   }
   const [websiteCrawlProvider, setWebsiteCrawlProvider] = useState<DataSourceProvider>(DataSourceProvider.fireCrawl)
   const [websiteCrawlJobId, setWebsiteCrawlJobId] = useState('')
 
-  const updateFile = (fileItem: FileItem, progress: number, list: FileItem[]) => {
+  const updateFile = (fileItem: ExtendedFileItem, progress: number, list: ExtendedFileItem[]) => {
+    console.log('updateFile', fileItem, progress, list)
     const targetIndex = list.findIndex(file => file.fileID === fileItem.fileID)
     list[targetIndex] = {
       ...list[targetIndex],
@@ -75,20 +81,6 @@ const DatasetUpdateForm = ({ datasetId }: DatasetUpdateFormProps) => {
     // })
     // setFiles(newList)
   }
-
-
-  const updateFileByOldId = (oldId: string, fileItem: FileItem, progress: number, list: FileItem[]) => {
-    // 旧文件的下标
-    const targetIndex = list.findIndex(file => file.fileID === oldId)
-
-    // 替换旧文件为新文件
-    list[targetIndex] = {
-      ...fileItem,
-      progress,
-    }
-    setFiles([...list])
-  }
-
   const updateIndexingTypeCache = (type: string) => {
     setIndexTypeCache(type)
   }
@@ -148,7 +140,6 @@ const DatasetUpdateForm = ({ datasetId }: DatasetUpdateFormProps) => {
           changeType={setDataSourceType}
           files={fileList}
           updateFile={updateFile}
-          updateFileByOldId={updateFileByOldId}
           updateFileList={updateFileList}
           notionPages={notionPages}
           updateNotionPages={updateNotionPages}

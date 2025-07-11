@@ -21,16 +21,20 @@ import VectorSpaceFull from '@/app/components/billing/vector-space-full'
 import classNames from '@/utils/classnames'
 import { Icon3Dots } from '@/app/components/base/icons/src/vender/line/others'
 
+// 扩展FileItem类型，添加解析类型属性
+type ExtendedFileItem = FileItem & {
+  parseType?: 'fast' | 'multimodal'
+}
+
 type IStepOneProps = {
   datasetId?: string
   dataSourceType?: DataSourceType
   dataSourceTypeDisable: boolean
   hasConnection: boolean
   onSetting: () => void
-  files: FileItem[]
-  updateFileList: (files: FileItem[]) => void
-  updateFile: (fileItem: FileItem, progress: number, list: FileItem[]) => void
-  updateFileByOldId: (oldId:string, fileItem: FileItem, progress: number, list: FileItem[]) => void
+  files: ExtendedFileItem[]
+  updateFileList: (files: ExtendedFileItem[]) => void
+  updateFile: (fileItem: ExtendedFileItem, progress: number, list: ExtendedFileItem[]) => void
   notionPages?: NotionPage[]
   updateNotionPages: (value: NotionPage[]) => void
   onStepChange: () => void
@@ -76,7 +80,6 @@ const StepOne = ({
   files,
   updateFileList,
   updateFile,
-  updateFileByOldId,
   notionPages = [],
   updateNotionPages,
   websitePages = [],
@@ -226,9 +229,17 @@ const StepOne = ({
                     prepareFileList={updateFileList}
                     onFileListUpdate={updateFileList}
                     onFileUpdate={updateFile}
-                    updateFileByOldId={updateFileByOldId}
                     onPreview={updateCurrentFile}
                     notSupportBatchUpload={notSupportBatchUpload}
+                    onParseTypeChange={(fileID, parseType) => {
+                      // 处理解析类型变化
+                      const updatedFiles = [...files]
+                      const fileIndex = updatedFiles.findIndex(f => f.fileID === fileID)
+                      if (fileIndex !== -1) {
+                        updatedFiles[fileIndex].parseType = parseType
+                        updateFileList(updatedFiles)
+                      }
+                    }}
                   />
                   {isShowVectorSpaceFull && (
                     <div className='mb-4 max-w-[640px]'>

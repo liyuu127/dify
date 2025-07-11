@@ -32,7 +32,6 @@ type IFileUploaderProps = {
   titleClassName?: string
   prepareFileList: (files: ExtendedFileItem[]) => void
   onFileUpdate: (fileItem: ExtendedFileItem, progress: number, list: ExtendedFileItem[]) => void
-  updateFileByOldId: (oldId: string, fileItem: ExtendedFileItem, progress: number, list: ExtendedFileItem[]) => void
   onFileListUpdate?: (files: ExtendedFileItem[]) => void
   onPreview: (file: File) => void
   notSupportBatchUpload?: boolean
@@ -40,20 +39,20 @@ type IFileUploaderProps = {
 }
 
 const FileUploader = ({
-                        fileList,
-                        titleClassName,
-                        prepareFileList,
-                        onFileUpdate,
-                        updateFileByOldId,
-                        onFileListUpdate,
-                        onPreview,
-                        notSupportBatchUpload,
-                        onParseTypeChange,
-                      }: IFileUploaderProps) => {
-  const {t} = useTranslation()
-  const {notify} = useContext(ToastContext)
-  const {locale} = useContext(I18n)
+  fileList,
+  titleClassName,
+  prepareFileList,
+  onFileUpdate,
+  onFileListUpdate,
+  onPreview,
+  notSupportBatchUpload,
+  onParseTypeChange,
+}: IFileUploaderProps) => {
+  const { t } = useTranslation()
+  const { notify } = useContext(ToastContext)
+  const { locale } = useContext(I18n)
   const [dragging, setDragging] = useState(false)
+  const [loadingFileId, setLoadingFileId] = useState<string | null>(null) // 添加loading状态
   const dropRef = useRef<HTMLDivElement>(null)
   const dragRef = useRef<HTMLDivElement>(null)
   const fileUploader = useRef<HTMLInputElement>(null)
@@ -315,7 +314,7 @@ const FileUploader = ({
   // 点击多模态模式调用接口后，把multimodalId缓存起来。此时不要调用onFileUpdate方法，调用新的updateFileByOldId方法，把缓存的fastId和新的文件以及文件集合传过去，把旧的那个文件信息替换成新的文件。
   // 再点击快速模式切换后，一样的把multimodalId缓存和旧的文件传过去，执行替换操作
   // 再次切换都同理
-  const fileParseCache :FileParseCache = {
+  const fileParseCache: FileParseCache = {
     fastId: undefined,
     fastItem: undefined,
     multimodalId: undefined,
@@ -334,7 +333,8 @@ const FileUploader = ({
     fileItem.file.resolveMethod = parseType
     if (parseType === 'fast') {
       // 快速解析不调用接口，只更新状态
-      // 注意：不再删除analysisId，保留之前的分析结果
+      if (fileItem.file.analysisId) delete fileItem.file.analysisId
+
       onFileUpdate(
         {
           ...fileItem,
@@ -350,20 +350,23 @@ const FileUploader = ({
     else {
       // 多模态解析
       try {
-        onFileUpdate(
-          {
-            ...fileItem,
-            progress: 0,
-          },
-          0,
-          fileListRef.current,
-        )
+        // 检查是否已经调用过多模态解析接口
+        const hasCalledAnalysisAPI = fileItem.file.hasCalledAnalysisAPI || false
+        // 只有第一次点击多模态才调用接口
+        if (!hasCalledAnalysisAPI) {
+          // 调用解析接口
+          const res = await fetchFileAnalysis({
+            params: {
+              file_id: fileItem.file.id,
+            },
+          })
 
-        // 只有第一次选择多模态解析且没有analysisId时才调用接口
-        if (!fileItem.file.analysisId) {
-          const res = await fetchFileAnalysis({ params: { file_id: fileItem.file.id } })
           // 保存后端返回的analysisId
-          if (res && res.id) fileItem.file.analysisId = res.id
+          if (res && res.id) {
+            fileItem.file.analysisId = res.id
+            // 标记已经调用过多模态解析接口
+            fileItem.file.hasCalledAnalysisAPI = true
+          }
         }
 
         onFileUpdate(
@@ -379,6 +382,9 @@ const FileUploader = ({
         onParseTypeChange?.(fileID, parseType)
       }
       catch (e: any) {
+        // 清除loading状态
+        setLoadingFileId(null)
+
         onFileUpdate(
           {
             ...fileItem,
@@ -459,7 +465,7 @@ const FileUploader = ({
             </div>
             <div className="flex shrink grow flex-col gap-0.5">
               <div className='flex w-full'>
-                <div className="w-0 grow truncate text-sm leading-4 text-text-secondary">{fileItem.file.name}</div>
+                <div className="max-w-[200px] truncate text-sm leading-4 text-text-secondary">{fileItem.file.name}</div>
               </div>
               <div className="w-full truncate leading-3 text-text-tertiary">
                 <span className='uppercase'>{getFileType(fileItem.file)}</span>
@@ -469,14 +475,19 @@ const FileUploader = ({
                   <span>10k characters</span> */}
               </div>
             </div>
-            <div className="flex w-16 shrink-0 items-center justify-end gap-1 pr-3">
+            <div className="flex grow items-center justify-end gap-1 pr-3">
               {/* <span className="flex justify-center items-center w-6 h-6 cursor-pointer">
                   <RiErrorWarningFill className='size-4 text-text-warning' />
                 </span> */}
-
+              {(fileItem.progress < 100 && fileItem.progress >= 0) && (
+                <SimplePieChart percentage={fileItem.progress} stroke={chartColor} fill={chartColor} animationDuration={0} />
+              )}
               {/* 添加两个单选框 */}
               <label
-                className="mr-2 flex cursor-pointer items-center gap-1 text-xs"
+                className={cn(
+                  'mr-2 flex cursor-pointer items-center gap-1 text-xs',
+                  loadingFileId === fileItem.fileID ? 'opacity-50' : '',
+                )}
                 onClick={e => e.stopPropagation()}
               >
                 <input
@@ -485,12 +496,15 @@ const FileUploader = ({
                   checked={fileItem.parseType === 'fast' || fileItem.parseType === undefined}
                   onChange={e => handleRadioChange(e, fileItem.fileID, 'fast')}
                   className="size-4 cursor-pointer"
+                  disabled={loadingFileId === fileItem.fileID}
                 />
                 <span className="whitespace-nowrap">快速解析</span>
               </label>
-
               <label
-                className="mr-2 flex cursor-pointer items-center gap-1 text-xs"
+                className={cn(
+                  'mr-2 flex cursor-pointer items-center gap-1 text-xs',
+                  loadingFileId === fileItem.fileID ? 'opacity-50' : '',
+                )}
                 onClick={e => e.stopPropagation()}
               >
                 <input
@@ -499,13 +513,10 @@ const FileUploader = ({
                   checked={fileItem.parseType === 'multimodal'}
                   onChange={e => handleRadioChange(e, fileItem.fileID, 'multimodal')}
                   className="size-4 cursor-pointer"
+                  disabled={loadingFileId === fileItem.fileID}
                 />
                 <span className="whitespace-nowrap">多模态解析</span>
               </label>
-
-              {(fileItem.progress < 100 && fileItem.progress >= 0) && (
-                <SimplePieChart percentage={fileItem.progress} stroke={chartColor} fill={chartColor} animationDuration={0} />
-              )}
               <span className="flex h-6 w-6 cursor-pointer items-center justify-center" onClick={(e) => {
                 e.stopPropagation()
                 removeFile(fileItem.fileID)
