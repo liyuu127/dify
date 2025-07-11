@@ -1,8 +1,9 @@
 'use client'
-import React, { useMemo, useState } from 'react'
+import React, { forwardRef, useImperativeHandle, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { RiArrowRightLine, RiFolder6Line } from '@remixicon/react'
 import FilePreview from '../file-preview'
+import type { FileUploaderRef } from '../file-uploader'
 import FileUploader from '../file-uploader'
 import NotionPagePreview from '../notion-page-preview'
 import EmptyDatasetCreationModal from '../empty-dataset-creation-modal'
@@ -21,16 +22,20 @@ import VectorSpaceFull from '@/app/components/billing/vector-space-full'
 import classNames from '@/utils/classnames'
 import { Icon3Dots } from '@/app/components/base/icons/src/vender/line/others'
 
+// 扩展FileItem类型，添加解析类型属性
+type ExtendedFileItem = FileItem & {
+  parseType?: 'fast' | 'multimodal'
+}
+
 type IStepOneProps = {
   datasetId?: string
   dataSourceType?: DataSourceType
   dataSourceTypeDisable: boolean
   hasConnection: boolean
   onSetting: () => void
-  files: FileItem[]
-  updateFileList: (files: FileItem[]) => void
-  updateFile: (fileItem: FileItem, progress: number, list: FileItem[]) => void
-  updateFileByOldId: (oldId:string, fileItem: FileItem, progress: number, list: FileItem[]) => void
+  files: ExtendedFileItem[]
+  updateFileList: (files: ExtendedFileItem[]) => void
+  updateFile: (fileItem: ExtendedFileItem, progress: number, list: ExtendedFileItem[]) => void
   notionPages?: NotionPage[]
   updateNotionPages: (value: NotionPage[]) => void
   onStepChange: () => void
@@ -65,7 +70,12 @@ export const NotionConnector = (props: NotionConnectorProps) => {
   )
 }
 
-const StepOne = ({
+// 定义组件引用类型
+export type StepOneRef = {
+  clearFilesAndCache: () => void
+}
+
+const StepOne = forwardRef<StepOneRef, IStepOneProps>(({
   datasetId,
   dataSourceType: inCreatePageDataSourceType,
   dataSourceTypeDisable,
@@ -76,7 +86,6 @@ const StepOne = ({
   files,
   updateFileList,
   updateFile,
-  updateFileByOldId,
   notionPages = [],
   updateNotionPages,
   websitePages = [],
@@ -85,13 +94,21 @@ const StepOne = ({
   onWebsiteCrawlJobIdChange,
   crawlOptions,
   onCrawlOptionsChange,
-}: IStepOneProps) => {
+}, ref) => {
   const { dataset } = useDatasetDetailContext()
   const [showModal, setShowModal] = useState(false)
   const [currentFile, setCurrentFile] = useState<File | undefined>()
   const [currentNotionPage, setCurrentNotionPage] = useState<NotionPage | undefined>()
   const [currentWebsite, setCurrentWebsite] = useState<CrawlResultItem | undefined>()
   const { t } = useTranslation()
+  const fileUploaderRef = useRef<FileUploaderRef>(null)
+
+  // 暴露方法给父组件
+  useImperativeHandle(ref, () => ({
+    clearFilesAndCache: () => {
+      fileUploaderRef.current?.clearFilesAndCache()
+    },
+  }), [])
 
   const modalShowHandle = () => setShowModal(true)
   const modalCloseHandle = () => setShowModal(false)
@@ -221,14 +238,23 @@ const StepOne = ({
               {dataSourceType === DataSourceType.FILE && (
                 <>
                   <FileUploader
+                    ref={fileUploaderRef}
                     fileList={files}
                     titleClassName={!shouldShowDataSourceTypeList ? 'mt-[30px] !mb-[44px] !text-lg' : undefined}
                     prepareFileList={updateFileList}
                     onFileListUpdate={updateFileList}
                     onFileUpdate={updateFile}
-                    updateFileByOldId={updateFileByOldId}
                     onPreview={updateCurrentFile}
                     notSupportBatchUpload={notSupportBatchUpload}
+                    onParseTypeChange={(fileID, parseType) => {
+                      // 处理解析类型变化
+                      const updatedFiles = [...files]
+                      const fileIndex = updatedFiles.findIndex(f => f.fileID === fileID)
+                      if (fileIndex !== -1) {
+                        updatedFiles[fileIndex].parseType = parseType
+                        updateFileList(updatedFiles)
+                      }
+                    }}
                   />
                   {isShowVectorSpaceFull && (
                     <div className='mb-4 max-w-[640px]'>
@@ -326,6 +352,9 @@ const StepOne = ({
       </div>
     </div>
   )
-}
+})
+
+// 设置组件名称
+StepOne.displayName = 'StepOne'
 
 export default StepOne
