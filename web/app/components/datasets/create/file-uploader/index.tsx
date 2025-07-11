@@ -345,9 +345,6 @@ const FileUploader = ({
     const fileItem: any = fileListRef.current.find(item => item.fileID === fileID)
     if (!fileItem || !fileItem.file.id) return
 
-    // 设置文件中的resolveMethod属性，用于预览组件判断使用哪个ID
-    fileItem.file.resolveMethod = parseType
-
     // 查找缓存中是否已存在该文件的记录
     const cacheIndex = fileParseCache.findIndex((cache: FileParseCache) =>
       cache.fastItem?.fileID === fileID || cache.multimodalItem?.fileID === fileID,
@@ -369,6 +366,8 @@ const FileUploader = ({
           // 确保删除多模态相关的属性
           analysisId: undefined,
           hasCalledAnalysisAPI: undefined,
+          // 确保设置正确的解析方法
+          resolveMethod: 'fast',
         },
         progress: 100,
         parseType: 'fast',
@@ -383,6 +382,9 @@ const FileUploader = ({
         fastItem.file = {
           ...fastItem.file,
           resolveMethod: 'fast',
+          // 删除多模态解析可能添加的属性
+          analysisId: undefined,
+          hasCalledAnalysisAPI: undefined,
         }
       }
 
@@ -447,6 +449,10 @@ const FileUploader = ({
         // 如果没有缓存的multimodalItem，才进行后续处理
         // 检查是否已经调用过多模态解析接口
         const hasCalledAnalysisAPI = fileItem.file.hasCalledAnalysisAPI || false
+
+        // 设置加载状态
+        setLoadingFileId(fileID)
+
         // 只有第一次点击多模态才调用接口
         if (!hasCalledAnalysisAPI) {
           // 调用解析接口
@@ -458,64 +464,127 @@ const FileUploader = ({
 
           // 保存后端返回的analysisId和完整数据
           if (res) {
-            // 更新文件的analysisId
-            fileItem.file.analysisId = res.id
-            // 标记已经调用过多模态解析接口
-            fileItem.file.hasCalledAnalysisAPI = true
-
             // 创建新的文件对象，合并原始数据和后端返回的数据
             const newFile = {
               ...fileItem.file,
               ...res,
+              analysisId: res.id,
+              hasCalledAnalysisAPI: true,
               resolveMethod: 'multimodal', // 确保保留解析方法
             }
 
-            // 更新fileItem中的file
-            fileItem.file = newFile
+            // 创建多模态文件项
+            const multimodalItem: ExtendedFileItem = {
+              fileID: fileItem.fileID,
+              file: newFile,
+              progress: 100,
+              parseType: 'multimodal',
+            }
+
+            // 更新fileParseCache中的multimodalItem
+            if (cacheIndex >= 0) {
+              setFileParseCache((prev) => {
+                const newCache = [...prev]
+                newCache[cacheIndex].multimodalItem = multimodalItem
+                return newCache
+              })
+            }
+            else {
+              setFileParseCache(prev => [...prev, {
+                fastItem: undefined,
+                multimodalItem,
+              }])
+            }
+
+            // 同时更新fileListRef中的文件
+            const fileIndex = fileListRef.current.findIndex(item => item.fileID === fileID)
+            if (fileIndex >= 0) fileListRef.current[fileIndex] = multimodalItem
+
+            // 使用更新后的multimodalItem调用onFileUpdate
+            onFileUpdate(
+              multimodalItem,
+              100,
+              fileListRef.current,
+            )
+
+            // 清除loading状态
+            setLoadingFileId(null)
+
+            // 通知父组件解析类型变化
+            onParseTypeChange?.(fileID, parseType)
           }
           else {
             // 如果没有返回file数据，只设置resolveMethod
             fileItem.file.resolveMethod = 'multimodal'
+            fileItem.file.hasCalledAnalysisAPI = true
+            fileItem.parseType = 'multimodal'
+
+            // 更新fileParseCache中的multimodalItem
+            if (cacheIndex >= 0) {
+              setFileParseCache((prev) => {
+                const newCache = [...prev]
+                newCache[cacheIndex].multimodalItem = fileItem
+                return newCache
+              })
+            }
+            else {
+              setFileParseCache(prev => [...prev, {
+                fastItem: undefined,
+                multimodalItem: fileItem,
+              }])
+            }
+
+            // 清除loading状态
+            setLoadingFileId(null)
+
+            // 通知父组件解析类型变化
+            onParseTypeChange?.(fileID, parseType)
           }
         }
-
-        // 创建多模态文件项
-        const multimodalItem: ExtendedFileItem = {
-          fileID: fileItem.fileID,
-          file: fileItem.file,
-          progress: 100,
-          parseType: 'multimodal',
-        }
-
-        // 更新fileParseCache中的multimodalItem
-        if (cacheIndex >= 0) {
-          setFileParseCache((prev) => {
-            const newCache = [...prev]
-            newCache[cacheIndex].multimodalItem = multimodalItem
-            return newCache
-          })
-        }
         else {
-          setFileParseCache(prev => [...prev, {
-            fastItem: undefined,
+          // 已经调用过API，但没有缓存，创建一个新的multimodalItem
+          const multimodalItem: ExtendedFileItem = {
+            fileID: fileItem.fileID,
+            file: {
+              ...fileItem.file,
+              resolveMethod: 'multimodal',
+            },
+            progress: 100,
+            parseType: 'multimodal',
+          }
+
+          // 更新fileParseCache中的multimodalItem
+          if (cacheIndex >= 0) {
+            setFileParseCache((prev) => {
+              const newCache = [...prev]
+              newCache[cacheIndex].multimodalItem = multimodalItem
+              return newCache
+            })
+          }
+          else {
+            setFileParseCache(prev => [...prev, {
+              fastItem: undefined,
+              multimodalItem,
+            }])
+          }
+
+          // 同时更新fileListRef中的文件
+          const fileIndex = fileListRef.current.findIndex(item => item.fileID === fileID)
+          if (fileIndex >= 0) fileListRef.current[fileIndex] = multimodalItem
+
+          // 使用更新后的multimodalItem调用onFileUpdate
+          onFileUpdate(
             multimodalItem,
-          }])
+            100,
+            fileListRef.current,
+          )
+
+          // 清除loading状态
+          setLoadingFileId(null)
+
+          // 通知父组件解析类型变化
+          onParseTypeChange?.(fileID, parseType)
         }
-
-        // 同时更新fileListRef中的文件
-        const fileIndex = fileListRef.current.findIndex(item => item.fileID === fileID)
-        if (fileIndex >= 0) fileListRef.current[fileIndex] = multimodalItem
-
-        // 使用更新后的multimodalItem调用onFileUpdate
-        onFileUpdate(
-          multimodalItem,
-          100,
-          fileListRef.current,
-        )
-
-        console.log(fileParseCache, 'fileParseCache')
-        // 通知父组件解析类型变化
-        onParseTypeChange?.(fileID, parseType)
       }
       catch (e: any) {
         // 清除loading状态
