@@ -1,5 +1,5 @@
 'use client'
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useContext } from 'use-context-selector'
 import useSWR from 'swr'
@@ -36,6 +36,7 @@ type IFileUploaderProps = {
   onPreview: (file: File) => void
   notSupportBatchUpload?: boolean
   onParseTypeChange?: (fileID: string, parseType: 'fast' | 'multimodal') => void
+  resetOnBack?: boolean // 添加一个属性，控制是否在返回上一步时清空文件
 }
 
 // 当前页面两种状态的ID缓存
@@ -44,7 +45,12 @@ type FileParseCache = {
   multimodalItem?: ExtendedFileItem
 }
 
-const FileUploader = ({
+// 定义组件引用类型
+export type FileUploaderRef = {
+  clearFilesAndCache: () => void
+}
+
+const FileUploader = forwardRef<FileUploaderRef, IFileUploaderProps>(({
   fileList,
   titleClassName,
   prepareFileList,
@@ -53,7 +59,8 @@ const FileUploader = ({
   onPreview,
   notSupportBatchUpload,
   onParseTypeChange,
-}: IFileUploaderProps) => {
+  resetOnBack,
+}, ref) => {
   const { t } = useTranslation()
   const { notify } = useContext(ToastContext)
   const { locale } = useContext(I18n)
@@ -615,6 +622,35 @@ const FileUploader = ({
     }
   }, [handleDrop])
 
+  // 清空文件和缓存的方法
+  const clearFilesAndCache = useCallback(() => {
+    // 清空文件上传器的值
+    if (fileUploader.current)
+      fileUploader.current.value = ''
+
+    // 清空文件列表引用
+    fileListRef.current = []
+
+    // 清空文件解析缓存
+    setFileParseCache([])
+
+    // 清空加载状态
+    setLoadingFileId(null)
+
+    // 清空拖拽状态
+    setDragging(false)
+
+    // 通知父组件更新文件列表（必须放在最后，确保所有状态都已清空）
+    onFileListUpdate?.([])
+
+    console.log('文件和缓存已清空')
+  }, [onFileListUpdate])
+
+  // 暴露方法给父组件
+  useImperativeHandle(ref, () => ({
+    clearFilesAndCache,
+  }), [clearFilesAndCache])
+
   return (
     <div className="mb-5 w-[640px]">
       {!hideUpload && (
@@ -734,6 +770,9 @@ const FileUploader = ({
       </div>
     </div>
   )
-}
+})
+
+// 设置组件名称
+FileUploader.displayName = 'FileUploader'
 
 export default FileUploader

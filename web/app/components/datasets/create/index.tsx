@@ -1,8 +1,9 @@
 'use client'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import AppUnavailable from '../../base/app-unavailable'
 import { ModelTypeEnum } from '../../header/account-setting/model-provider-page/declarations'
+import type { StepOneRef } from './step-one'
 import StepOne from './step-one'
 import StepTwo from './step-two'
 import StepThree from './step-three'
@@ -46,6 +47,7 @@ const DatasetUpdateForm = ({ datasetId }: DatasetUpdateFormProps) => {
   const [result, setResult] = useState<createDocumentResponse | undefined>()
   const [hasError, setHasError] = useState(false)
   const { data: embeddingsDefaultModel } = useDefaultModel(ModelTypeEnum.textEmbedding)
+  const stepOneRef = useRef<StepOneRef>(null)
 
   const [notionPages, setNotionPages] = useState<NotionPage[]>([])
   const updateNotionPages = (value: NotionPage[]) => {
@@ -96,8 +98,24 @@ const DatasetUpdateForm = ({ datasetId }: DatasetUpdateFormProps) => {
   }, [step, setStep])
 
   const changeStep = useCallback((delta: number) => {
+    // 如果是返回上一步，清空文件和缓存
+    if (delta < 0) {
+      // 调用StepOne组件中的clearFilesAndCache方法
+      stepOneRef.current?.clearFilesAndCache()
+
+      // 同时清空fileList状态和其他相关状态
+      setFiles([])
+
+      // 如果有其他需要重置的状态，也可以在这里重置
+      // 例如：重置indexingTypeCache和retrievalMethodCache
+      setIndexTypeCache('')
+      setRetrievalMethodCache('')
+
+      console.log('所有状态已重置')
+    }
+
     setStep(step + delta)
-  }, [step, setStep])
+  }, [step]) // setState函数是稳定的引用，不需要添加到依赖项中
 
   const checkNotionConnection = async () => {
     const { data } = await fetchDataSource({ url: '/data-source/integrates' })
@@ -132,6 +150,7 @@ const DatasetUpdateForm = ({ datasetId }: DatasetUpdateFormProps) => {
       <TopBar activeIndex={step - 1} datasetId={datasetId} />
       <div style={{ height: 'calc(100% - 52px)' }}>
         {step === 1 && <StepOne
+          ref={stepOneRef}
           hasConnection={hasConnection}
           onSetting={() => setShowAccountSettingModal({ payload: 'data-source' })}
           datasetId={datasetId}

@@ -1,8 +1,9 @@
 'use client'
-import React, { useMemo, useState } from 'react'
+import React, { forwardRef, useImperativeHandle, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { RiArrowRightLine, RiFolder6Line } from '@remixicon/react'
 import FilePreview from '../file-preview'
+import type { FileUploaderRef } from '../file-uploader'
 import FileUploader from '../file-uploader'
 import NotionPagePreview from '../notion-page-preview'
 import EmptyDatasetCreationModal from '../empty-dataset-creation-modal'
@@ -69,7 +70,12 @@ export const NotionConnector = (props: NotionConnectorProps) => {
   )
 }
 
-const StepOne = ({
+// 定义组件引用类型
+export type StepOneRef = {
+  clearFilesAndCache: () => void
+}
+
+const StepOne = forwardRef<StepOneRef, IStepOneProps>(({
   datasetId,
   dataSourceType: inCreatePageDataSourceType,
   dataSourceTypeDisable,
@@ -88,13 +94,21 @@ const StepOne = ({
   onWebsiteCrawlJobIdChange,
   crawlOptions,
   onCrawlOptionsChange,
-}: IStepOneProps) => {
+}, ref) => {
   const { dataset } = useDatasetDetailContext()
   const [showModal, setShowModal] = useState(false)
   const [currentFile, setCurrentFile] = useState<File | undefined>()
   const [currentNotionPage, setCurrentNotionPage] = useState<NotionPage | undefined>()
   const [currentWebsite, setCurrentWebsite] = useState<CrawlResultItem | undefined>()
   const { t } = useTranslation()
+  const fileUploaderRef = useRef<FileUploaderRef>(null)
+
+  // 暴露方法给父组件
+  useImperativeHandle(ref, () => ({
+    clearFilesAndCache: () => {
+      fileUploaderRef.current?.clearFilesAndCache()
+    },
+  }), [])
 
   const modalShowHandle = () => setShowModal(true)
   const modalCloseHandle = () => setShowModal(false)
@@ -224,6 +238,7 @@ const StepOne = ({
               {dataSourceType === DataSourceType.FILE && (
                 <>
                   <FileUploader
+                    ref={fileUploaderRef}
                     fileList={files}
                     titleClassName={!shouldShowDataSourceTypeList ? 'mt-[30px] !mb-[44px] !text-lg' : undefined}
                     prepareFileList={updateFileList}
@@ -337,6 +352,9 @@ const StepOne = ({
       </div>
     </div>
   )
-}
+})
+
+// 设置组件名称
+StepOne.displayName = 'StepOne'
 
 export default StepOne
