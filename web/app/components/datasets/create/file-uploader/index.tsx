@@ -38,6 +38,12 @@ type IFileUploaderProps = {
   onParseTypeChange?: (fileID: string, parseType: 'fast' | 'multimodal') => void
 }
 
+// 当前页面两种状态的ID缓存
+type FileParseCache = {
+  fastItem?: ExtendedFileItem
+  multimodalItem?: ExtendedFileItem
+}
+
 const FileUploader = ({
   fileList,
   titleClassName,
@@ -57,6 +63,9 @@ const FileUploader = ({
   const dragRef = useRef<HTMLDivElement>(null)
   const fileUploader = useRef<HTMLInputElement>(null)
   const hideUpload = notSupportBatchUpload && fileList.length > 0
+
+  // 缓存上传文件的不同解析方式状态
+  const [fileParseCache, setFileParseCache] = useState<FileParseCache[]>([])
 
   const { data: fileUploadConfigResponse } = useSWR({ url: '/files/upload' }, fetchFileUploadConfig)
   const { data: supportFileTypesResponse } = useSWR({ url: '/files/support-type' }, fetchSupportFileTypes)
@@ -147,6 +156,23 @@ const FileUploader = ({
         }
         const index = fileListRef.current.findIndex(item => item.fileID === fileItem.fileID)
         fileListRef.current[index] = completeFile
+
+        // 将上传的文件添加到fileParseCache中
+        const existingCacheIndex = fileParseCache.findIndex((cache: FileParseCache) => cache.fastItem?.fileID === fileItem.fileID)
+        if (existingCacheIndex >= 0) {
+          // 更新已存在的缓存
+          const newCache = [...fileParseCache]
+          newCache[existingCacheIndex].fastItem = completeFile
+          setFileParseCache(newCache)
+        }
+        else {
+          // 添加新的缓存项
+          setFileParseCache([...fileParseCache, {
+            fastItem: completeFile,
+            multimodalItem: undefined,
+          }])
+        }
+
         onFileUpdate(completeFile, 100, fileListRef.current)
         return Promise.resolve({ ...completeFile })
       })
@@ -159,7 +185,7 @@ const FileUploader = ({
         return Promise.resolve({ ...fileItem })
       })
       .finally()
-  }, [fileListRef, notify, onFileUpdate, t])
+  }, [fileListRef, notify, onFileUpdate, t, fileParseCache, setFileParseCache])
 
   const uploadBatchFiles = useCallback((bFiles: ExtendedFileItem[]) => {
     bFiles.forEach(bf => (bf.progress = 0))
@@ -293,6 +319,12 @@ const FileUploader = ({
       fileUploader.current.value = ''
 
     fileListRef.current = fileListRef.current.filter(item => item.fileID !== fileID)
+
+    // 同时从fileParseCache中删除对应的缓存
+    setFileParseCache(fileParseCache.filter(
+      (cache: FileParseCache) => cache.fastItem?.fileID !== fileID,
+    ))
+
     onFileListUpdate?.([...fileListRef.current])
   }
   const fileChangeHandle = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -303,25 +335,12 @@ const FileUploader = ({
   const { theme } = useTheme()
   const chartColor = useMemo(() => theme === Theme.dark ? '#5289ff' : '#296dff', [theme])
 
-  // 当前页面两种状态的ID缓存
-  type FileParseCache = {
-    fastId?: string,
-    fastItem?: FileItem
-    multimodalId?: string,
-    multimodalItem?: FileItem,
-  }
   // 首次文件上传后，默认快速模式，把fastId缓存起来，此时调用onFileUpdate方法，更新dify全局缓存的文件信息。
   // 点击多模态模式调用接口后，把multimodalId缓存起来。此时不要调用onFileUpdate方法，调用新的updateFileByOldId方法，把缓存的fastId和新的文件以及文件集合传过去，把旧的那个文件信息替换成新的文件。
   // 再点击快速模式切换后，一样的把multimodalId缓存和旧的文件传过去，执行替换操作
   // 再次切换都同理
-  const fileParseCache: FileParseCache = {
-    fastId: undefined,
-    fastItem: undefined,
-    multimodalId: undefined,
-    multimodalItem: undefined,
-  }
 
-  const handleRadioChange = async (e: React.ChangeEvent<HTMLInputElement>, fileID: string, parseType: 'fast' | 'multimodal') => {
+  const handleRadioChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>, fileID: string, parseType: 'fast' | 'multimodal') => {
     // 查找当前文件
     const fileItem: any = fileListRef.current.find(item => item.fileID === fileID)
     if (!fileItem || !fileItem.file.id) return
@@ -346,6 +365,28 @@ const FileUploader = ({
 
       // 通知父组件解析类型变化
       onParseTypeChange?.(fileID, parseType)
+
+      // 更新fileParseCache中的fastItem
+      const cacheIndex = fileParseCache.findIndex((cache: FileParseCache) => cache.fastItem?.fileID === fileID || cache.multimodalItem?.fileID === fileID)
+      if (cacheIndex >= 0) {
+        setFileParseCache((prev) => {
+          const newCache = [...prev]
+          newCache[cacheIndex].fastItem = {
+            ...fileItem,
+            progress: 100,
+          }
+          return newCache
+        })
+      }
+      else {
+        setFileParseCache(prev => [...prev, {
+          fastItem: {
+            ...fileItem,
+            progress: 100,
+          },
+          multimodalItem: undefined,
+        }])
+      }
     }
     else {
       // 多模态解析
@@ -361,23 +402,72 @@ const FileUploader = ({
             },
           })
 
-          // 保存后端返回的analysisId
-          if (res && res.id) {
+          // 保存后端返回的analysisId和完整数据
+          if (res) {
+            // 更新文件的analysisId
             fileItem.file.analysisId = res.id
             // 标记已经调用过多模态解析接口
             fileItem.file.hasCalledAnalysisAPI = true
+
+            // 创建新的文件对象，合并原始数据和后端返回的数据
+            const newFile = {
+              ...fileItem.file,
+              ...res,
+              resolveMethod: 'multimodal', // 确保保留解析方法
+            }
+
+            // 更新fileItem中的file
+            fileItem.file = newFile
+          }
+          else {
+            // 如果没有返回file数据，只设置resolveMethod
+            fileItem.file.resolveMethod = 'multimodal'
           }
         }
 
+        // 创建更新后的文件项，确保file数据被完整替换
+        const updatedFileItem = {
+          ...fileItem,
+          progress: 100,
+        }
+
+        // 更新UI显示
         onFileUpdate(
-          {
-            ...fileItem,
-            progress: 100,
-          },
+          updatedFileItem,
           100,
           fileListRef.current,
         )
 
+        // 更新fileParseCache中的multimodalItem，确保file数据被完整更新
+        const cacheIndex = fileParseCache.findIndex((cache: FileParseCache) => cache.fastItem?.fileID === fileID || cache.multimodalItem?.fileID === fileID)
+
+        if (cacheIndex >= 0) {
+          setFileParseCache((prev) => {
+            const newCache = [...prev]
+            // 确保完全替换multimodalItem
+            newCache[cacheIndex].multimodalItem = {
+              fileID: fileItem.fileID,
+              file: fileItem.file, // 直接使用更新后的file
+              progress: 100,
+              parseType: 'multimodal',
+            }
+            return newCache
+          })
+        }
+        else {
+          // 如果缓存中没有对应的项，则创建新项
+          setFileParseCache(prev => [...prev, {
+            fastItem: undefined,
+            multimodalItem: {
+              fileID: fileItem.fileID,
+              file: fileItem.file, // 直接使用更新后的file
+              progress: 100,
+              parseType: 'multimodal',
+            },
+          }])
+        }
+
+        console.log(fileParseCache, 'fileParseCache')
         // 通知父组件解析类型变化
         onParseTypeChange?.(fileID, parseType)
       }
@@ -395,7 +485,7 @@ const FileUploader = ({
         )
       }
     }
-  }
+  }, [fileListRef, fileParseCache, setFileParseCache, onFileUpdate, onParseTypeChange, setLoadingFileId, fetchFileAnalysis])
 
   useEffect(() => {
     dropRef.current?.addEventListener('dragenter', handleDragEnter)

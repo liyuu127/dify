@@ -62,7 +62,7 @@ const DatasetUpdateForm = ({ datasetId }: DatasetUpdateFormProps) => {
   const [websiteCrawlJobId, setWebsiteCrawlJobId] = useState('')
 
   const updateFile = (fileItem: ExtendedFileItem, progress: number, list: ExtendedFileItem[]) => {
-    console.log('updateFile', fileItem, progress, list)
+    console.log('updateFile', fileItem, list)
     const targetIndex = list.findIndex(file => file.fileID === fileItem.fileID)
     list[targetIndex] = {
       ...list[targetIndex],
