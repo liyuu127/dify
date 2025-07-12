@@ -34,6 +34,8 @@ ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN pnpm build
 
 
+ARG NEXT_PUBLIC_APPLICATION_PLATFORM
+
 # production stage
 FROM base AS production
 
@@ -47,8 +49,8 @@ ENV MARKETPLACE_URL=https://marketplace.dify.ai
 ENV PORT=3001
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV PM2_INSTANCES=2
-ENV APPLICATION_PLATFORM=https://127.0.0.1:8055/
 
+RUN echo NEXT_PUBLIC_APPLICATION_PLATFORM=${NEXT_PUBLIC_APPLICATION_PLATFORM} > .env.example
 # set timezone
 ENV TZ=UTC
 RUN ln -s /usr/share/zoneinfo/${TZ} /etc/localtime \
@@ -71,6 +73,9 @@ RUN pnpm add -g pm2 \
 
 ARG COMMIT_SHA
 ENV COMMIT_SHA=${COMMIT_SHA}
+
+
+
 
 USER 1001
 EXPOSE 3001
