@@ -22,7 +22,7 @@ import { createApp } from '@/service/apps'
 import Input from '@/app/components/base/input'
 import Textarea from '@/app/components/base/textarea'
 import AppsFull from '@/app/components/billing/apps-full-in-dialog'
-import { Agent, Workflow } from '@/app/components/base/icons/src/vender/solid/communication'
+import { Agent, BubbleTextMod, Workflow } from '@/app/components/base/icons/src/vender/solid/communication'
 import { NEED_REFRESH_APP_LIST_KEY } from '@/config'
 import { getRedirection } from '@/utils/app-redirection'
 import FullScreenModal from '@/app/components/base/fullscreen-modal'
@@ -42,9 +42,9 @@ function CreateApp({ onClose, onSuccess, onCreateFromTemplate }: CreateAppProps)
 
   const [appMode, setAppMode] = useState<AppMode>('workflow')
   const [appIcon, setAppIcon] = useState<AppIconSelection>({
- type: '',
- fileId: '',
-})
+    type: '',
+    fileId: '',
+  })
   const [showAppIconPicker, setShowAppIconPicker] = useState(false)
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
@@ -67,16 +67,16 @@ function CreateApp({ onClose, onSuccess, onCreateFromTemplate }: CreateAppProps)
   const onCreate = useCallback(async () => {
     if (!appMode) {
       notify({
- type: 'error',
-message: t('app.newApp.appTypeRequired'),
-})
+        type: 'error',
+        message: t('app.newApp.appTypeRequired'),
+      })
       return
     }
     if (!name.trim()) {
       notify({
- type: 'error',
-message: t('app.newApp.nameNotEmpty'),
-})
+        type: 'error',
+        message: t('app.newApp.nameNotEmpty'),
+      })
       return
     }
     if (isCreatingRef.current)
@@ -92,9 +92,9 @@ message: t('app.newApp.nameNotEmpty'),
         mode: appMode,
       })
       notify({
- type: 'success',
-message: t('app.newApp.appCreated'),
-})
+        type: 'success',
+        message: t('app.newApp.appCreated'),
+      })
       onSuccess()
       onClose()
       mutateApps()
@@ -103,9 +103,9 @@ message: t('app.newApp.appCreated'),
     }
     catch {
       notify({
- type: 'error',
-message: t('app.newApp.appCreateFailed'),
-})
+        type: 'error',
+        message: t('app.newApp.appCreateFailed'),
+      })
     }
     isCreatingRef.current = false
   }, [name, notify, t, appMode, appIcon, description, onSuccess, onClose, mutateApps, push, isCurrentWorkspaceEditor])
@@ -141,20 +141,19 @@ message: t('app.newApp.appCreateFailed'),
                   onClick={() => {
                     setAppMode('workflow')
                   }} />
-                  <AppTypeCard
-                    active={appMode === 'agent-chat'}
-                    title={t('app.types.agent')}
-                    description={t('app.newApp.agentShortDescription')}
-                    icon={<div className='flex h-6 w-6 items-center justify-center rounded-md bg-AI-components-icon-bg-indigo-solid'>
-                      {/* <Logic className='h-4 w-4 text-components-avatar-shape-fill-stop-100' /> */}
-                      <Agent className='h-4 w-4 text-components-avatar-shape-fill-stop-100' />
+                <AppTypeCard
+                  active={appMode === 'agent-chat'}
+                  title={t('app.types.agent')}
+                  description={t('app.newApp.agentShortDescription')}
+                  icon={<div className='flex h-6 w-6 items-center justify-center rounded-md bg-AI-components-icon-bg-indigo-solid'>
+                    {/* <Logic className='h-4 w-4 text-components-avatar-shape-fill-stop-100' /> */}
+                    <Agent className='h-4 w-4 text-components-avatar-shape-fill-stop-100' />
 
-                    </div>}
-                    onClick={() => {
-                      setAppMode('agent-chat')
-                    }} />
-                    {/* 注释掉高级应用 */}
-                  {/* <AppTypeCard
+                  </div>}
+                  onClick={() => {
+                    setAppMode('agent-chat')
+                  }} />
+                <AppTypeCard
                   active={appMode === 'advanced-chat'}
                   title={t('app.types.advanced')}
                   description={t('app.newApp.advancedShortDescription')}
@@ -163,7 +162,7 @@ message: t('app.newApp.appCreateFailed'),
                   </div>}
                   onClick={() => {
                     setAppMode('advanced-chat')
-                  }} /> */}
+                  }} />
               </div>
             </div>
             {/* 注释掉创建应用模板 */}
@@ -379,8 +378,8 @@ function AppPreview({ mode }: { mode: AppMode }) {
 }
 
 function AppScreenShot({ mode, show }: {
- mode: AppMode;
-show: boolean
+  mode: AppMode;
+  show: boolean
 }) {
   const { theme } = useTheme()
   const modeToImageMap = {
