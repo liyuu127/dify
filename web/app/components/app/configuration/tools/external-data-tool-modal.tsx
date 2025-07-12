@@ -17,7 +17,6 @@ import type {
   ExternalDataTool,
 } from '@/models/common'
 import { useToastContext } from '@/app/components/base/toast'
-import AppIcon from '@/app/components/base/app-icon'
 import { noop } from 'lodash-es'
 
 const systemTypes = ['api']
@@ -235,12 +234,12 @@ message: t('appDebug.errorMessage.valueOfVarRequired', { key: locale !== Languag
             className='mr-2 block h-9 grow appearance-none rounded-lg bg-gray-100 px-3 text-sm text-gray-900 outline-none'
             placeholder={t('appDebug.feature.tools.modal.name.placeholder') || ''}
           />
-          <AppIcon size='large'
+          {/* <AppIcon size='large'
             onClick={() => { setShowEmojiPicker(true) }}
             className='!h-9 !w-9 cursor-pointer rounded-lg border-[0.5px] border-black/5 '
             icon={localeData.icon}
             background={localeData.icon_background}
-          />
+          /> */}
         </div>
       </div>
       <div className='py-2'>
