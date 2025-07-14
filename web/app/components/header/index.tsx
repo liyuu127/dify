@@ -41,7 +41,6 @@ const Header = () => {
 
   const switchPlatform = () => {
     // 跳转到外部链接
-    // window.location.replace(`${process.env.NEXT_PUBLIC_APPLICATION_PLATFORM}`)
     console.log('process.env.NEXT_PUBLIC_APPLICATION_PLATFORM', process.env.NEXT_PUBLIC_APPLICATION_PLATFORM)
     router.replace(`${process.env.NEXT_PUBLIC_APPLICATION_PLATFORM}`)
   }

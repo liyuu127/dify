@@ -16,6 +16,7 @@ FROM base AS packages
 
 WORKDIR /app/web
 
+COPY .env.production .
 COPY package.json .
 COPY pnpm-lock.yaml .
 
@@ -50,7 +51,7 @@ ENV PORT=3001
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV PM2_INSTANCES=2
 
-RUN echo NEXT_PUBLIC_APPLICATION_PLATFORM=${NEXT_PUBLIC_APPLICATION_PLATFORM} > .env.example
+RUN echo "NEXT_PUBLIC_APPLICATION_PLATFORM=${NEXT_PUBLIC_APPLICATION_PLATFORM}" > .env.production
 # set timezone
 ENV TZ=UTC
 RUN ln -s /usr/share/zoneinfo/${TZ} /etc/localtime \
