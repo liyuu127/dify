@@ -16,6 +16,7 @@ FROM base AS packages
 
 WORKDIR /app/web
 
+COPY .env.production .
 COPY package.json .
 COPY pnpm-lock.yaml .
 
@@ -50,6 +51,7 @@ ENV PORT=3001
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV PM2_INSTANCES=2
 ENV NEXT_PUBLIC_APPLICATION_PLATFORM=https://127.0.0.1:8055/
+
 
 # set timezone
 ENV TZ=UTC
