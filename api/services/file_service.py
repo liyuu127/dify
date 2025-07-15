@@ -28,11 +28,12 @@ from .errors.file import FileTooLargeError, UnsupportedFileTypeError
 
 PREVIEW_WORDS_LIMIT = 3000
 
-import requests
 import ssl
+
+import requests
 from requests.adapters import HTTPAdapter
-from urllib3.poolmanager import PoolManager
 from urllib3.exceptions import InsecureRequestWarning
+from urllib3.poolmanager import PoolManager
 
 # 禁用不安全请求的警告
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
