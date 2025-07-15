@@ -14,6 +14,7 @@ from .packaging import PackagingInfo
 from .remote_settings_sources import RemoteSettingsSource, RemoteSettingsSourceConfig, RemoteSettingsSourceName
 from .remote_settings_sources.apollo import ApolloSettingsSource
 from .remote_settings_sources.nacos import NacosSettingsSource
+from .wxsbank import WxsbankConfig
 
 logger = logging.getLogger(__name__)
 
@@ -70,6 +71,7 @@ class DifyConfig(
     # Enterprise feature configs
     # **Before using, please contact business@dify.ai by email to inquire about licensing matters.**
     EnterpriseFeatureConfig,
+    WxsbankConfig,
 ):
     model_config = SettingsConfigDict(
         # read from dotenv format config file
