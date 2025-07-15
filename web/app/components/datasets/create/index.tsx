@@ -64,25 +64,37 @@ const DatasetUpdateForm = ({ datasetId }: DatasetUpdateFormProps) => {
   const [websiteCrawlJobId, setWebsiteCrawlJobId] = useState('')
 
   const updateFile = (fileItem: ExtendedFileItem, progress: number, list: ExtendedFileItem[]) => {
-    const targetIndex = list.findIndex(file => file.fileID === fileItem.fileID)
-    list[targetIndex] = {
-      ...list[targetIndex],
-      progress,
-    }
-    console.log('updateFile', fileItem, list)
-    setFiles([...list])
-    // use follow code would cause dirty list update problem
-    // const newList = list.map((file) => {
-    //   if (file.fileID === fileItem.fileID) {
-    //     return {
-    //       ...fileItem,
-    //       progress,
-    //     }
-    //   }
-    //   return file
-    // })
-    // setFiles(newList)
+    // 使用函数式更新确保基于最新状态
+    setFiles((prevFiles) => {
+      // 找到目标文件索引
+      const fileIndex = prevFiles.findIndex(file => file.fileID === fileItem.fileID)
+      if (fileIndex === -1) return prevFiles // 未找到匹配文件，返回原状态
+      // 创建新数组
+      const newFiles = [...prevFiles]
+      // 更新目标文件的完整信息
+      newFiles[fileIndex] = {
+        ...fileItem, // 保留完整的fileItem信息
+        progress, // 更新进度
+      }
+      return newFiles
+    })
   }
+
+  // 添加处理解析类型变化的专用函数
+  const updateFileParseType = (fileID: string, parseType: 'fast' | 'multimodal', updatedFileData?: any) => {
+    setFiles((prevFiles) => {
+      const fileIndex = prevFiles.findIndex(file => file.fileID === fileID)
+      if (fileIndex === -1) return prevFiles
+      const newFiles = [...prevFiles]
+      newFiles[fileIndex] = {
+        ...newFiles[fileIndex],
+        parseType,
+        file: updatedFileData || newFiles[fileIndex].file,
+      }
+      return newFiles
+    })
+  }
+
   const updateIndexingTypeCache = (type: string) => {
     setIndexTypeCache(type)
   }
@@ -110,8 +122,6 @@ const DatasetUpdateForm = ({ datasetId }: DatasetUpdateFormProps) => {
       // 例如：重置indexingTypeCache和retrievalMethodCache
       setIndexTypeCache('')
       setRetrievalMethodCache('')
-
-      console.log('所有状态已重置')
     }
 
     setStep(step + delta)
@@ -160,6 +170,7 @@ const DatasetUpdateForm = ({ datasetId }: DatasetUpdateFormProps) => {
           files={fileList}
           updateFile={updateFile}
           updateFileList={updateFileList}
+          updateFileParseType={updateFileParseType} // 添加新方法处理解析类型变化
           notionPages={notionPages}
           updateNotionPages={updateNotionPages}
           onStepChange={nextStep}
