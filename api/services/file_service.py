@@ -220,7 +220,7 @@ class FileService:
 
     @staticmethod
     def post_analysis_file(filename: str, content: bytes, mimetype: str):
-        api_url = dify_config.WXSBANK_URL
+        api_url = dify_config.DOCUMENT_RECOGNITION_URL
 
         # 创建支持旧版TLS的会话
         session = requests.Session()
@@ -236,15 +236,15 @@ class FileService:
                 'use_llm': 'false'
             }
 
-            print("【锡商行】发送 POST 请求")
+            print("【多模态文档识别】发送 POST 请求")
             # 注意：verify=False 仍然需要，但真正的禁用逻辑在适配器中
             response = session.post(api_url, files=files, data=data, timeout=30, verify=False)
             response.raise_for_status()
 
             json = response.json()
-            print("【锡商行】接口响应：")
-            print(f"【锡商行】状态码：{response.status_code}")
-            print(f"【锡商行】响应内容：{json}")
+            print("【多模态文档识别】接口响应：")
+            print(f"【多模态文档识别】状态码：{response.status_code}")
+            print(f"【多模态文档识别】响应内容：{json}")
             return json
 
         except requests.exceptions.RequestException as e:
