@@ -121,6 +121,7 @@ class ConversationService:
         )
 
         query = query.filter(Conversation.from_end_user_id.in_(user_ids))
+        query = query.filter(Conversation.is_deleted == False)
 
         if keyword:
             query = query.filter(message_ranked.c.query.ilike(f"%{keyword}%"))
