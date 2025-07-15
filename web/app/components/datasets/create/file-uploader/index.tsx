@@ -413,7 +413,6 @@ const FileUploader = forwardRef<FileUploaderRef, IFileUploaderProps>(({
       // 同时更新fileListRef中的文件
       const fileIndex = fileListRef.current.findIndex(item => item.fileID === fileID)
       if (fileIndex >= 0) fileListRef.current[fileIndex] = fastItem
-
       // 使用更新后的fastItem调用onFileUpdate
       onFileUpdate(
         fastItem,
@@ -642,8 +641,6 @@ const FileUploader = forwardRef<FileUploaderRef, IFileUploaderProps>(({
 
     // 通知父组件更新文件列表（必须放在最后，确保所有状态都已清空）
     onFileListUpdate?.([])
-
-    console.log('文件和缓存已清空')
   }, [onFileListUpdate])
 
   // 暴露方法给父组件
