@@ -170,7 +170,7 @@ const PermissionSelector = ({ disabled, permission, value, memberList, onChange,
                         {userProfile.name}
                         <span className='text-xs font-normal text-text-tertiary'>{t('datasetSettings.form.me')}</span>
                       </div>
-                      <div className='truncate text-xs leading-[18px] text-text-tertiary'>{userProfile.email}</div>
+                      {/* <div className='truncate text-xs leading-[18px] text-text-tertiary'>{userProfile.email}</div> */}
                     </div>
                     <Check className='h-4 w-4 shrink-0 text-text-accent opacity-30' />
                   </div>
@@ -180,7 +180,7 @@ const PermissionSelector = ({ disabled, permission, value, memberList, onChange,
                     <Avatar avatar={userProfile.avatar_url} name={member.name} className='shrink-0' size={24} />
                     <div className='grow'>
                       <div className='truncate text-[13px] font-medium leading-[18px] text-text-secondary'>{member.name}</div>
-                      <div className='truncate text-xs leading-[18px] text-text-tertiary'>{member.email}</div>
+                      {/* <div className='truncate text-xs leading-[18px] text-text-tertiary'>{member.email}</div> */}
                     </div>
                     {value.includes(member.id) && <Check className='h-4 w-4 shrink-0 text-text-accent' />}
                   </div>

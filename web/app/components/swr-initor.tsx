@@ -47,18 +47,19 @@ const SwrInitor = ({
   useEffect(() => {
     (async () => {
       const action = searchParams.get('action')
-
+      // 跳转到外部链接
+    const applicationPlatform = globalThis.document.body.getAttribute('data-public-application-platform')
       if (action === EDUCATION_VERIFY_URL_SEARCHPARAMS_ACTION)
         localStorage.setItem(EDUCATION_VERIFYING_LOCALSTORAGE_ITEM, 'yes')
 
       try {
         const isFinished = await isSetupFinished()
         if (!isFinished) {
-          router.replace(`${process.env.NEXT_PUBLIC_APPLICATION_PLATFORM}`)
+          router.replace(`${applicationPlatform}`)
           return
         }
         if (!((consoleToken && refreshToken) || (consoleTokenFromLocalStorage && refreshTokenFromLocalStorage))) {
-          router.replace(`${process.env.NEXT_PUBLIC_APPLICATION_PLATFORM}`)
+          router.replace(`${applicationPlatform}`)
           return
         }
         if (searchParams.has('access_token') || searchParams.has('refresh_token')) {
@@ -70,7 +71,7 @@ const SwrInitor = ({
         setInit(true)
       }
       catch {
-        router.replace(`${process.env.NEXT_PUBLIC_APPLICATION_PLATFORM}`)
+        router.replace(`${applicationPlatform}`)
       }
     })()
   }, [isSetupFinished, router, pathname, searchParams, consoleToken, refreshToken, consoleTokenFromLocalStorage, refreshTokenFromLocalStorage])

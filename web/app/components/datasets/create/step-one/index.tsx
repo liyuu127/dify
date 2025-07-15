@@ -36,6 +36,7 @@ type IStepOneProps = {
   files: ExtendedFileItem[]
   updateFileList: (files: ExtendedFileItem[]) => void
   updateFile: (fileItem: ExtendedFileItem, progress: number, list: ExtendedFileItem[]) => void
+  updateFileParseType?: (fileID: string, parseType: 'fast' | 'multimodal', updatedFileData?: any) => void
   notionPages?: NotionPage[]
   updateNotionPages: (value: NotionPage[]) => void
   onStepChange: () => void
@@ -86,6 +87,7 @@ const StepOne = forwardRef<StepOneRef, IStepOneProps>(({
   files,
   updateFileList,
   updateFile,
+  updateFileParseType,
   notionPages = [],
   updateNotionPages,
   websitePages = [],
@@ -247,12 +249,18 @@ const StepOne = forwardRef<StepOneRef, IStepOneProps>(({
                     onPreview={updateCurrentFile}
                     notSupportBatchUpload={notSupportBatchUpload}
                     onParseTypeChange={(fileID, parseType) => {
-                      // 处理解析类型变化
-                      const updatedFiles = [...files]
-                      const fileIndex = updatedFiles.findIndex(f => f.fileID === fileID)
-                      if (fileIndex !== -1) {
-                        updatedFiles[fileIndex].parseType = parseType
-                        updateFileList(updatedFiles)
+                      // 使用专用方法处理解析类型变化
+                      if (updateFileParseType) {
+                        updateFileParseType(fileID, parseType)
+                      }
+                      else {
+                        // 兼容处理：如果没有提供updateFileParseType方法，使用旧的方式
+                        const updatedFiles = [...files]
+                        const fileIndex = updatedFiles.findIndex(f => f.fileID === fileID)
+                        if (fileIndex !== -1) {
+                          updatedFiles[fileIndex].parseType = parseType
+                          updateFileList(updatedFiles)
+                        }
                       }
                     }}
                   />
