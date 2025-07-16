@@ -15,7 +15,7 @@ from controllers.console.wraps import (
     setup_required,
 )
 from extensions.ext_database import db
-from fields.member_fields import account_with_role_field, account_with_role_list_fields, account_fields
+from fields.member_fields import account_with_role_field, account_with_role_list_fields
 from libs.login import login_required
 from models.account import Account, AccountStatus, TenantAccountRole
 from services.account_service import AccountService, RegisterService, TenantService
