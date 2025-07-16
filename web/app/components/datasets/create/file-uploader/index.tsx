@@ -99,7 +99,7 @@ const FileUploader = forwardRef<FileUploaderRef, IFileUploaderProps>(({
     batch_count_limit: 5,
   }, [fileUploadConfigResponse])
   // 定义文件可用类型
-  const fileAccepts = ['TXT', 'MARKDOWN', 'MDX', 'PDF', 'HTML', 'XLSX', 'XLS', 'DOCX', 'CSV', 'VTT', 'PROPERTIES', 'MD', 'HTM']
+  const fileAccepts = ['TXT', 'PDF', 'HTML', 'XLSX', 'XLS', 'DOCX', 'CSV', 'PPTX', 'PPT']
   const fileListRef = useRef<ExtendedFileItem[]>([])
 
   // utils
