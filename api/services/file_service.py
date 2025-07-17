@@ -281,7 +281,7 @@ class FileService:
         code = json["code"]
 
         if code != 200:
-            raise Exception("该文件暂不支持多模态解析")
+            raise ValueError("该文件暂不支持多模态解析")
 
         text = json["data"]["text"]
 
