@@ -8,8 +8,7 @@ import { omit } from 'lodash-es'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
-import { Trans, useTranslation } from 'react-i18next'
-import Link from 'next/link'
+import { useTranslation } from 'react-i18next'
 import List from './list'
 import { basePath } from '@/utils/var'
 import Filter, { TIME_PERIOD_MAPPING } from './filter'
@@ -44,7 +43,7 @@ const EmptyElement: FC<{ appUrl: string }> = ({ appUrl }) => {
   const pathSegments = pathname.split('/')
   pathSegments.pop()
   return <div className='flex h-full items-center justify-center'>
-    <div className='box-border h-fit w-[560px] rounded-2xl bg-background-section-burn px-5 py-4'>
+    {/* <div className='box-border h-fit w-[560px] rounded-2xl bg-background-section-burn px-5 py-4'>
       <span className='system-md-semibold text-text-secondary'>{t('appLog.table.empty.element.title')}<ThreeDotsIcon className='relative -left-1.5 -top-3 inline' /></span>
       <div className='system-sm-regular mt-2 text-text-tertiary'>
         <Trans
@@ -52,14 +51,17 @@ const EmptyElement: FC<{ appUrl: string }> = ({ appUrl }) => {
           components={{ shareLink: <Link href={`${pathSegments.join('/')}/overview`} className='text-util-colors-blue-blue-600' />, testLink: <Link href={appUrl} className='text-util-colors-blue-blue-600' target='_blank' rel='noopener noreferrer' /> }}
         />
       </div>
-    </div>
+    </div> */}
   </div>
 }
 
 const Logs: FC<ILogsProps> = ({ appDetail }) => {
   const { t } = useTranslation()
   const { userProfile: { timezone } } = useAppContext()
-  const [queryParams, setQueryParams] = useState<QueryParam>({ status: 'all', period: '2' })
+  const [queryParams, setQueryParams] = useState<QueryParam>({
+ status: 'all',
+period: '2',
+})
   const [currPage, setCurrPage] = React.useState<number>(0)
   const debouncedQueryParams = useDebounce(queryParams, { wait: 500 })
   const [limit, setLimit] = React.useState<number>(APP_PAGE_LIMIT)
