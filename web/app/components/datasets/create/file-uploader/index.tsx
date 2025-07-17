@@ -681,7 +681,7 @@ const FileUploader = forwardRef<FileUploaderRef, IFileUploaderProps>(({
           <div>{t('datasetCreation.stepOne.uploader.tip', {
             size: fileUploadConfig.file_size_limit,
             supportTypes: supportTypesShowNames,
-          })}多模态解析 只支持 TXT、PDF、HTML、XLSX、XLS、DOCX、CSV 格式。</div>
+          })} 文档页数不超过50页。 多模态解析 只支持 TXT、PDF、HTML、XLSX、XLS、DOCX、CSV 格式。</div>
           {dragging && <div ref={dragRef} className='absolute left-0 top-0 h-full w-full' />}
         </div>
       )}
