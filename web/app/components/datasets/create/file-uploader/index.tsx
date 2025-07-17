@@ -681,7 +681,7 @@ const FileUploader = forwardRef<FileUploaderRef, IFileUploaderProps>(({
           <div>{t('datasetCreation.stepOne.uploader.tip', {
             size: fileUploadConfig.file_size_limit,
             supportTypes: supportTypesShowNames,
-          })}</div>
+          })}多模态解析 只支持 TXT、PDF、HTML、XLSX、XLS、DOCX、CSV 格式。</div>
           {dragging && <div ref={dragRef} className='absolute left-0 top-0 h-full w-full' />}
         </div>
       )}
@@ -723,45 +723,41 @@ const FileUploader = forwardRef<FileUploaderRef, IFileUploaderProps>(({
                 <SimplePieChart percentage={fileItem.progress} stroke={chartColor} fill={chartColor} animationDuration={0} />
               )}
               {/* 添加两个单选框 */}
-              {/* 判断上传的文件类型，不在可用上传文件类型中则不展示多模态解析和快速解析 */}
-              {fileAccepts.includes(getFileType(fileItem.file).toUpperCase()) && (
-                <>
-                  <label
-                    className={cn(
-                      'mr-2 flex cursor-pointer items-center gap-1 text-xs',
-                      loadingFileId === fileItem.fileID ? 'opacity-50' : '',
-                    )}
-                    onClick={e => e.stopPropagation()}
-                  >
-                    <input
-                      type="radio"
-                      name={`radio-group-${fileItem.fileID}`}
-                      checked={fileItem.parseType === 'fast' || fileItem.parseType === undefined}
-                      onChange={e => handleRadioChange(e, fileItem.fileID, 'fast')}
-                      className="size-4 cursor-pointer"
-                      disabled={loadingFileId === fileItem.fileID}
-                    />
-                    <span className="whitespace-nowrap">快速解析</span>
-                  </label>
-                  <label
-                    className={cn(
-                      'mr-2 flex cursor-pointer items-center gap-1 text-xs',
-                      loadingFileId === fileItem.fileID ? 'opacity-50' : '',
-                    )}
-                    onClick={e => e.stopPropagation()}
-                  >
-                    <input
-                      type="radio"
-                      name={`radio-group-${fileItem.fileID}`}
-                      checked={fileItem.parseType === 'multimodal'}
-                      onChange={e => handleRadioChange(e, fileItem.fileID, 'multimodal')}
-                      className="size-4 cursor-pointer"
-                      disabled={loadingFileId === fileItem.fileID}
-                    />
-                    <span className="whitespace-nowrap">多模态解析</span>
-                  </label>
-                </>
-              )}
+              {/* 判断上传的文件类型，不在可用上传文件类型中则禁用多模态解析 */}
+              <label
+                className={cn(
+                  'mr-2 flex cursor-pointer items-center gap-1 text-xs',
+                  loadingFileId === fileItem.fileID ? 'opacity-50' : '',
+                )}
+                onClick={e => e.stopPropagation()}
+              >
+                <input
+                  type="radio"
+                  name={`radio-group-${fileItem.fileID}`}
+                  checked={fileItem.parseType === 'fast' || fileItem.parseType === undefined}
+                  onChange={e => handleRadioChange(e, fileItem.fileID, 'fast')}
+                  className="size-4 cursor-pointer"
+                  disabled={loadingFileId === fileItem.fileID}
+                />
+                <span className="whitespace-nowrap">快速解析</span>
+              </label>
+              <label
+                className={cn(
+                  'mr-2 flex cursor-pointer items-center gap-1 text-xs',
+                  loadingFileId === fileItem.fileID ? 'opacity-50' : '',
+                )}
+                onClick={e => e.stopPropagation()}
+              >
+                <input
+                  type="radio"
+                  name={`radio-group-${fileItem.fileID}`}
+                  checked={fileItem.parseType === 'multimodal'}
+                  onChange={e => handleRadioChange(e, fileItem.fileID, 'multimodal')}
+                  className="size-4 cursor-pointer"
+                  disabled={loadingFileId === fileItem.fileID || !fileAccepts.includes(getFileType(fileItem.file).toUpperCase())}
+                />
+                <span className="whitespace-nowrap">多模态解析</span>
+              </label>
               {/* <label
 
                 className={cn(

@@ -22,7 +22,6 @@ import Switch from '@/app/components/base/switch'
 import Divider from '@/app/components/base/divider'
 import CopyFeedback from '@/app/components/base/copy-feedback'
 import Confirm from '@/app/components/base/confirm'
-import ShareQRCode from '@/app/components/base/qrcode'
 import SecretKeyButton from '@/app/components/develop/secret-key/secret-key-button'
 import type { AppDetailResponse } from '@/models/app'
 import { useAppContext } from '@/context/app-context'
@@ -228,7 +227,7 @@ function AppCard({
                 content={isApp ? appUrl : apiUrl}
                 className={'!size-6'}
               />
-              {isApp && <ShareQRCode content={isApp ? appUrl : apiUrl} />}
+              {/* {isApp && <ShareQRCode content={isApp ? appUrl : apiUrl} />} */}
               {isApp && <Divider type="vertical" className="!mx-0.5 !h-3.5 shrink-0" />}
               {/* button copy link/ button regenerate */}
               {showConfirmDelete && (
