@@ -27,6 +27,7 @@ import { NEED_REFRESH_APP_LIST_KEY } from '@/config'
 import { getRedirection } from '@/utils/app-redirection'
 import FullScreenModal from '@/app/components/base/fullscreen-modal'
 import useTheme from '@/hooks/use-theme'
+import AppIcon from '@/app/components/base/app-icon'
 
 type CreateAppProps = {
   onSuccess: () => void
@@ -223,14 +224,14 @@ function CreateApp({ onClose, onSuccess, onCreateFromTemplate }: CreateAppProps)
                   placeholder={t('app.newApp.appNamePlaceholder') || ''}
                 />
               </div>
-              {/* <AppIcon
+              <AppIcon
                 iconType={appIcon.type}
                 icon={appIcon.type === 'emoji' ? appIcon.icon : appIcon.fileId}
                 background={appIcon.type === 'emoji' ? appIcon.background : '#fff'}
                 imageUrl={appIcon.type === 'image' ? appIcon.url : undefined}
                 size='xxl' className='rounded-1xl cursor-pointer'
                 onClick={() => { setShowAppIconPicker(true) }}
-              /> */}
+              />
               {showAppIconPicker && <AppIconPicker
                 onSelect={(payload) => {
                   setAppIcon(payload)

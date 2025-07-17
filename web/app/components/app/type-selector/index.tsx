@@ -131,7 +131,7 @@ export function AppTypeIcon({ type, className, wrapperClassName, style }: AppTyp
     </div>
   }
   if (type === 'advanced-chat') {
-    return <div style={style} className={cn(wrapperClassNames, 'bg-components-icon-bg-blue-light-solid')}>
+    return <div style={style} className={cn(wrapperClassNames, 'bg-components-icon-bg-blue-solid')}>
       <BubbleTextMod className={iconClassNames} />
     </div>
   }
