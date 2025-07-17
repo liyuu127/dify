@@ -249,7 +249,7 @@ class FileService:
             return json
 
         except requests.exceptions.RequestException as e:
-            print(f"【锡商行】请求失败：{e}")
+            print(f"【多模态文档识别】请求失败：{e}")
         finally:
             session.close()
 
@@ -273,11 +273,15 @@ class FileService:
         if not file:
             raise NotFound("File not found or signature is invalid")
 
-        # TODO 调用三方接口解析文件
-
+        # 调用解析文件接口
         generator = storage.load_once(file.key)
 
         json = FileService.post_analysis_file(filename=file.name, content=generator, mimetype=file.mime_type)
+
+        code = json["code"]
+
+        if code != 200:
+            raise Exception("该文件暂不支持多模态解析")
 
         text = json["data"]["text"]
 
