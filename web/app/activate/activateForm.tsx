@@ -35,7 +35,10 @@ const ActivateForm = () => {
         params.set('email', encodeURIComponent(email))
         params.set('workspace_id', encodeURIComponent(workspace_id))
         params.set('invite_token', encodeURIComponent(token as string))
-        router.replace(`/signin?${params.toString()}`)
+        // router.replace(`/signin?${params.toString()}`)
+        // 跳转到外部链接
+        const applicationPlatform = globalThis.document.body.getAttribute('data-public-application-platform')
+        router.replace(`${applicationPlatform}`)
       }
     },
   })

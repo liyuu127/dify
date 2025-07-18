@@ -56,7 +56,10 @@ const ForgotPasswordForm = () => {
 
   const handleSendResetPasswordClick = async () => {
     if (isEmailSent) {
-      router.push('/signin')
+      // router.push('/signin')
+      // 跳转到外部链接
+    const applicationPlatform = globalThis.document.body.getAttribute('data-public-application-platform')
+    router.replace(`${applicationPlatform}`)
     }
     else {
       const isValid = await trigger('email')

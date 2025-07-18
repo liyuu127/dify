@@ -58,7 +58,10 @@ const InstallForm = () => {
         ...data,
       },
     })
-    router.push('/signin')
+    // router.push('/signin')
+    // 跳转到外部链接
+    const applicationPlatform = globalThis.document.body.getAttribute('data-public-application-platform')
+    router.replace(`${applicationPlatform}`)
   }
 
   const handleSetting = async () => {
@@ -82,7 +85,10 @@ const InstallForm = () => {
     fetchSetupStatus().then((res: SetupStatusResponse) => {
       if (res.step === 'finished') {
         localStorage.setItem('setup_status', 'finished')
-        router.push('/signin')
+        // router.push('/signin')
+        // 跳转到外部链接
+        const applicationPlatform = globalThis.document.body.getAttribute('data-public-application-platform')
+        router.replace(`${applicationPlatform}`)
       }
       else {
         fetchInitValidateStatus().then((res: InitValidateStatusResponse) => {
