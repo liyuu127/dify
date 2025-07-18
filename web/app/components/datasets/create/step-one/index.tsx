@@ -1,5 +1,5 @@
 'use client'
-import React, { forwardRef, useImperativeHandle, useMemo, useRef, useState } from 'react'
+import React, { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { RiArrowRightLine, RiFolder6Line } from '@remixicon/react'
 import FilePreview from '../file-preview'
@@ -102,8 +102,28 @@ const StepOne = forwardRef<StepOneRef, IStepOneProps>(({
   const [currentFile, setCurrentFile] = useState<File | undefined>()
   const [currentNotionPage, setCurrentNotionPage] = useState<NotionPage | undefined>()
   const [currentWebsite, setCurrentWebsite] = useState<CrawlResultItem | undefined>()
+  // 添加一个计数器状态，用于强制更新nextDisabled
+  const [forceUpdateCounter, setForceUpdateCounter] = useState(0)
   const { t } = useTranslation()
   const fileUploaderRef = useRef<FileUploaderRef>(null)
+
+  // 强制重新计算nextDisabled
+  const forceUpdateNextDisabled = () => {
+    setForceUpdateCounter(prev => prev + 1)
+  }
+
+  // 添加一个定时器，定期检查loadingFileId状态
+  useEffect(() => {
+    // 每200毫秒检查一次loadingFileId状态
+    const intervalId = setInterval(() => {
+      forceUpdateNextDisabled()
+    }, 200)
+
+    // 清除定时器
+    return () => {
+      clearInterval(intervalId)
+    }
+  }, []) // 仅在组件挂载时运行一次
 
   // 暴露方法给父组件
   useImperativeHandle(ref, () => ({
@@ -143,13 +163,18 @@ const StepOne = forwardRef<StepOneRef, IStepOneProps>(({
   const isVectorSpaceFull = plan.usage.vectorSpace >= plan.total.vectorSpace
   const isShowVectorSpaceFull = (allFileLoaded || hasNotin) && isVectorSpaceFull && enableBilling
   const notSupportBatchUpload = enableBilling && plan.type === 'sandbox'
+  const [isMultimodalParsing, setIsMultimodalParsing] = useState(false)
   const nextDisabled = useMemo(() => {
     if (!files.length)
       return true
     if (files.some(file => !file.file.id))
       return true
+    // 多模态解析API调用时禁用下一步按钮（快速解析不会禁用）
+    // loadingFileId只在多模态API调用过程中不为null，调用完成后即为null
+    if (fileUploaderRef.current?.isLoading())
+      return true
     return isShowVectorSpaceFull
-  }, [files, isShowVectorSpaceFull])
+  }, [files, isShowVectorSpaceFull, fileUploaderRef, forceUpdateCounter])
 
   return (
     <div className='h-full w-full overflow-x-auto'>
@@ -249,6 +274,8 @@ const StepOne = forwardRef<StepOneRef, IStepOneProps>(({
                     onPreview={updateCurrentFile}
                     notSupportBatchUpload={notSupportBatchUpload}
                     onParseTypeChange={(fileID, parseType) => {
+                      // 在解析类型变化时强制更新nextDisabled状态
+                      forceUpdateNextDisabled()
                       // 使用专用方法处理解析类型变化
                       if (updateFileParseType) {
                         updateFileParseType(fileID, parseType)
@@ -262,6 +289,8 @@ const StepOne = forwardRef<StepOneRef, IStepOneProps>(({
                           updateFileList(updatedFiles)
                         }
                       }
+                      // 再次强制更新，确保状态同步
+                      setTimeout(forceUpdateNextDisabled, 100)
                     }}
                   />
                   {isShowVectorSpaceFull && (
@@ -271,7 +300,12 @@ const StepOne = forwardRef<StepOneRef, IStepOneProps>(({
                   )}
                   <div className="flex max-w-[640px] justify-end gap-2">
                     {/* <Button>{t('datasetCreation.stepOne.cancel')}</Button> */}
-                    <Button disabled={nextDisabled} variant='primary' onClick={onStepChange}>
+                    <Button
+                      disabled={nextDisabled}
+                      variant='primary'
+                      onClick={onStepChange}
+                      title={fileUploaderRef.current?.isLoading() ? '正在进行多模态解析，请稍候...' : ''}
+                    >
                       <span className="flex gap-0.5 px-[10px]">
                         <span className="px-0.5">{t('datasetCreation.stepOne.button')}</span>
                         <RiArrowRightLine className="size-4" />

@@ -68,18 +68,18 @@ const ModerationSettingModal: FC<ModerationSettingModalProps> = ({
   const customOpenaiProvidersCanUse = openaiProvider?.custom_configuration.status === CustomConfigurationStatusEnum.active
   const isOpenAIProviderConfigured = customOpenaiProvidersCanUse || systemOpenaiProviderCanUse
   const providers: Provider[] = [
-    {
-      key: 'openai_moderation',
-      name: t('appDebug.feature.moderation.modal.provider.openai'),
-    },
+    // {
+    //   key: 'openai_moderation',
+    //   name: t('appDebug.feature.moderation.modal.provider.openai'),
+    // },
     {
       key: 'keywords',
       name: t('appDebug.feature.moderation.modal.provider.keywords'),
     },
-    {
-      key: 'api',
-      name: t('common.apiBasedExtension.selector.title'),
-    },
+    // {
+    //   key: 'api',
+    //   name: t('common.apiBasedExtension.selector.title'),
+    // },
     ...(
       codeBasedExtensionList
         ? codeBasedExtensionList.data.map((item) => {
