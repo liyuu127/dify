@@ -37,7 +37,10 @@ const ChangePasswordForm = () => {
       params.set('token', searchParams.get('invite_token') as string)
       return `/activate?${params.toString()}`
     }
-    return '/signin'
+    // return '/signin'
+    // 跳转到外部链接
+    const applicationPlatform = globalThis.document.body.getAttribute('data-public-application-platform')
+    return `${applicationPlatform}`
   }
 
   const AUTO_REDIRECT_TIME = 5000
@@ -45,7 +48,7 @@ const ChangePasswordForm = () => {
   const [countdown] = useCountDown({
     leftTime,
     onEnd: () => {
-      router.replace(getSignInUrl())
+      // router.replace(getSignInUrl())
     },
   })
 
@@ -181,6 +184,8 @@ const ChangePasswordForm = () => {
           <div className="mx-auto mt-6 w-full">
             <Button variant='primary' className='w-full' onClick={() => {
               setLeftTime(undefined)
+              // router.replace(getSignInUrl())
+              // 跳转到外部链接
               router.replace(getSignInUrl())
             }}>{t('login.passwordChanged')} ({Math.round(countdown / 1000)}) </Button>
           </div>

@@ -33,7 +33,10 @@ export default function AppSelector() {
     localStorage.removeItem('console_token')
     localStorage.removeItem('refresh_token')
 
-    router.push('/signin')
+    // router.push('/signin')
+    // 跳转到外部链接
+    const applicationPlatform = globalThis.document.body.getAttribute('data-public-application-platform')
+    router.replace(`${applicationPlatform}`)
   }
 
   return (

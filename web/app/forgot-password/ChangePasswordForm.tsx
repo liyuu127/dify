@@ -3,7 +3,6 @@ import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import useSWR from 'swr'
 import { useSearchParams } from 'next/navigation'
-import { basePath } from '@/utils/var'
 import cn from 'classnames'
 import { CheckCircleIcon } from '@heroicons/react/24/solid'
 import Input from '../components/base/input'
@@ -13,6 +12,8 @@ import Toast from '@/app/components/base/toast'
 import Loading from '@/app/components/base/loading'
 
 const validPassword = /^(?=.*[a-zA-Z])(?=.*\d).{8,}$/
+// 跳转到外部链接
+const applicationPlatform = globalThis.document.body.getAttribute('data-public-application-platform')
 
 const ChangePasswordForm = () => {
   const { t } = useTranslation()
@@ -164,7 +165,7 @@ const ChangePasswordForm = () => {
           </div>
           <div className="mx-auto mt-6 w-full">
             <Button variant='primary' className='w-full'>
-              <a href={`${basePath}/signin`}>{t('login.passwordChanged')}</a>
+              <a href={`${applicationPlatform}`}>{t('login.passwordChanged')}</a>
             </Button>
           </div>
         </div>
