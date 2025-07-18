@@ -10,7 +10,6 @@ import {
   RiArrowDownSLine,
   RiArrowRightSLine,
   RiLockLine,
-  RiPlayCircleLine,
 } from '@remixicon/react'
 import { useKeyPress } from 'ahooks'
 import { getKeyboardKeyCodeBySystem } from '../../workflow/utils'
@@ -19,8 +18,6 @@ import type { ModelAndParameter } from '../configuration/debug/types'
 import Divider from '../../base/divider'
 import AccessControl from '../app-access-control'
 import Loading from '../../base/loading'
-import Tooltip from '../../base/tooltip'
-import SuggestedAction from './suggested-action'
 import PublishWithMultipleModel from './publish-with-multiple-model'
 import Button from '@/app/components/base/button'
 import {
@@ -294,7 +291,8 @@ useCapture: true,
                   </div>
                   {!isAppAccessSet && <p className='system-xs-regular mt-1 text-text-warning'>{t('app.publishApp.notSetDesc')}</p>}
                 </div>}
-                <div className='flex flex-col gap-y-1 border-t-[0.5px] border-t-divider-regular p-4 pt-3'>
+                {/* <div className='flex flex-col gap-y-1 border-t-[0.5px] border-t-divider-regular p-4 pt-3'>
+                  注释掉运行应用
                   <Tooltip triggerClassName='flex' disabled={!systemFeatures.webapp_auth.enabled || userCanAccessApp?.result} popupContent={t('app.noAccessPermission')} asChild={false}>
                     <SuggestedAction
                       className='flex-1'
@@ -305,8 +303,8 @@ useCapture: true,
                       {t('workflow.common.runApp')}
                     </SuggestedAction>
                   </Tooltip>
-                  {/* 注释掉批量运行 */}
-                  {/* {appDetail?.mode === 'workflow' || appDetail?.mode === 'completion'
+                  注释掉批量运行
+                  {appDetail?.mode === 'workflow' || appDetail?.mode === 'completion'
                     ? (
                       <Tooltip triggerClassName='flex' disabled={!systemFeatures.webapp_auth.enabled || userCanAccessApp?.result} popupContent={t('app.noAccessPermission')} asChild={false}>
                         <SuggestedAction
@@ -330,9 +328,9 @@ useCapture: true,
                       >
                         {t('workflow.common.embedIntoSite')}
                       </SuggestedAction>
-                    )} */}
-                    {/* 注释掉嵌入站点 */}
-                  {/* <Tooltip triggerClassName='flex' disabled={!systemFeatures.webapp_auth.enabled || userCanAccessApp?.result} popupContent={t('app.noAccessPermission')} asChild={false}>
+                    )}
+                    注释掉嵌入站点
+                  <Tooltip triggerClassName='flex' disabled={!systemFeatures.webapp_auth.enabled || userCanAccessApp?.result} popupContent={t('app.noAccessPermission')} asChild={false}>
                     <SuggestedAction
                       className='flex-1'
                       onClick={() => {
@@ -343,17 +341,17 @@ useCapture: true,
                     >
                       {t('workflow.common.openInExplore')}
                     </SuggestedAction>
-                  </Tooltip> */}
-                  {/* 注释掉访问API参考 */}
-                  {/* <SuggestedAction
+                  </Tooltip>
+                  注释掉访问API参考
+                  <SuggestedAction
                     disabled={!publishedAt}
                     link='./develop'
                     icon={<RiTerminalBoxLine className='h-4 w-4' />}
                   >
                     {t('workflow.common.accessAPIReference')}
-                  </SuggestedAction> */}
-                  {/* 注释掉工作流工具配置 */}
-                  {/* {appDetail?.mode === 'workflow' && (
+                  </SuggestedAction>
+                  注释掉工作流工具配置
+                  {appDetail?.mode === 'workflow' && (
                     <WorkflowToolConfigureButton
                       disabled={!publishedAt}
                       published={!!toolPublished}
@@ -369,8 +367,8 @@ useCapture: true,
                       handlePublish={handlePublish}
                       onRefreshData={onRefreshData}
                     />
-                  )} */}
-                </div>
+                  )}
+                </div> */}
               </>}
           </div>
         </PortalToFollowElemContent>

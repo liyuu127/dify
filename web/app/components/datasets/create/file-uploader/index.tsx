@@ -48,6 +48,7 @@ type FileParseCache = {
 // 定义组件引用类型
 export type FileUploaderRef = {
   clearFilesAndCache: () => void
+  isLoading: () => boolean // 添加一个方法，用于检查是否有文件正在加载
 }
 
 const FileUploader = forwardRef<FileUploaderRef, IFileUploaderProps>(({
@@ -428,6 +429,10 @@ const FileUploader = forwardRef<FileUploaderRef, IFileUploaderProps>(({
     else {
       // 多模态解析
       try {
+        // 设置加载状态 - 无论是否有缓存，都先设置loading状态
+        setLoadingFileId(fileID)
+        console.log('多模态解析: 设置 loadingFileId =', fileID)
+
         // 首先检查fileParseCache中是否已有multimodalItem
         let existingMultimodalItem: ExtendedFileItem | undefined
         if (cacheIndex >= 0) existingMultimodalItem = fileParseCache[cacheIndex].multimodalItem
@@ -448,6 +453,10 @@ const FileUploader = forwardRef<FileUploaderRef, IFileUploaderProps>(({
             fileListRef.current,
           )
 
+          // 清除loading状态
+          setLoadingFileId(null)
+          console.log('多模态解析(使用缓存): 清除 loadingFileId')
+
           // 通知父组件解析类型变化
           onParseTypeChange?.(fileID, parseType)
 
@@ -458,17 +467,16 @@ const FileUploader = forwardRef<FileUploaderRef, IFileUploaderProps>(({
         // 检查是否已经调用过多模态解析接口
         const hasCalledAnalysisAPI = fileItem.file.hasCalledAnalysisAPI || false
 
-        // 设置加载状态
-        setLoadingFileId(fileID)
-
         // 只有第一次点击多模态才调用接口
         if (!hasCalledAnalysisAPI) {
+          console.log('多模态解析: 调用API')
           // 调用解析接口
           const res = await fetchFileAnalysis({
             params: {
               file_id: fileItem.file.id,
             },
           })
+          console.log('多模态解析: API返回', res ? '成功' : '失败')
 
           // 保存后端返回的analysisId和完整数据
           if (res) {
@@ -517,6 +525,7 @@ const FileUploader = forwardRef<FileUploaderRef, IFileUploaderProps>(({
 
             // 清除loading状态
             setLoadingFileId(null)
+            console.log('多模态解析(API成功): 清除 loadingFileId')
 
             // 通知父组件解析类型变化
             onParseTypeChange?.(fileID, parseType)
@@ -544,12 +553,14 @@ const FileUploader = forwardRef<FileUploaderRef, IFileUploaderProps>(({
 
             // 清除loading状态
             setLoadingFileId(null)
+            console.log('多模态解析(API无数据): 清除 loadingFileId')
 
             // 通知父组件解析类型变化
             onParseTypeChange?.(fileID, parseType)
           }
         }
         else {
+          console.log('多模态解析: 已调用过API但无缓存')
           // 已经调用过API，但没有缓存，创建一个新的multimodalItem
           const multimodalItem: ExtendedFileItem = {
             fileID: fileItem.fileID,
@@ -589,6 +600,7 @@ const FileUploader = forwardRef<FileUploaderRef, IFileUploaderProps>(({
 
           // 清除loading状态
           setLoadingFileId(null)
+          console.log('多模态解析(已调用过API): 清除 loadingFileId')
 
           // 通知父组件解析类型变化
           onParseTypeChange?.(fileID, parseType)
@@ -597,6 +609,7 @@ const FileUploader = forwardRef<FileUploaderRef, IFileUploaderProps>(({
       catch (e: any) {
         // 清除loading状态
         setLoadingFileId(null)
+        console.log('多模态解析(发生错误): 清除 loadingFileId, 错误:', e)
 
         onFileUpdate(
           {
@@ -648,7 +661,12 @@ const FileUploader = forwardRef<FileUploaderRef, IFileUploaderProps>(({
   // 暴露方法给父组件
   useImperativeHandle(ref, () => ({
     clearFilesAndCache,
-  }), [clearFilesAndCache])
+    isLoading: () => {
+      const loading = loadingFileId !== null
+      console.log('isLoading被调用，当前loadingFileId =', loadingFileId, '返回:', loading)
+      return loading
+    },
+  }), [clearFilesAndCache, loadingFileId])
 
   return (
     <div className="mb-5 w-[640px]">

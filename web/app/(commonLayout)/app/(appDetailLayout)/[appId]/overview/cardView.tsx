@@ -3,7 +3,6 @@ import type { FC } from 'react'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { useContext } from 'use-context-selector'
-import AppCard from '@/app/components/app/overview/appCard'
 import AppPermission from '@/app/components/app/overview/appPermission'
 import Loading from '@/app/components/base/loading'
 import { ToastContext } from '@/app/components/base/toast'
@@ -106,7 +105,7 @@ id: appId,
 
   return (
     <div className={className || 'mb-6 grid w-full grid-cols-1 gap-6 xl:grid-cols-2'}>
-      <AppCard
+      {/* <AppCard
         appInfo={appDetail}
         cardType="webapp"
         isInPanel={isInPanel}
@@ -119,7 +118,7 @@ id: appId,
         appInfo={appDetail}
         isInPanel={isInPanel}
         onChangeStatus={onChangeApiStatus}
-      />
+      /> */}
       <AppPermission
         cardType="PermissionSvg"
         appInfo={appDetail}
