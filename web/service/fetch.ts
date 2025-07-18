@@ -41,10 +41,14 @@ const afterResponseErrorCode = (otherOptions: IOtherOptions): AfterResponseHook 
       switch (clonedResponse.status) {
         case 403:
           bodyJson.then((data: ResponseError) => {
-            if (!otherOptions.silent)
-              Toast.notify({ type: 'error', message: data.message })
+            if (!otherOptions.silent) {
+ Toast.notify({
+ type: 'error',
+message: data.message,
+})
+}
             if (data.code === 'already_setup')
-              globalThis.location.href = `${globalThis.location.origin}/signin`
+              globalThis.location.href = 'www.baidu.com'
           })
           break
         case 401:
@@ -52,8 +56,12 @@ const afterResponseErrorCode = (otherOptions: IOtherOptions): AfterResponseHook 
         // fall through
         default:
           bodyJson.then((data: ResponseError) => {
-            if (!otherOptions.silent)
-              Toast.notify({ type: 'error', message: data.message })
+            if (!otherOptions.silent) {
+ Toast.notify({
+ type: 'error',
+message: data.message,
+})
+}
           })
           return Promise.reject(response)
       }
@@ -63,8 +71,12 @@ const afterResponseErrorCode = (otherOptions: IOtherOptions): AfterResponseHook 
 
 const beforeErrorToast = (otherOptions: IOtherOptions): BeforeErrorHook => {
   return (error) => {
-    if (!otherOptions.silent)
-      Toast.notify({ type: 'error', message: error.message })
+    if (!otherOptions.silent) {
+ Toast.notify({
+ type: 'error',
+message: error.message,
+})
+}
     return error
   }
 }

@@ -23,11 +23,15 @@ export default function CheckCode() {
   const [email, setEmail] = useState('')
   const [loading, setIsLoading] = useState(false)
   const { locale } = useContext(I18NContext)
-
+  // 跳转到外部链接
+  const applicationPlatform = globalThis.document.body.getAttribute('data-public-application-platform')
   const handleGetEMailVerificationCode = async () => {
     try {
       if (!email) {
-        Toast.notify({ type: 'error', message: t('login.error.emailEmpty') })
+        Toast.notify({
+ type: 'error',
+message: t('login.error.emailEmpty'),
+})
         return
       }
 
@@ -94,7 +98,7 @@ export default function CheckCode() {
     <div className='py-2'>
       <div className='h-px bg-gradient-to-r from-background-gradient-mask-transparent via-divider-regular to-background-gradient-mask-transparent'></div>
     </div>
-    <Link href={`/signin?${searchParams.toString()}`} className='flex h-9 items-center justify-center text-text-tertiary hover:text-text-primary'>
+    <Link href={`${applicationPlatform}`} className='flex h-9 items-center justify-center text-text-tertiary hover:text-text-primary'>
       <div className='inline-block rounded-full bg-background-default-dimmed p-1'>
         <RiArrowLeftLine size={12} />
       </div>

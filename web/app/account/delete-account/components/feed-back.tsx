@@ -30,15 +30,24 @@ export default function FeedBack(props: DeleteAccountProps) {
       })
       localStorage.removeItem('refresh_token')
       localStorage.removeItem('console_token')
-      router.push('/signin')
-      Toast.notify({ type: 'info', message: t('common.account.deleteSuccessTip') })
+      // router.push('/signin')
+      // 跳转到外部链接
+    const applicationPlatform = globalThis.document.body.getAttribute('data-public-application-platform')
+    router.replace(`${applicationPlatform}`)
+      Toast.notify({
+ type: 'info',
+message: t('common.account.deleteSuccessTip'),
+})
     }
     catch (error) { console.error(error) }
   }, [router, t])
 
   const handleSubmit = useCallback(async () => {
     try {
-      await sendFeedback({ feedback: userFeedback, email: userProfile.email })
+      await sendFeedback({
+ feedback: userFeedback,
+email: userProfile.email,
+})
       props.onConfirm()
       await handleSuccess()
     }
