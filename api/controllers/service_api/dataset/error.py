@@ -45,7 +45,7 @@ class ArchivedDocumentImmutableError(BaseHTTPException):
 
 class DatasetNameDuplicateError(BaseHTTPException):
     error_code = "dataset_name_duplicate"
-    description = "The dataset name already exists. Please modify your dataset name."
+    description = "已存在相同名称的知识库"
     code = 409
 
 
