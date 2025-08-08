@@ -16,7 +16,7 @@ export type LogoSize = 'large' | 'medium' | 'small'
 
 export const logoSizeMap: Record<LogoSize, string> = {
   large: 'w-16 h-7',
-  medium: 'w-96 h-[42px]',
+  medium: 'w-76 h-[30px]',
   small: 'w-9 h-4',
 }
 
