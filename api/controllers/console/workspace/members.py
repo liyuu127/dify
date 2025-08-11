@@ -172,6 +172,29 @@ class MemberDeleteApi(Resource):
         return {"result": "success"}
 
 
+class MemberNameUpdateApi(Resource):
+    """update a member name by member id."""
+
+    @setup_required
+    @login_required
+    @account_initialization_required
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument("id", type=str, required=True, location="json")
+        parser.add_argument("name", type=str, required=True, location="json")
+        args = parser.parse_args()
+
+        id = args["id"]
+        account = AccountService.load_user(id)
+
+        if not account:
+            raise ParameterValidationError("member not found")
+
+        updated_account = AccountService.update_account(account, name=args["name"])
+
+        return {"result": "success"}
+
+
 class MemberCancelInviteApi(Resource):
     """Cancel an invitation by member id."""
 
@@ -243,6 +266,7 @@ api.add_resource(MemberListApi, "/workspaces/current/members")
 api.add_resource(MemberInviteEmailApi, "/workspaces/current/members/invite-email")
 api.add_resource(MemberCreatApi, "/workspaces/current/members/create")
 api.add_resource(MemberDeleteApi, "/workspaces/current/members/delete")
+api.add_resource(MemberNameUpdateApi, "/workspaces/current/members/name")
 api.add_resource(MemberCancelInviteApi, "/workspaces/current/members/<uuid:member_id>")
 api.add_resource(MemberUpdateRoleApi, "/workspaces/current/members/<uuid:member_id>/update-role")
 api.add_resource(DatasetOperatorMemberListApi, "/workspaces/current/dataset-operators")

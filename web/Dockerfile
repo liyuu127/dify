@@ -16,7 +16,6 @@ FROM base AS packages
 
 WORKDIR /app/web
 
-COPY .env.production .
 COPY package.json .
 COPY pnpm-lock.yaml .
 

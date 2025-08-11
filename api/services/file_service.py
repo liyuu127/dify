@@ -28,6 +28,39 @@ from .errors.file import FileTooLargeError, UnsupportedFileTypeError
 
 PREVIEW_WORDS_LIMIT = 3000
 
+import ssl
+
+import requests
+from requests.adapters import HTTPAdapter
+from urllib3.exceptions import InsecureRequestWarning
+from urllib3.poolmanager import PoolManager
+
+# 禁用不安全请求的警告
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+
+
+class LegacyHTTPAdapter(HTTPAdapter):
+    """支持不安全TLS重新协商并禁用主机名验证的HTTP适配器"""
+
+    def init_poolmanager(self, connections, maxsize, block=False):
+        context = ssl.create_default_context()
+        # 允许不安全的重新协商
+        context.options |= 0x4  # OP_LEGACY_SERVER_CONNECT
+
+        # 关键修复：禁用主机名验证
+        context.check_hostname = False
+
+        # 降低安全级别以支持旧版TLS
+        context.set_ciphers('DEFAULT@SECLEVEL=1')
+
+        self.poolmanager = PoolManager(
+            num_pools=connections,
+            maxsize=maxsize,
+            block=block,
+            ssl_context=context,
+            assert_hostname=False  # 禁用主机名验证
+        )
+
 
 class FileService:
     @staticmethod
@@ -187,22 +220,78 @@ class FileService:
         return generator, upload_file.mime_type
 
     @staticmethod
+    def post_analysis_file(filename: str, content: bytes, mimetype: str):
+        api_url = dify_config.DOCUMENT_RECOGNITION_URL
+
+        # 创建支持旧版TLS的会话
+        session = requests.Session()
+        session.mount('https://', LegacyHTTPAdapter())
+
+        try:
+            files = {
+                'file_bytes': (filename, content, mimetype)
+            }
+
+            data = {
+                'not_save_img_link': 'true',
+                'use_llm': 'false'
+            }
+
+            print("【多模态文档识别】发送 POST 请求")
+            # 注意：verify=False 仍然需要，但真正的禁用逻辑在适配器中
+            response = session.post(api_url, files=files, data=data, timeout=30, verify=False)
+            response.raise_for_status()
+
+            json = response.json()
+            print("【多模态文档识别】接口响应：")
+            print(f"【多模态文档识别】状态码：{response.status_code}")
+            print(f"【多模态文档识别】响应内容：{json}")
+            return json
+
+        except requests.exceptions.RequestException as e:
+            print(f"【多模态文档识别】请求失败：{e}")
+        finally:
+            session.close()
+
+    @staticmethod
+    def replace_extension(filename: str) -> str:
+        """将任意扩展名替换为.md"""
+        # 查找最后一个点的位置（即扩展名的起始位置）
+        last_dot_index = filename.rfind('.')
+
+        if last_dot_index != -1:
+            # 如果找到点，截取点之前的部分并添加.md
+            return filename[:last_dot_index] + '.md'
+        else:
+            # 如果没有扩展名，直接添加.md
+            return filename + '.md'
+
+    @staticmethod
     def analysis_file(file_id: str):
         file = db.session.query(UploadFile).filter(UploadFile.id == file_id).first()
 
         if not file:
             raise NotFound("File not found or signature is invalid")
 
-        # TODO 调用三方接口解析文件
-        new_file = file
-        generator = storage.load_once(new_file.key)
+        # 调用解析文件接口
+        generator = storage.load_once(file.key)
+
+        json = FileService.post_analysis_file(filename=file.name, content=generator, mimetype=file.mime_type)
+
+        code = json["code"]
+
+        if code != 200:
+            raise ValueError("该文件暂不支持多模态解析")
+
+        text = json["data"]["text"]
+
+        text_bytes = text.encode(encoding="utf-8")
 
         return FileService.upload_file(
-            filename=new_file.name,
-            content=generator,
-            mimetype=new_file.mime_type,
-            user=current_user,
-            source_url=new_file.source_url,
+            filename=FileService.replace_extension(file.name),
+            content=text_bytes,
+            mimetype='text/markdown',
+            user=current_user
         )
 
     @staticmethod
