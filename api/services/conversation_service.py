@@ -2,7 +2,7 @@ from collections.abc import Callable, Sequence
 from datetime import UTC, datetime
 from typing import Optional, Union
 
-from sqlalchemy import asc, desc, func, or_, select, and_
+from sqlalchemy import and_, asc, desc, func, or_, select
 from sqlalchemy.orm import Session
 
 from core.app.entities.app_invoke_entities import InvokeFrom
@@ -121,6 +121,7 @@ class ConversationService:
         )
 
         query = query.filter(Conversation.from_end_user_id.in_(user_ids))
+        query = query.filter(Conversation.is_deleted == False)
 
         if keyword:
             query = query.filter(message_ranked.c.query.ilike(f"%{keyword}%"))

@@ -41,7 +41,9 @@ const Header = () => {
 
   const switchPlatform = () => {
     // 跳转到外部链接
+    console.log('process.env.NEXT_PUBLIC_APPLICATION_PLATFORM', process.env.NEXT_PUBLIC_APPLICATION_PLATFORM)
     const applicationPlatform = globalThis.document.body.getAttribute('data-public-application-platform')
+    console.log('data-public-application-platform', applicationPlatform)
     router.replace(`${applicationPlatform}`)
   }
   useEffect(() => {
